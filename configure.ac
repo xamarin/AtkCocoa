@@ -4,6 +4,7 @@ AC_INIT([atk-cocoa], [0.1])
 
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_SRCDIR([atk-cocoa/acelement.h])
+AC_CONFIG_MACRO_DIR([m4])
 
 AM_INIT_AUTOMAKE
 
