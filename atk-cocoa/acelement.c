@@ -741,7 +741,6 @@ ac_element_add_child (AcElement *parent,
 			NSMutableArray *new_children = [[parent_element accessibilityChildren] mutableCopy];
 			[new_children addObject:child_element];
 			[parent_element setAccessibilityChildren:new_children];
-
 			[child_element setAccessibilityParent:parent_element];
 
 			if (nsWindow) {
@@ -755,7 +754,6 @@ ac_element_add_child (AcElement *parent,
 		// If the child is not accessible, then we need to add its unignored children
 		// This will fix up the situation mentioned in get_real_accessibility_parent
 		NSArray *unignoredChildren = NULL;
-
 		AC_NOTE (TREE, NSLog (@"ATKCocoa:    Child %@ is not accessible\n", child_element));
 
 		if ([child_element accessibilityChildren]) {
@@ -763,6 +761,9 @@ ac_element_add_child (AcElement *parent,
 
 			unignoredChildren = NSAccessibilityUnignoredChildren ([child_element accessibilityChildren]);
 
+			if ([unignoredChildren count] == 0) {
+				return;
+			}
 			realChildAdded = unignoredChildren[0];
 
 			AC_NOTE (TREE, g_print ("ATKCocoa:       Adding %lu children\n", [unignoredChildren count]));
