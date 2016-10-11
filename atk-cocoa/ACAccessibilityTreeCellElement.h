@@ -8,7 +8,9 @@
 
 @interface ACAccessibilityTreeCellElement : ACAccessibilityElement
 
-- (instancetype)initWithDelegate:(AcElement *)delegate;
+- (instancetype)initWithDelegate:(AcElement *)delegate withDisclosureButton:(BOOL)canDisclose;
 - (void)addToRow:(ACAccessibilityTreeRowElement *)rowElement column:(ACAccessibilityTreeColumnElement *)columnElement;
+- (void)addDisclosureButton;
+- (void)removeDisclosureButton;
 
 @end

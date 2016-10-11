@@ -3153,21 +3153,23 @@ make_accessibility_cell_for_column (GtkTreeModel *treeModel,
                                     ACAccessibilityTreeRowElement *rowElement,
                                     ACAccessibilityTreeColumnElement *columnElement)
 {
-  ACAccessibilityTreeCellElement *cell = [[ACAccessibilityTreeCellElement alloc] initWithDelegate:AC_ELEMENT (gailView)];
+  ACAccessibilityTreeCellElement *cell;
   GList *renderers, *r;
   AtkRegistry *default_registry = atk_get_default_registry ();
   int i;
   GtkTreePath *path = gtk_tree_model_get_path (treeModel, rowIter);
   gboolean isExpanderColumn = (gtk_tree_view_get_expander_column (treeView) == column);
   gboolean is_expanded = FALSE;
+  gboolean needs_disclosure = FALSE;
   GtkTreeSelection *selection;
-
-  [cell addToRow:rowElement column:columnElement];
 
   renderers = gtk_cell_layout_get_cells (GTK_CELL_LAYOUT (column));
   if (isExpanderColumn && gtk_tree_model_iter_has_child (treeModel, rowIter)) {
-    // Add a disclosure triangle to the cell
+    needs_disclosure = TRUE;
   }
+
+  cell = [[ACAccessibilityTreeCellElement alloc] initWithDelegate:AC_ELEMENT (gailView) withDisclosureButton:needs_disclosure];
+  [cell addToRow:rowElement column:columnElement];
 
   if (isExpanderColumn) {
     is_expanded = gtk_tree_view_row_expanded (treeView, path);
@@ -3201,7 +3203,9 @@ make_accessibility_cell_for_column (GtkTreeModel *treeModel,
       continue;
     }
 
-    renderer_element = g_object_get_data (G_OBJECT (child), "xamarin-private-atkcocoa-nsaccessibility");
+    // FIXME: Creating a render element from a non gail source (eg inside managed code)
+    // needs more thought and testing. 
+    // renderer_element = g_object_get_data (G_OBJECT (child), "xamarin-private-atkcocoa-nsaccessibility");
     if (GAIL_IS_RENDERER_CELL (child)) {
       
       gailCell = GAIL_CELL (child);
@@ -3371,6 +3375,43 @@ make_accessibility_element_for_row (GtkTreeModel *treeModel,
   return rowElement;
 }
 
+static void
+update_expandability (GtkTreeView *tree_view,
+                      GtkTreeModel *tree_model,
+                      GailTreeView *gailview,
+                      GtkTreePath *path)
+{
+  GtkTreeViewColumn *expandColumn = gtk_tree_view_get_expander_column (tree_view);
+  ACAccessibilityTreeColumnElement *columnElement = find_column_element_for_column (gailview, expandColumn);
+  ACAccessibilityTreeRowElement *rowElement = find_row_element_for_path (gailview, path);
+  NSArray *columnChildren = [columnElement accessibilityChildren];
+  ACAccessibilityTreeCellElement *cell = NULL;
+  GtkTreeIter iter;
+  gboolean hasChildren;
+
+  if (!gtk_tree_model_get_iter (tree_model, &iter, path)) {
+    return;
+  }
+
+  hasChildren = gtk_tree_model_iter_has_child (tree_model, &iter);
+
+  for (id<NSAccessibility> child in columnChildren) {
+    if ([child accessibilityParent] == rowElement) {
+      cell = child;
+      break;
+    }
+  }
+
+  if (cell == NULL) {
+    return;
+  }
+
+  if (hasChildren) {
+    [cell addDisclosureButton];
+  } else {
+    [cell removeDisclosureButton];
+  }
+}
 static gboolean
 check_visibility (GtkTreeModel *tree_model,
                   GtkTreeIter *iter,
@@ -3421,7 +3462,6 @@ model_row_inserted (GtkTreeModel *tree_model,
       g_source_remove (gailview->idle_expand_id);
       gailview->idle_expand_id = 0;
 
-      g_print ("Cancelling expand idle\n");
       /* don't do this if the insertion precedes the idle path, since it will now be invalid */
       if (path && gailview->idle_expand_path &&
       	  (gtk_tree_path_compare (path, gailview->idle_expand_path) > 0))
@@ -3432,7 +3472,6 @@ model_row_inserted (GtkTreeModel *tree_model,
   /* Check to see if row is visible */
   row = get_row_from_tree_path (tree_view, path);
 
-  g_print ("Inserting %s\n", gtk_tree_path_to_string (path));
  /*
   * A row insert is not necessarily visible.  For example,
   * a row can be draged & dropped into another row, which
@@ -3502,6 +3541,8 @@ model_row_inserted (GtkTreeModel *tree_model,
       path_copy = gtk_tree_path_copy (path);
       gtk_tree_path_up (path_copy);
       set_expand_state (tree_view, tree_model, gailview, path_copy, TRUE);
+
+      update_expandability (tree_view, tree_model, gailview, path_copy);
       gtk_tree_path_free (path_copy);
     }
 }

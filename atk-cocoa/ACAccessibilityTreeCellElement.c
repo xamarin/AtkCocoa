@@ -1,14 +1,44 @@
+#import <Cocoa/Cocoa.h>
 #import "ACAccessibilityTreeCellElement.h"
 
 #import "ACAccessibilityTreeColumnElement.h"
 #import "ACAccessibilityTreeRowElement.h"
 
+@protocol ACAccessibilityDisclosureButtonDelegate
+
+- (void)performDisclosurePress;
+
+@end
+
+@interface ACAccessibilityDisclosureButton : NSAccessibilityElement
+
+@property (readwrite, assign) id<ACAccessibilityDisclosureButtonDelegate> delegate;
+@end
+
+@implementation ACAccessibilityDisclosureButton
+
+- (NSString *)accessibilityRole
+{
+    return NSAccessibilityDisclosureTriangleRole;
+}
+
+- (BOOL)accessibilityPerformPress
+{
+    [_delegate performDisclosurePress];
+    return YES;
+}
+@end
+
+@interface ACAccessibilityTreeCellElement () <ACAccessibilityDisclosureButtonDelegate>
+@end
+
 @implementation ACAccessibilityTreeCellElement {
     ACAccessibilityTreeRowElement *_rowElement;
     ACAccessibilityTreeColumnElement *_columnElement;
+    ACAccessibilityDisclosureButton *_disclosureElement;
 }
 
-- (instancetype)initWithDelegate:(AcElement *)delegate
+- (instancetype)initWithDelegate:(AcElement *)delegate withDisclosureButton:(BOOL)canDisclose
 {
     self = [super initWithDelegate:delegate];
     if (!self) {
@@ -16,13 +46,26 @@
     }
 
     [self setAccessibilityRole:NSAccessibilityCellRole];
+
+    if (canDisclose) {
+        [self addDisclosureButton];
+    }
     return self;
 }
 
+- (void)dealloc
+{
+    [self removeDisclosureButton];
+
+    [_rowElement release];
+    [_columnElement release];
+
+    [super dealloc];
+}
 - (void)addToRow:(ACAccessibilityTreeRowElement *)rowElement column:(ACAccessibilityTreeColumnElement *)columnElement
 {
-    _rowElement = rowElement;
-    _columnElement = columnElement;
+    _rowElement = [rowElement retain];
+    _columnElement = [columnElement retain];
 
     [columnElement accessibilityAddChildElement:self];
     [rowElement accessibilityAddChildElement:self];
@@ -53,4 +96,45 @@
     return cellSpace;
 }
 
+- (void)addDisclosureButton
+{
+    if (_disclosureElement != nil) {
+        return;
+    }
+
+    _disclosureElement = [[ACAccessibilityDisclosureButton alloc] init];
+    [_disclosureElement setDelegate:self];
+
+    [self accessibilityAddChildElement:_disclosureElement];
+}
+
+- (void)removeDisclosureButton
+{
+    if (_disclosureElement == nil) {
+        return;
+    }
+    
+    [_disclosureElement setDelegate:nil];
+    [_disclosureElement release];
+    _disclosureElement = nil;
+}
+
+- (void)performDisclosurePress
+{
+    GtkTreeViewColumn *column;
+    GtkTreePath *path;
+    GtkWidget *treeView;
+
+    column = [_columnElement column];
+    treeView = gtk_tree_view_column_get_tree_view (column);
+    path = gtk_tree_row_reference_get_path ([_rowElement rowReference]);
+
+    if (gtk_tree_view_row_expanded (GTK_TREE_VIEW (treeView), path)) {
+        gtk_tree_view_collapse_row (GTK_TREE_VIEW (treeView), path);
+    } else {
+        gtk_tree_view_expand_row (GTK_TREE_VIEW (treeView), path, FALSE);
+    }
+
+    gtk_tree_path_free (path);
+}
 @end
