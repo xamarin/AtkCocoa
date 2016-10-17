@@ -12,6 +12,7 @@
 
 static void ac_element_class_init (AcElementClass *klass);
 static void ac_element_init (AcElement *element);
+static void ac_element_dispose (GObject *obj);
 static ACAccessibilityElement *ac_element_get_real_accessibility_element (AcElement *element);
 static void ac_element_real_set_role (AtkObject *accessible,
 									  AtkRole role);
@@ -63,6 +64,7 @@ ac_element_class_init (AcElementClass *klass)
 {
   AtkObjectClass *class = ATK_OBJECT_CLASS (klass);
   GtkAccessibleClass *accessible_class = GTK_ACCESSIBLE_CLASS (klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
   klass->get_accessibility_element = ac_element_get_real_accessibility_element;
   klass->get_actions = ac_element_real_get_actions;
@@ -79,6 +81,7 @@ ac_element_class_init (AcElementClass *klass)
   klass->perform_show_default_ui = ac_element_real_perform_show_default_ui;
   klass->perform_show_menu = ac_element_real_perform_show_menu;
 
+  object_class->dispose = ac_element_dispose;
   g_type_class_add_private (G_OBJECT_CLASS (klass), sizeof (AcElementPrivate));
 /*
   class->get_description = gail_widget_get_description;
@@ -122,6 +125,17 @@ static void
 ac_element_init (AcElement *element)
 {
 	element->priv = AC_ELEMENT_GET_PRIVATE (element);
+}
+
+static void
+ac_element_dispose (GObject *obj)
+{
+	AcElement *element = AC_ELEMENT (obj);
+
+	[element->priv->real_element release];
+	element->priv->real_element = nil;
+
+	G_OBJECT_CLASS (ac_element_parent_class)->dispose (obj);
 }
 
 static id<NSAccessibility>
@@ -615,7 +629,12 @@ ac_element_set_owner (AcElement *element,
 	priv = element->priv;
 
 	priv->owner = owner;
+	g_object_add_weak_pointer (owner, (gpointer *)&priv->owner);
+
 	priv->real_element = [[ACAccessibilityElement alloc] initWithDelegate:element];
+
+	// Set the NSAccessibilityElement as data on the AtkObject
+	// so it can be accessed from managed code which can't know about AcElement
 	g_object_set_data (G_OBJECT (element), "xamarin-private-atkcocoa-nsaccessibility", priv->real_element);
 }
 

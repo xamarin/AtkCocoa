@@ -3206,20 +3206,19 @@ make_accessibility_cell_for_column (GtkTreeModel *treeModel,
     // FIXME: Creating a render element from a non gail source (eg inside managed code)
     // needs more thought and testing. 
     // renderer_element = g_object_get_data (G_OBJECT (child), "xamarin-private-atkcocoa-nsaccessibility");
-    if (GAIL_IS_RENDERER_CELL (child)) {
-      
-      gailCell = GAIL_CELL (child);
 
-      /* Create the GailTreeViewCellInfo structure for this cell */
-      //cell_info_new (gailView, treeModel, path, column, gailCell);
-
-      // Set the parent as far as ATK understands to the GtkTreeView
-      // because ATK doesn't understand the NSAccessibility parents for the AxCell
-      // or AxRow
-      gail_cell_initialise (gailCell,
-                            GTK_WIDGET (treeView), ATK_OBJECT (gailView), 
-                            [rowElement rowReference], column, i);
+    if (!GAIL_IS_RENDERER_CELL (child)) {
+      continue;
     }
+
+    gailCell = GAIL_CELL (child);
+
+    // Set the parent as far as ATK understands to the GtkTreeView
+    // because ATK doesn't understand the NSAccessibility parents for the AxCell
+    // or AxRow
+    gail_cell_initialise (gailCell,
+                          GTK_WIDGET (treeView), ATK_OBJECT (gailView),
+                          [rowElement rowReference], column, i);
 
     [cell accessibilityAddChildElement:renderer_element ?: (NSAccessibilityElement *) gailCell->cell_element];
 
@@ -3231,14 +3230,11 @@ make_accessibility_cell_for_column (GtkTreeModel *treeModel,
       GailRendererCellClass *gail_renderer_cell_class = GAIL_RENDERER_CELL_GET_CLASS (child);
       char **prop_list = gail_renderer_cell_class->property_list;
 
-      g_print ("Updating cell values for %s\n", G_OBJECT_TYPE_NAME (child));
-
       gtk_tree_view_column_cell_set_cell_data (column, treeModel, rowIter, isExpanderColumn, is_expanded);
 
       while (*prop_list) {
         GParamSpec *spec;
 
-        g_print ("Getting prop: %s\n", *prop_list);
         spec = g_object_class_find_property (G_OBJECT_CLASS (gtk_cell_renderer_class), *prop_list);
 
         if (spec != NULL) {
