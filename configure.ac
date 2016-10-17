@@ -4,7 +4,6 @@ AC_INIT([atk-cocoa], [0.1])
 
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_SRCDIR([atk-cocoa/acelement.h])
-AC_CONFIG_MACRO_DIRS([m4])
 
 AM_INIT_AUTOMAKE
 
@@ -19,7 +18,7 @@ AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 
 AM_DISABLE_STATIC
-AM_PROG_LIBTOOL
+LT_INIT
 
 AM_PATH_GLIB_2_0(2.31.2, :, AC_MSG_ERROR([
 *** GLIB 2.31.2 or better required]), gobject)
