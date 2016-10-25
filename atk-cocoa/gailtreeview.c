@@ -3224,7 +3224,7 @@ make_accessibility_cell_for_column (GtkTreeModel *treeModel,
 
     // FIXME: Work out how to do this for the managed renderer_element
     // Hmmm... 
-    if (GAIL_IS_RENDERER_CELL (child)) {
+    if (GAIL_IS_RENDERER_CELL (child) && GAIL_RENDERER_CELL (child)->renderer) {
       GailRendererCell *renderer_cell = GAIL_RENDERER_CELL (child);
       GtkCellRendererClass *gtk_cell_renderer_class = GTK_CELL_RENDERER_GET_CLASS (renderer_cell->renderer);
       GailRendererCellClass *gail_renderer_cell_class = GAIL_RENDERER_CELL_GET_CLASS (child);
