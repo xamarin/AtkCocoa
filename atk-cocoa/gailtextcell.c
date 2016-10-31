@@ -23,7 +23,7 @@
 #include "gailtextcell.h"
 #include "gailcontainercell.h"
 #include "gailcellparent.h"
-#include <libatkcocoa-util/gailmisc.h>
+#include <atk-cocoa/gailmisc.h>
 #include "gail-private-macros.h"
 
 #include "acutils.h"

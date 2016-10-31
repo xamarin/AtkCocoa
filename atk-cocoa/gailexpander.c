@@ -23,7 +23,7 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #include "gailexpander.h"
-#include <libatkcocoa-util/gailmisc.h>
+#include <atk-cocoa/gailmisc.h>
 
 static void                  gail_expander_class_init       (GailExpanderClass *klass);
 static void                  gail_expander_init             (GailExpander      *expander);

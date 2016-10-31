@@ -27,7 +27,7 @@
 #include <glib/gstdio.h>
 #include <gtk/gtk.h>
 #include "gailtextview.h"
-#include <libatkcocoa-util/gailmisc.h>
+#include <atk-cocoa/gailmisc.h>
 
 static void       gail_text_view_class_init            (GailTextViewClass *klass);
 static void       gail_text_view_init                  (GailTextView      *text_view);

@@ -1,5 +1,3 @@
-SUBDIRS = libatkcocoa-util
-
 moduledir = $(libdir)/gtk-2.0/modules
 module_LTLIBRARIES = libatkcocoa.la
 
@@ -44,6 +42,7 @@ atkcocoa_c_sources =			\
 	gailmenu.c			\
 	gailmenushell.c			\
 	gailmenuitem.c			\
+	gailmisc.c			\
 	gailnotebook.c			\
 	gailnotebookpage.c		\
 	gailobject.c			\
@@ -65,6 +64,7 @@ atkcocoa_c_sources =			\
 	gailsubmenuitem.c		\
 	gailstatusbar.c			\
 	gailtextcell.c			\
+	gailtextutil.c			\
 	gailtextview.c			\
 	gailtogglebutton.c		\
 	gailtoplevel.c			\
@@ -116,6 +116,7 @@ atkcocoa_private_h_sources =		\
 	gailmenu.h			\
 	gailmenushell.h			\
 	gailmenuitem.h			\
+	gailmisc.h			\
 	gailnotebook.h			\
 	gailnotebookpage.h		\
 	gailobject.h			\
@@ -137,12 +138,14 @@ atkcocoa_private_h_sources =		\
 	gailsubmenuitem.h		\
 	gailstatusbar.h			\
 	gailtextcell.h			\
+	gailtextutil.h			\
 	gailtextview.h			\
 	gailtogglebutton.h		\
 	gailtoplevel.h			\
 	gailtreeview.h			\
 	gailutil.h			\
 	gailwindow.h			\
+	gail-util.h			\
 	NSAccessibilityElement+AtkCocoa.h
 
 atkcocoa_public_h_sources =	\
@@ -169,7 +172,6 @@ libatkcocoa_la_CFLAGS = \
 	$(AM_CFLAGS)
 
 libatkcocoa_la_LIBADD =  \
-	$(top_builddir)/atk-cocoa/libatkcocoa-util/libatkcocoautil.la	\
 	$(GTK_LIBS)
 
 libatkcocoa_la_LDFLAGS =    \

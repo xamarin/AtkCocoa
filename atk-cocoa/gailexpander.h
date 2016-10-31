@@ -21,7 +21,7 @@
 #define __GAIL_EXPANDER_H__
 
 #include <atk-cocoa/gailcontainer.h>
-#include <libatkcocoa-util/gailtextutil.h>
+#include <atk-cocoa/gailtextutil.h>
 
 G_BEGIN_DECLS
 

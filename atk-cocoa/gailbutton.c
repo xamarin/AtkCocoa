@@ -23,7 +23,7 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #include "gailbutton.h"
-#include <libatkcocoa-util/gailmisc.h>
+#include <atk-cocoa/gailmisc.h>
 
 #import <Cocoa/Cocoa.h>
 

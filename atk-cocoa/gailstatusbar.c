@@ -22,7 +22,7 @@
 #include <string.h>
 #include <gtk/gtk.h>
 #include "gailstatusbar.h"
-#include <libatkcocoa-util/gailmisc.h>
+#include <atk-cocoa/gailmisc.h>
 
 static void         gail_statusbar_class_init          (GailStatusbarClass *klass);
 static void         gail_statusbar_init                (GailStatusbar      *bar);

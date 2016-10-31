@@ -22,7 +22,7 @@
 
 #include <atk/atk.h>
 #include <atk-cocoa/gailrenderercell.h>
-#include <libatkcocoa-util/gailtextutil.h>
+#include <atk-cocoa/gailtextutil.h>
 
 G_BEGIN_DECLS
 

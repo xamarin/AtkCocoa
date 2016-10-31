@@ -21,7 +21,7 @@
 #define __GAIL_NOTEBOOK_PAGE_H__
 
 #include <atk-cocoa/gailnotebook.h>
-#include <libatkcocoa-util/gailtextutil.h>
+#include <atk-cocoa/gailtextutil.h>
 
 G_BEGIN_DECLS
 

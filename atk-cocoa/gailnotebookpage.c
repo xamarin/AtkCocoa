@@ -22,7 +22,7 @@
 #include <string.h>
 #include <gtk/gtk.h>
 #include "gailnotebookpage.h"
-#include <libatkcocoa-util/gailmisc.h>
+#include <atk-cocoa/gailmisc.h>
 #include "gail-private-macros.h"
 
 static void      gail_notebook_page_class_init      (GailNotebookPageClass     *klass);

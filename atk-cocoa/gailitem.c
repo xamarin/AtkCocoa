@@ -25,7 +25,7 @@
 
 #include <gtk/gtk.h>
 #include "gailitem.h"
-#include <libatkcocoa-util/gailmisc.h>
+#include <atk-cocoa/gailmisc.h>
 
 static void                  gail_item_class_init      (GailItemClass *klass);
 static void                  gail_item_init            (GailItem      *item);

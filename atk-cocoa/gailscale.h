@@ -21,7 +21,7 @@
 #define __GAIL_SCALE_H__
 
 #include <atk-cocoa/gailrange.h>
-#include <libatkcocoa-util/gailtextutil.h>
+#include <atk-cocoa/gailtextutil.h>
 
 G_BEGIN_DECLS
 

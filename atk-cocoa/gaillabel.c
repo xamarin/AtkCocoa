@@ -26,7 +26,7 @@
 #include <gtk/gtk.h>
 #include "gaillabel.h"
 #include "gailwindow.h"
-#include <libatkcocoa-util/gailmisc.h>
+#include <atk-cocoa/gailmisc.h>
 
 #import <Cocoa/Cocoa.h>
 

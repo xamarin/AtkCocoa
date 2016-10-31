@@ -22,7 +22,7 @@
 #include <string.h>
 #include <gtk/gtk.h>
 #include "gailscale.h"
-#include <libatkcocoa-util/gailmisc.h>
+#include <atk-cocoa/gailmisc.h>
 
 static void	    gail_scale_class_init        (GailScaleClass *klass);
 

@@ -34,7 +34,6 @@ AC_SUBST(GTK_VERSION)
 AC_CONFIG_FILES([
 Makefile
 atk-cocoa/Makefile
-atk-cocoa/libatkcocoa-util/Makefile
 ])
 
 AC_OUTPUT

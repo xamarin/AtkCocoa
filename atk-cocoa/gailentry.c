@@ -25,7 +25,7 @@
 #include "gailentry.h"
 #include "gailcombo.h"
 #include "gailcombobox.h"
-#include <libatkcocoa-util/gailmisc.h>
+#include <atk-cocoa/gailmisc.h>
 
 static void       gail_entry_class_init            (GailEntryClass       *klass);
 static void       gail_entry_init                  (GailEntry            *entry);
