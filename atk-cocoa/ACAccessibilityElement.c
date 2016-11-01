@@ -645,18 +645,17 @@ ns_role_from_atk (AtkRole atk_role, NSString **ns_role, NSString **ns_subrole)
 	// which may not be the same as the parent in the widget tree.
 	// So we need to get the widget of the accessibility parent, and work up from there
 	parentElement = [self accessibilityParent];
+	if (parentElement == NULL) {
+		return CGRectZero;
+	}
+
 	if ([parentElement isKindOfClass:[ACAccessibilityElement class]]) {
 		ACAccessibilityElement *ep = (ACAccessibilityElement *)parentElement;
 
 		parentWidget = (GtkWidget *) ac_element_get_owner ([ep delegate]);
 		parentRect = [ep frameInGtkWindowSpace];
 	} else {
-		if (GDK_IS_WINDOW (parentElement)) {
-			parentRect.x = 0;
-			parentRect.y = 0;
-			parentRect.width = gdk_window_get_width (GDK_WINDOW (parentElement));
-			parentRect.height = gdk_window_get_height (GDK_WINDOW (parentElement)); 
-		} else if ([parentElement isKindOfClass:[NSWindow class]]) {
+		if ([parentElement isKindOfClass:[NSWindow class]]) {
 			NSWindow *window = (NSWindow *)parentElement;
 			NSView *contentView = [window contentView];
 			parentRect.x = contentView.frame.origin.x;
