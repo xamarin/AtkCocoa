@@ -1,5 +1,3 @@
-moduledir = $(libdir)/gtk-2.0/modules
-module_LTLIBRARIES = libatkcocoa.la
 
 BUILT_SOURCES = acmarshal.h acmarshal.c
 
@@ -159,25 +157,32 @@ libatkcocoa_la_SOURCES = 			\
 libatkcocoainclude_HEADERS =		\
 	$(atkcocoa_public_h_sources)
 
-libatkcocoa_la_CPPFLAGS = \
+libatkcocoa_CPPFLAGS = \
 	-I$(top_srcdir)			\
+	-I.				\
 	-DGTK_VERSION=\"$(GTK_VERSION)\"\
 	-DGDK_DISABLE_DEPRECATED	\
 	-DGTK_DISABLE_DEPRECATED	\
 	$(AM_CPPFLAGS)
 
-libatkcocoa_la_CFLAGS = \
+libatkcocoa_CFLAGS = \
+	-arch x86_64 -ObjC -dynamiclib \
 	-xobjective-c   \
 	$(GTK_CFLAGS)	\
 	$(AM_CFLAGS)
 
-libatkcocoa_la_LIBADD =  \
+libatkcocoa_LIBADD =  \
+	-lgmodule-2.0 	\
 	$(GTK_LIBS)
 
-libatkcocoa_la_LDFLAGS =    \
+libatkcocoa_LDFLAGS =    \
 	-rpath $(moduledir) -module -avoid-version \
 	$(no_undefined) \
+	-framework Foundation -framework Cocoa \
         $(LDFLAGS)
+
+libatkcocoa: $(BUILT_SOURCES) $(atkcocoa_c_sources)
+	xcrun clang $(libatkcocoa_CPPFLAGS) $(libatkcocoa_CFLAGS) $(atkcocoa_c_sources) $(libatkcocoa_LIBADD) $(libatkcocoa_LDFLAGS) -o libatkcocoa.so
 
 acmarshal.h: stamp-acmarshal.h
 	@true
@@ -191,3 +196,6 @@ acmarshal.c: acmarshal.list
 	 $(GLIB_GENMARSHAL) --prefix=_ac_marshal $(srcdir)/acmarshal.list --body) >> xgen-acmlc \
 	&& cp xgen-acmlc acmarshal.c \
 	&& rm -f xgen-acmlc
+
+clean-local:
+	rm libatkcocoa.so

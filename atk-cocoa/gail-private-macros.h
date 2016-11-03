@@ -21,6 +21,8 @@
 #ifndef __GAIL_PRIVATE_MACROS_H__
 #define __GAIL_PRIVATE_MACROS_H__
 
+#include <glib.h>
+
 G_BEGIN_DECLS
 
 /* Note: these macros are logic macros, not intended to warn on failure. */
