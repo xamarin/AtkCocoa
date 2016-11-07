@@ -85,7 +85,6 @@ if test -z "$*"; then
 	echo "to pass any to it, please specify them on the $0 command line."
 fi
 
-echo $ACLOCAL_FLAGS
 $ACLOCAL $ACLOCAL_FLAGS
 
 #$LIBTOOLIZE --force --copy
