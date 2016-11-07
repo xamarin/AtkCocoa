@@ -627,7 +627,8 @@ ns_role_from_atk (AtkRole atk_role, NSString **ns_role, NSString **ns_subrole)
 - (CGRect)accessibilityFrameInParentSpace
 {
 	GObject *owner;
-	GtkWidget *ownerWidget, *parentWidget = NULL;
+	GtkWidget *ownerWidget;
+	gboolean needsParentOffset = FALSE;
 	GdkRectangle ownerRect, parentRect;
 	id<NSAccessibility> parentElement;
 	int x, y, parentX, parentY;
@@ -652,7 +653,8 @@ ns_role_from_atk (AtkRole atk_role, NSString **ns_role, NSString **ns_subrole)
 	if ([parentElement isKindOfClass:[ACAccessibilityElement class]]) {
 		ACAccessibilityElement *ep = (ACAccessibilityElement *)parentElement;
 
-		parentWidget = (GtkWidget *) ac_element_get_owner ([ep delegate]);
+		//parentWidget = (GtkWidget *) ac_element_get_owner ([ep delegate]);
+		needsParentOffset = TRUE;
 		parentRect = [ep frameInGtkWindowSpace];
 	} else {
 		if ([parentElement isKindOfClass:[NSWindow class]]) {
@@ -662,6 +664,13 @@ ns_role_from_atk (AtkRole atk_role, NSString **ns_role, NSString **ns_subrole)
 			parentRect.y = contentView.frame.origin.y;
 			parentRect.width = contentView.frame.size.width;
 			parentRect.height = contentView.frame.size.height;
+		} else if ([parentElement isKindOfClass:[NSView class]]) {
+			NSView *view = (NSView *)parentElement;
+			parentRect.x = view.frame.origin.x;
+			parentRect.y = view.frame.origin.y;
+			parentRect.width = view.frame.size.width;
+			parentRect.height = view.frame.size.height;
+			needsParentOffset = TRUE;
 		} else {
 			NSLog (@"Parent element is %@ and not supported", parentElement);
 			return CGRectZero;
@@ -674,7 +683,7 @@ ns_role_from_atk (AtkRole atk_role, NSString **ns_role, NSString **ns_subrole)
 	x = ownerRect.x;
 	y = ownerRect.y;
 
-	if (parentWidget) {
+	if (needsParentOffset) {
 		//get_coords_in_window (parentWidget, &parentX, &parentY);
 
 		x -= parentRect.x;
