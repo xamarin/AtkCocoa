@@ -4,6 +4,8 @@
 #include "acdebug.h"
 #include "acutils.h"
 
+// ACAccessibilityCellElement is the individual renderers that make up the contents of a "cell"
+// FIXME: Rename to ACAccessibilityCellRendererElement?
 @implementation ACAccessibilityCellElement {
 	GailCell *_delegate;
 	GtkTreeRowReference *_row_ref;
@@ -91,4 +93,9 @@
 	return CGRectMake (x, cellSpace.y - cellSpace.height, width, cellSpace.height);
 }
 
+// Clear any actions that the accessibility system might try to inherit from the parent TreeView
+- (NSArray *)accessibilityActions
+{
+	return nil;
+}
 @end

@@ -50,4 +50,10 @@
 {
     return _column;
 }
+
+// Clear any actions that the accessibility system might try to inherit from the parent TreeView
+- (NSArray *)accessibilityActionNames
+{
+	return nil;
+}
 @end

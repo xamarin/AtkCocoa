@@ -29,6 +29,7 @@
 }
 @end
 
+// ACAccessibilityTreeCellElement is the child of the TreeRow/TreeColumn that holds all the individual ACAccessibilityCellElements
 @interface ACAccessibilityTreeCellElement () <ACAccessibilityDisclosureButtonDelegate>
 @end
 
@@ -136,5 +137,11 @@
     }
 
     gtk_tree_path_free (path);
+}
+
+// Clear any actions that the accessibility system might try to inherit from the parent TreeView
+- (NSArray *)accessibilityActionNames
+{
+	return nil;
 }
 @end
