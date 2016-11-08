@@ -86,6 +86,7 @@
     g_free (str);
 
     if (selected) {
+        gtk_tree_selection_unselect_all (selection);
         gtk_tree_selection_select_path (selection, path);
     } else {
         gtk_tree_selection_unselect_path (selection, path);

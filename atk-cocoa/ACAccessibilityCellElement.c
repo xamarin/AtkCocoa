@@ -94,7 +94,7 @@
 }
 
 // Clear any actions that the accessibility system might try to inherit from the parent TreeView
-- (NSArray *)accessibilityActions
+- (NSArray *)accessibilityActionNames
 {
 	return nil;
 }
