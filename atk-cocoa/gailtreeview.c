@@ -2716,14 +2716,19 @@ columns_changed (GtkTreeView *tree_view)
     }
    
   /* rebuild the array */
+  int idx;
+  NSAccessibilityElement *parentElement = ac_element_get_accessibility_element (AC_ELEMENT (atk_obj));
 
   g_array_free (gailview->col_data, TRUE);
+  for (id<NSAccessibility> colElement in gailview->columns) {
+    [parentElement ac_accessibilityRemoveChildElement:colElement];
+  }
   [gailview->columns removeAllObjects];
 
   gailview->col_data = g_array_sized_new (FALSE, TRUE,
     sizeof(GtkTreeViewColumn *), 0);
 
-  int idx = 0;
+  idx = 0;
   for (tmp_list = tv_cols; tmp_list; tmp_list = tmp_list->next) {
     ACAccessibilityTreeColumnElement *tc;
     g_array_append_val (gailview->col_data, tmp_list->data);
@@ -2734,7 +2739,6 @@ columns_changed (GtkTreeView *tree_view)
     [gailview->columns addObject:tc];
 
     /* Add the column as an accessibillty child */
-    NSAccessibilityElement *parentElement = ac_element_get_accessibility_element (AC_ELEMENT (atk_obj));
     [parentElement accessibilityAddChildElement:tc];
 
     idx++;
