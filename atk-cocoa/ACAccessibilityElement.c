@@ -148,17 +148,7 @@ get_coords_in_window (GtkWidget *widget, int *x, int *y)
 			continue;
 		}
 
-		//int windowX, windowY;
-		//GdkWindow *gdkWindow = gtk_widget_get_window (ownerWidget);
-
-/*
-		if (gdkWindow == NULL) {
-			continue;
-		}
-*/
 		GdkRectangle ownerRect = [e frameInGtkWindowSpace];
-		//GdkRectangle ownerRect = ownerWidget->allocation;
-		//get_coords_in_window (ownerWidget, &windowX, &windowY);
 
 		if (pointInGtkWindow.x >= ownerRect.x && pointInGtkWindow.x < ownerRect.x + ownerRect.width &&
 			pointInGtkWindow.y >= ownerRect.y && pointInGtkWindow.y < ownerRect.y + ownerRect.height) {
