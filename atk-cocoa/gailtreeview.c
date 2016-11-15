@@ -3423,13 +3423,11 @@ check_visibility (GtkTreeModel *tree_model,
 
   // If iter has no parent, then it is the root node and is visible
   if (!gtk_tree_model_iter_parent (tree_model, &parentIter, iter)) {
-    g_print ("   Has no parent - is visible\n");
     return TRUE;
   }
 
   path = gtk_tree_model_get_path (tree_model, &parentIter);
   expanded = gtk_tree_view_row_expanded (view, path);
-  g_print ("   %s expanded - %d\n", gtk_tree_path_to_string (path), expanded);
   gtk_tree_path_free (path);
 
   return expanded && check_visibility (tree_model, &parentIter, view);
@@ -3441,7 +3439,6 @@ model_row_is_visible (GtkTreeModel *tree_model,
                       GtkTreeIter *iter,
                       GtkTreeView *view)
 {
-  g_print ("Checking visibility of %s\n", gtk_tree_path_to_string (path));
   return check_visibility (tree_model, iter, view);
 }
 
@@ -3580,7 +3577,6 @@ model_row_deleted (GtkTreeModel *tree_model,
 
   if (gailview->idle_expand_id)
     {
-      g_print ("Cancelling expand handler due to delete\n");
       g_source_remove (gailview->idle_expand_id);
       gtk_tree_path_free (gailview->idle_expand_path);
       gailview->idle_expand_id = 0;
@@ -3661,7 +3657,6 @@ model_rows_reordered (GtkTreeModel *tree_model,
 
   if (gailview->idle_expand_id)
     {
-      g_print ("Cancelling idle handler bcause rows reordered\n");
       g_source_remove (gailview->idle_expand_id);
       gtk_tree_path_free (gailview->idle_expand_path);
       gailview->idle_expand_id = 0;
@@ -3795,16 +3790,11 @@ update_cell_value (GailRendererCell *renderer_cell,
 
   prop_list = gail_renderer_cell_class->property_list;
 
-  g_print ("Property list: %p\n", prop_list);
-
   cell = GAIL_CELL (renderer_cell);
   cell_info = find_cell_info (gailview, cell, NULL, TRUE);
   
-  g_print ("Cell info: %p\n", cell_info);
   gail_return_val_if_fail (cell_info, FALSE);
-  g_print ("   col ref - %p\n", cell_info->cell_col_ref);
   gail_return_val_if_fail (cell_info->cell_col_ref, FALSE);
-  g_print ("   row ref - %p\n", cell_info->cell_row_ref);
   gail_return_val_if_fail (cell_info->cell_row_ref, FALSE);
 
   if (emit_change_signal && cell_info->in_use)
@@ -3835,7 +3825,6 @@ update_cell_value (GailRendererCell *renderer_cell,
     }
 
   renderers = gtk_cell_layout_get_cells (GTK_CELL_LAYOUT (cell_info->cell_col_ref));
-  g_print ("Got renderers: %p", renderers);
   gail_return_val_if_fail (renderers, FALSE);
 
   /*
@@ -3849,7 +3838,6 @@ update_cell_value (GailRendererCell *renderer_cell,
    */
 
   if (cell_info->in_use) {
-    g_print ("   In use\n");
       parent = atk_object_get_parent (ATK_OBJECT (cell));
       if (!ATK_IS_OBJECT (cell)) g_on_error_query (NULL);
       if (GAIL_IS_CONTAINER_CELL (parent))
@@ -3858,19 +3846,15 @@ update_cell_value (GailRendererCell *renderer_cell,
 	  cur_renderer = renderers;
   }
   else {
-    g_print ("   not in use\n");
       return FALSE;
   }
   
-  g_print ("cur_renderer: %p\n", cur_renderer);
   gail_return_val_if_fail (cur_renderer != NULL, FALSE);
 
   if (gtk_cell_renderer_class)
     {
-      g_print ("Cell renderer class\n");
       while (*prop_list)
         {
-          g_print ("Getting prop: %s\n", *prop_list);
           spec = g_object_class_find_property
                            (G_OBJECT_CLASS (gtk_cell_renderer_class), *prop_list);
 
