@@ -61,16 +61,6 @@
   });
 }
 
-- (void)atkcocoa_setBaseAccessibilityElement:(ACAccessibilityElement *)base
-{
-  objc_setAssociatedObject(self, @"atkcocoa_baseElement", base, OBJC_ASSOCIATION_RETAIN);
-}
-
-- (ACAccessibilityElement *)atkcocoa_baseAccessibilityElement
-{
-  return (ACAccessibilityElement *)objc_getAssociatedObject (self, @"atkcocoa_baseElement");
-}
-
 // Because convertScreenToBase: is now deprecated
 - (CGPoint)atkcocoa_convertPointFromScreen:(CGPoint)point
 {
@@ -90,8 +80,38 @@
 
   CGPoint pointInWindow = [self atkcocoa_convertPointFromScreen:point];
   if ([[self contentView] hitTest:pointInWindow]) {
-    AC_NOTE (HITTEST, NSLog (@"Starting hittest on %@ %lu", [self atkcocoa_baseAccessibilityElement], [[[self atkcocoa_baseAccessibilityElement] accessibilityChildren] count]));
-    return [[self atkcocoa_baseAccessibilityElement] accessibilityHitTest:point];
+    NSArray *children = [self accessibilityChildren];
+    AC_NOTE (HITTEST, NSLog (@"Number of accessibility children on window: %@: %ld", self, children ? [children count] : -2));
+    AC_NOTE (HITTEST, NSLog (@"   Point: %f,%f", point.x, point.y));
+
+    for (id<NSAccessibility> child in children) {
+      if ([child isKindOfClass:[ACAccessibilityElement class]]) {
+        NSAccessibilityElement *e = (NSAccessibilityElement *)child;
+        CGRect frameInParent = [e accessibilityFrameInParentSpace];
+        if ([[self contentView] isFlipped]) {
+          float halfParentHeight = [[self contentView] frame].size.height / 2;
+          float dy = (frameInParent.origin.y + frameInParent.size.height) - halfParentHeight;
+          frameInParent.origin.y = halfParentHeight - dy;
+        }
+        CGRect frameInWindow = [[self contentView] convertRect:frameInParent toView:nil];
+        CGRect frameInScreen = [self convertRectToScreen:frameInWindow];
+
+        AC_NOTE (HITTEST, NSLog (@"   %@ - %@", child, [[self contentView] isFlipped] ? @"Flipped" : @"Normal"));
+
+        AC_NOTE (HITTEST, NSLog (@"   frame rect: %@", NSStringFromRect (frameInParent)));
+        AC_NOTE (HITTEST, NSLog (@"   window rect: %@", NSStringFromRect (frameInWindow)));
+        AC_NOTE (HITTEST, NSLog (@"   screen rect: %@", NSStringFromRect (frameInScreen)));
+
+        if (CGRectContainsPoint (frameInScreen, point)) {
+          AC_NOTE (HITTEST, NSLog (@"   Hit %@", child));
+          return [e accessibilityHitTest:point];
+        }
+      } else {
+        // Skip this because any non ACAccessibilityElement objects shouldn't be
+        // inside the contentView
+        AC_NOTE (HITTEST, NSLog (@"   Skipping %@", child));
+      }
+    }
   }
 
   return self;
@@ -156,9 +176,6 @@ static void                  gail_window_get_size         (AtkComponent         
                                                            gint                 *height);
 static void gail_window_realized (GtkWidget *window,
                                   gpointer data);
-static void gail_window_child_was_added (AcElement *parent,
-                                         AcElement *child);
-
 
 static guint gail_window_signals [LAST_SIGNAL] = { 0, };
 
@@ -188,7 +205,6 @@ gail_window_class_init (GailWindowClass *klass)
   class->initialize = gail_window_real_initialize;
 
   element_class->get_accessibility_element = gail_window_real_get_accessibility_element;
-  element_class->child_was_added = gail_window_child_was_added;
 
   gail_window_signals [ACTIVATE] =
     g_signal_new ("activate",
@@ -354,24 +370,7 @@ update_toplevel_and_window (NSArray *children, NSWindow *window)
     update_toplevel_and_window ([child accessibilityChildren], window);
   }
 }
-/*
-static void
-add_accessibility_child (NSWindow *ns_window, ACAccessibilityElement *element)
-{
-  NSMutableArray *new_children;
 
-  if ([ns_window atkcocoa_baseAccessibilityElement] == nil) {
-      [ns_window atkcocoa_setBaseAccessibilityElement:element];
-  }
-  new_children = [[NSMutableArray alloc] initWithArray:[ns_window accessibilityChildren]];
-  [new_children addObject:element];
-
-  [element setAccessibilityWindow:ns_window];
-  [element setAccessibilityParent:ns_window];
-  [element setAccessibilityTopLevelUIElement:ns_window];
-  [ns_window setAccessibilityChildren:new_children];
-}
-*/
 static void
 gail_window_realized (GtkWidget *window,
                       gpointer data)
@@ -417,33 +416,10 @@ gail_window_realized (GtkWidget *window,
 
   AC_NOTE (WIDGETS, g_print ("ATKCocoa:    Adding %lu children to window\n", [new_children count]));
   [ns_window setAccessibilityChildren:new_children];
-
-  [ns_window atkcocoa_setBaseAccessibilityElement:prerealized_children[0]];
   AC_NOTE (WIDGETS, g_print ("ATKCocoa:    new children: %lu\n", [[ns_window accessibilityChildren] count]));
 
   [priv->prerealized_element release];
   priv->prerealized_element = NULL;
-}
-
-static void
-gail_window_child_was_added (AcElement *parent,
-                             AcElement *child)
-{
-  GtkAccessible *accessible;
-  GtkWidget *window;
-  NSWindow *ns_window;
-
-  accessible = GTK_ACCESSIBLE (parent);
-  window = gtk_accessible_get_widget (accessible);
-
-  if (gtk_widget_get_realized (window)) {
-    ns_window = gdk_quartz_window_get_nswindow (gtk_widget_get_window (window));
-    if ([ns_window atkcocoa_baseAccessibilityElement] == nil) {
-      AC_NOTE (TREE, NSLog (@"AtkCocoa: Added %@ to window", ac_element_get_accessibility_element (child)));
-
-      [ns_window atkcocoa_setBaseAccessibilityElement:ac_element_get_accessibility_element (child)];
-    }
-  }
 }
 
 static id<NSAccessibility>
