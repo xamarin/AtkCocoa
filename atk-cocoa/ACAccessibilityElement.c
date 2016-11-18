@@ -32,11 +32,25 @@
 	return [NSString stringWithFormat:@"%@ (%s (%p)- %s (%p))", [super description], G_OBJECT_TYPE_NAME (_delegate), _delegate, G_OBJECT_TYPE_NAME (ac_element_get_owner (_delegate)), ac_element_get_owner (_delegate)];
 }
 
+static char *get_full_object_path (GtkWidget *object)
+{
+	GString *builder = g_string_new (G_OBJECT_TYPE_NAME (object));
+
+	while ((object = gtk_widget_get_parent (object))) {
+		g_string_append_printf (builder, ".%s", G_OBJECT_TYPE_NAME (object));
+	}
+
+	char *retval = builder->str;
+	g_string_free (builder, FALSE);
+	return retval;
+}
+
 - (GdkRectangle)frameInGtkWindowSpace
 {
 	int windowX, windowY;
 
 	GObject *owner = ac_element_get_owner (_delegate);
+
 	if (!GTK_IS_WIDGET (owner)) {
 		GdkRectangle emptyRect;
 		emptyRect.x = 0;

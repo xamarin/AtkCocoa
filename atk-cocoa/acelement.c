@@ -784,6 +784,7 @@ ac_element_add_child (AcElement *parent,
 				return;
 			}
 			realChildAdded = unignoredChildren[0];
+			[child_element setAccessibilityChildren:nil];
 
 			AC_NOTE (TREE, g_print ("ATKCocoa:       Adding %lu children\n", [unignoredChildren count]));
 			for (int i = 0; i < [unignoredChildren count]; i++) {
@@ -828,6 +829,42 @@ ac_element_add_child (AcElement *parent,
 	}
 }
 
+static void
+find_accessible_children (GtkWidget *widget,
+						  gpointer data)
+{
+	NSMutableArray *allyChildren = (NSMutableArray *)data;
+	AtkObject *atkElement;
+	AcElement *element;
+	id<NSAccessibility> realElement;
+
+	atkElement = gtk_widget_get_accessible (widget);
+	if (!AC_IS_ELEMENT (atkElement)) {
+		return;
+	}
+
+	element = AC_ELEMENT (atkElement);
+	realElement = ac_element_get_real_accessibility_element (element);
+
+	AC_NOTE (TREE, NSLog (@"      - Found %@", realElement));
+	if ([realElement isAccessibilityElement]) {
+		AC_NOTE (TREE, NSLog (@"         - Is accessible"));
+		// If the child is accessible, that's all we need to do
+		[allyChildren addObject:realElement];
+	} else {
+		AC_NOTE (TREE, NSLog (@"         - Is not accessible"));
+		if (!GTK_IS_CONTAINER (widget)) {
+			AC_NOTE (TREE, NSLog (@"         - Is not container"));
+			// If the widget is not a container, then there is nothing more to do
+			return;
+		}
+
+		AC_NOTE (TREE, NSLog (@"         - Is container, going futher up tree"));
+		// Otherwise go further up the tree looking for accessible children
+		gtk_container_forall (GTK_CONTAINER (widget), find_accessible_children, data);
+	}
+}
+
 void
 ac_element_remove_child (AcElement *parent,
 						 AcElement *child)
@@ -843,10 +880,65 @@ ac_element_remove_child (AcElement *parent,
 	child_element = ac_element_get_accessibility_element (child);
 	parent_element = [child_element accessibilityParent];
 
-	NSMutableArray *new_children = [[parent_element accessibilityChildren] mutableCopy];
-	[new_children removeObject:child_element];
+	AC_NOTE (TREE, NSLog (@"Child element: %p - %@", child_element, child_element));
+	AC_NOTE (TREE, NSLog (@"   - accessibility children: %lu", [[child_element accessibilityChildren] count]));
+	AC_NOTE (TREE, NSLog (@"Parent element: %p - %@", parent_element, parent_element));
 
-	[parent_element setAccessibilityChildren:new_children];
+	GtkWidget *parentWidget;
+	parent_element = get_real_accessibility_parent (parent, &parentWidget);
+	AC_NOTE (TREE, NSLog (@"Real parent element: %p - %@ %s", parent_element, parent_element, G_OBJECT_TYPE_NAME (parentWidget)));
+
+	BOOL childAccessible = [child_element isAccessibilityElement];
+	BOOL parentAccessible = [parent_element isAccessibilityElement];
+
+	// By getting the real accessibility parent, the parent should always be accessible
+	// (or if it isn't, then it should be the temporary parent which we treat as being accessible
+	// until the tree is complete)
+	if (childAccessible) {
+		AC_NOTE (TREE, NSLog (@"   - Child is accessible"));
+		// If both the child and the parent (after getting the correct parent) are both
+		// accessibility enabled, then it's just a simple case to remove the child from the parent
+		NSMutableArray *new_children = [[parent_element accessibilityChildren] mutableCopy];
+		[new_children removeObject:child_element];
+
+		[parent_element setAccessibilityChildren:new_children];
+	} else {
+		AC_NOTE (TREE, NSLog (@"   - Child is not accessible"));
+		// If the parent is accessible, but the child is not, then gather all the child's directly
+		// accessible children and remove them from the parent
+		GObject *owner = ac_element_get_owner (child);
+		if (!GTK_IS_WIDGET (owner)) {
+			g_warning ("Child owner is not GtkWidget: %s", G_OBJECT_TYPE_NAME (owner));
+			return;
+		}
+
+		if (!GTK_IS_CONTAINER (owner)) {
+			AC_NOTE (TREE, NSLog (@"   - Child is not a container: %s", G_OBJECT_TYPE_NAME (owner)));
+			// Can't have children
+			return;
+		}
+
+		NSMutableArray *allyChildren = [NSMutableArray array];
+		gtk_container_forall (GTK_CONTAINER (owner), find_accessible_children, allyChildren);
+
+		AC_NOTE (TREE, NSLog (@"   - Went looking for children, found: %lu", [allyChildren count]));
+		if ([allyChildren count] == 0) {
+			return;
+		}
+
+		NSMutableArray *parentChildren = [[parent_element accessibilityChildren] mutableCopy];
+		AC_NOTE (TREE, NSLog (@"   - parent had %lu children", [parentChildren count]));
+		int i = 0;
+		for (id<NSAccessibility> child in allyChildren) {
+			AC_NOTE (TREE, NSLog (@"   %d %@ - %@", i, child, [child accessibilityParent]));
+			i++;
+
+			[parentChildren removeObject:child];
+		}
+
+		AC_NOTE (TREE, NSLog (@"   - parent now has %lu children", [parentChildren count]));
+		[parent_element setAccessibilityChildren:parentChildren];
+	}
 }
 
 const char *
