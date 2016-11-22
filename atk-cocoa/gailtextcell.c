@@ -233,7 +233,6 @@ gail_text_cell_update_cache (GailRendererCell *cell,
 
   g_object_get (G_OBJECT (cell->renderer), "text", &new_cache, NULL);
 
-  g_print ("\n updating text cell %s\n", new_cache);
   if (text_cell->cell_text)
     {
      /*
@@ -277,7 +276,6 @@ gail_text_cell_update_cache (GailRendererCell *cell,
   g_free (new_cache);
   gail_text_util_text_setup (text_cell->textutil, text_cell->cell_text);
   
-  g_print ("\n\n\n\n\n\n\n\n\n\n\n\n\n\n Set text to: %s\n", text_cell->cell_text);
   [gailcell->cell_element setAccessibilityLabel:nsstring_from_cstring (text_cell->cell_text)];
   if (rv)
     {
