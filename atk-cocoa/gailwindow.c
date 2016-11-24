@@ -363,7 +363,14 @@ update_toplevel_and_window (NSArray *children, NSWindow *window)
   }
 
   for (i = 0; i < [children count]; i++) {
-    id<NSAccessibility> child = (id<NSAccessibility>)[children objectAtIndex:i];
+    id childObject = [children objectAtIndex:i];
+
+    // Some of the window decoration inside the accessibilityChildren array don't respond
+    // to accessibility messages.
+    if (![childObject respondsToSelector:@selector (setAccessibilityTopLevelUIElement:)]) {
+      continue;
+    }
+    id<NSAccessibility> child = (id<NSAccessibility>)childObject;
     [child setAccessibilityTopLevelUIElement:window];
     [child setAccessibilityWindow:window];
 
