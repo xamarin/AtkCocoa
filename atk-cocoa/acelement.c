@@ -938,6 +938,10 @@ ac_element_remove_child (AcElement *parent,
 
 		AC_NOTE (TREE, NSLog (@"   - parent now has %lu children", [parentChildren count]));
 		[parent_element setAccessibilityChildren:parentChildren];
+
+		// Need to set the removed children as accessibility children on @child
+		// otherwise the removed children will get lost if @child is reparented somewhere else
+		[child_element setAccessibilityChildren:allyChildren];
 	}
 }
 
