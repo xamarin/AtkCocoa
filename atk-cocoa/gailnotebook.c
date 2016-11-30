@@ -194,9 +194,11 @@ gail_notebook_real_notify_gtk (GObject           *obj,
 {
   GtkWidget *widget;
   AtkObject* atk_obj;
+  AcElement *element;
 
   widget = GTK_WIDGET (obj);
   atk_obj = gtk_widget_get_accessible (widget);
+  element = AC_ELEMENT (atk_obj);
 
   if (strcmp (pspec->name, "page") == 0)
     {
@@ -211,6 +213,7 @@ gail_notebook_real_notify_gtk (GObject           *obj,
      
       if (gail_notebook->page_count < g_list_length (gtk_notebook->children))
        check_cache (gail_notebook, gtk_notebook);
+
       /*
        * Notify SELECTED state change for old and new page
        */
@@ -227,6 +230,16 @@ gail_notebook_real_notify_gtk (GObject           *obj,
       if (page_num != old_page_num)
         {
           AtkObject *obj;
+          GtkWidget *oldPage = gtk_notebook_get_nth_page (gtk_notebook, old_page_num);
+          GtkWidget *newPage = gtk_notebook_get_nth_page (gtk_notebook, page_num);
+          AcElement *oldPageElement = AC_ELEMENT (gtk_widget_get_accessible (oldPage));
+          AcElement *newPageElement = AC_ELEMENT (gtk_widget_get_accessible (newPage));
+
+          /*
+          * Remove the old page from the NSAccessibility tree, and add the new page
+          */
+          ac_element_remove_child (element, oldPageElement);
+          ac_element_add_child (element, newPageElement);
 
           if (old_page_num != -1)
             {
