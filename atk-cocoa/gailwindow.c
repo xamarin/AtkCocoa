@@ -391,6 +391,10 @@ gail_window_realized (GtkWidget *window,
   NSMutableArray *new_children;
   int i;
 
+	// Set the NSAccessibilityElement as data on the AtkObject
+	// so it can be accessed from managed code which can't know about AcElement
+	g_object_set_data (G_OBJECT (data), "xamarin-private-atkcocoa-nsaccessibility", ns_window);
+
   AC_NOTE (WIDGETS, g_print ("ATKCocoa: Realizing window\n"));
   if (priv->prerealized_element == NULL) {
     return;
