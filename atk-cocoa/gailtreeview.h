@@ -1,5 +1,6 @@
 /* GAIL - The GNOME Accessibility Implementation Library
  * Copyright 2001 Sun Microsystems Inc.
+ * Copyright 2016 Microsoft Corporation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
