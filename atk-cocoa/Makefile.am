@@ -168,6 +168,7 @@ libatkcocoa_CPPFLAGS = \
 libatkcocoa_CFLAGS = \
 	-arch x86_64 -ObjC -dynamiclib \
 	-xobjective-c   \
+	-fobjc-arc	\
 	$(GTK_CFLAGS)	\
 	$(AM_CFLAGS)
 

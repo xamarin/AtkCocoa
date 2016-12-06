@@ -59,8 +59,8 @@ struct _GailTreeView
   GtkTreePath   *idle_expand_path;
   gboolean      garbage_collection_pending;
 
-  NSMutableArray *columns;
-  NSMutableArray *rows;
+  void *columns; /* NSMutableArray * */
+  void *rows; /* NSMutableArray * */
 };
 
 GType gail_tree_view_get_type (void);

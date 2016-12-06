@@ -133,7 +133,7 @@ enum {
 };
 
 struct _GailWindowPrivate {
-  ACAccessibilityElement *prerealized_element;
+  void *prerealized_element; /* ACAccessibilityElement */
 };
 
 #define GAIL_WINDOW_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GAIL_TYPE_WINDOW, GailWindowPrivate))
@@ -394,17 +394,18 @@ gail_window_realized (GtkWidget *window,
 
 	// Set the NSAccessibilityElement as data on the AtkObject
 	// so it can be accessed from managed code which can't know about AcElement
-	g_object_set_data (G_OBJECT (data), "xamarin-private-atkcocoa-nsaccessibility", ns_window);
+	g_object_set_data (G_OBJECT (data), "xamarin-private-atkcocoa-nsaccessibility", (__bridge void *) ns_window);
 
   AC_NOTE (WIDGETS, g_print ("ATKCocoa: Realizing window\n"));
   if (priv->prerealized_element == NULL) {
     return;
   }
 
-  prerealized_children = [priv->prerealized_element accessibilityChildren];
+  id<NSAccessibility> prerealizedElement = (__bridge id<NSAccessibility>)priv->prerealized_element;
+  prerealized_children = [prerealizedElement accessibilityChildren];
 
   if ([prerealized_children count] == 0) {
-    [priv->prerealized_element release];
+    CFBridgingRelease (priv->prerealized_element);
     priv->prerealized_element = NULL;
     return;
   }
@@ -430,7 +431,7 @@ gail_window_realized (GtkWidget *window,
   [ns_window setAccessibilityChildren:new_children];
   AC_NOTE (WIDGETS, g_print ("ATKCocoa:    new children: %lu\n", [[ns_window accessibilityChildren] count]));
 
-  [priv->prerealized_element release];
+  CFBridgingRelease (priv->prerealized_element);
   priv->prerealized_element = NULL;
 }
 
@@ -457,17 +458,19 @@ gail_window_real_get_accessibility_element (AcElement *element)
   } else
     {
     if (priv->prerealized_element) {
-      return priv->prerealized_element;
+      return (__bridge id<NSAccessibility>)priv->prerealized_element;
     }
 
-    priv->prerealized_element = [[ACAccessibilityElement alloc] initWithDelegate:element];
-    [priv->prerealized_element setAccessibilityRole:@"AXWindow"];
+    priv->prerealized_element = (__bridge_retained void *) [[ACAccessibilityElement alloc] initWithDelegate:element];
+    id<NSAccessibility> prerealizedElement = (__bridge id<NSAccessibility>)priv->prerealized_element;
+
+    [prerealizedElement setAccessibilityRole:@"AXWindow"];
 
     if (gtk_widget_get_realized (window)) {
       ns_window = gdk_quartz_window_get_nswindow (gtk_widget_get_window (window));
 
     }
-    return priv->prerealized_element;
+    return prerealizedElement;
   }
 }
 
@@ -475,6 +478,11 @@ static void
 gail_window_finalize (GObject *object)
 {
   GailWindow* window = GAIL_WINDOW (object);
+
+  if (window->priv->prerealized_element) {
+    CFBridgingRelease (window->priv->prerealized_element);
+    window->priv->prerealized_element = NULL;
+  }
 
   if (window->name_change_handler)
     {

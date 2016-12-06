@@ -72,7 +72,7 @@ enum {
 static guint signals[LAST_SIGNAL] = { 0 };
 
 struct _AcElementPrivate {
-	ACAccessibilityElement *real_element;
+	void *real_element; /* ACAccessibilityElement * to get around ARC issues */
 	GObject *owner;
 };
 
@@ -151,7 +151,7 @@ ac_element_dispose (GObject *obj)
 {
 	AcElement *element = AC_ELEMENT (obj);
 
-	[element->priv->real_element release];
+	CFBridgingRelease (element->priv->real_element);
 	element->priv->real_element = nil;
 
 	G_OBJECT_CLASS (ac_element_parent_class)->dispose (obj);
@@ -160,7 +160,7 @@ ac_element_dispose (GObject *obj)
 static id<NSAccessibility>
 ac_element_get_real_accessibility_element (AcElement *element)
 {
-	return element->priv->real_element;
+	return (__bridge id<NSAccessibility>) element->priv->real_element;
 }
 
 static NSArray *
@@ -630,9 +630,10 @@ ac_element_real_set_role (AtkObject *accessible,
 			break;
 	}
 
-	[priv->real_element setAccessibilityRole:ns_role];
+	id<NSAccessibility> realElement = ac_element_get_real_accessibility_element (element);
+	[realElement setAccessibilityRole:ns_role];
 	if (ns_subrole) {
-		[priv->real_element setAccessibilitySubrole:ns_subrole];
+		[realElement setAccessibilitySubrole:ns_subrole];
 	}
 }
 
@@ -650,7 +651,7 @@ ac_element_set_owner (AcElement *element,
 	priv->owner = owner;
 	g_object_add_weak_pointer (owner, (gpointer *)&priv->owner);
 
-	priv->real_element = [[ACAccessibilityElement alloc] initWithDelegate:element];
+	priv->real_element = (__bridge_retained void *) [[ACAccessibilityElement alloc] initWithDelegate:element];
 
 	// Set the NSAccessibilityElement as data on the AtkObject
 	// so it can be accessed from managed code which can't know about AcElement
@@ -852,7 +853,7 @@ static void
 find_accessible_children (GtkWidget *widget,
 						  gpointer data)
 {
-	NSMutableArray *allyChildren = (NSMutableArray *)data;
+	NSMutableArray *allyChildren = (__bridge NSMutableArray *)data;
 	AtkObject *atkElement;
 	AcElement *element;
 	id<NSAccessibility> realElement;
@@ -938,7 +939,7 @@ ac_element_remove_child (AcElement *parent,
 		}
 
 		NSMutableArray *allyChildren = [NSMutableArray array];
-		gtk_container_forall (GTK_CONTAINER (owner), find_accessible_children, allyChildren);
+		gtk_container_forall (GTK_CONTAINER (owner), find_accessible_children, (__bridge void *) allyChildren);
 
 		AC_NOTE (TREE, NSLog (@"   - Went looking for children, found: %lu", [allyChildren count]));
 		if ([allyChildren count] == 0) {

@@ -110,7 +110,7 @@ gail_cell_initialise (GailCell  *cell,
   cell->index = index;
 
   if (row_ref != NULL) {
-    cell->cell_element = [[ACAccessibilityCellElement alloc] initWithDelegate:cell row:row_ref column:column index:index];
+    cell->cell_element = (__bridge_retained void *) [[ACAccessibilityCellElement alloc] initWithDelegate:cell row:row_ref column:column index:index];
   }
 
   g_signal_connect_object (G_OBJECT (widget),
@@ -190,6 +190,13 @@ gail_cell_object_finalize (GObject *obj)
       g_object_unref (relation_set);
     }
   G_OBJECT_CLASS (gail_cell_parent_class)->finalize (obj);
+}
+
+id <NSAccessibility>
+gail_cell_get_real_cell (GailCell *cell)
+{
+  g_return_val_if_fail (GAIL_IS_CELL (cell), nil);
+  return (__bridge id<NSAccessibility>) cell->cell_element;
 }
 
 static AtkStateSet *

@@ -170,7 +170,8 @@ gail_text_cell_init (GailTextCell *text_cell)
 static void
 gail_text_cell_initialize (GailCell *cell)
 {
-  [cell->cell_element setAccessibilityRole:NSAccessibilityTextFieldRole];
+  id<NSAccessibility> realElement = (__bridge id<NSAccessibility>) cell->cell_element;
+  [realElement setAccessibilityRole:NSAccessibilityTextFieldRole];
 }
 
 AtkObject* 
@@ -277,7 +278,8 @@ gail_text_cell_update_cache (GailRendererCell *cell,
   g_free (new_cache);
   gail_text_util_text_setup (text_cell->textutil, text_cell->cell_text);
   
-  [gailcell->cell_element setAccessibilityLabel:nsstring_from_cstring (text_cell->cell_text)];
+  id<NSAccessibility> realElement = (__bridge id<NSAccessibility>) gailcell->cell_element;
+  [realElement setAccessibilityLabel:nsstring_from_cstring (text_cell->cell_text)];
   if (rv)
     {
       if (emit_change_signal)

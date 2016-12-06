@@ -203,7 +203,7 @@ get_coords_in_window (GtkWidget *widget, int *x, int *y)
 		return;
 	}
 
-	_realTitle = [[title copy] autorelease];
+	_realTitle = [title copy];
 }
 
 - (NSString *)accessibilityIdentifier

@@ -76,16 +76,12 @@
 - (void)dealloc
 {
     [self removeDisclosureButton];
-
-    [_rowElement release];
-    [_columnElement release];
-
-    [super dealloc];
 }
+
 - (void)addToRow:(ACAccessibilityTreeRowElement *)rowElement column:(ACAccessibilityTreeColumnElement *)columnElement
 {
-    _rowElement = [rowElement retain];
-    _columnElement = [columnElement retain];
+    _rowElement = rowElement;
+    _columnElement = columnElement;
 
     [columnElement accessibilityAddChildElement:self];
     [rowElement accessibilityAddChildElement:self];
@@ -135,7 +131,6 @@
     }
     
     [_disclosureElement setDelegate:nil];
-    [_disclosureElement release];
     _disclosureElement = nil;
 }
 

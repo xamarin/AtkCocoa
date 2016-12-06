@@ -23,6 +23,7 @@
 #include <atk/atk.h>
 
 @class ACAccessibilityCellElement;
+@protocol NSAccessibility;
 
 G_BEGIN_DECLS
 
@@ -41,7 +42,7 @@ typedef void (*ACTION_FUNC) (GailCell *cell);
 struct _GailCell
 {
   AtkObject parent;
-  ACAccessibilityCellElement *cell_element;
+  void *cell_element; /* ACAccessibilityCellElement * */
 
   GtkWidget    *widget;
   /*
@@ -78,6 +79,7 @@ void  gail_cell_initialise (GailCell  *cell,
                             GtkTreeRowReference *row_ref,
                             GtkTreeViewColumn *column,
                             gint      index);
+id <NSAccessibility> gail_cell_get_real_cell (GailCell *cell);
 
 gboolean gail_cell_add_state             (GailCell        *cell,
                                           AtkStateType    state_type,

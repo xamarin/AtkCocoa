@@ -43,7 +43,6 @@
 {
     gtk_tree_row_reference_free (_row);
     g_object_unref (_view);
-    [super dealloc];
 }
 
 - (GtkTreeRowReference *)rowReference

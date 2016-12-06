@@ -87,7 +87,9 @@ gail_image_cell_new (void)
 
   cell = GAIL_RENDERER_CELL(object);
   gailcell = GAIL_CELL (object);
-  [gailcell->cell_element setAccessibilityRole:NSAccessibilityImageRole];
+
+  id<NSAccessibility> realElement = (__bridge id<NSAccessibility>) gailcell->cell_element;
+  [realElement setAccessibilityRole:NSAccessibilityImageRole];
 
   cell->renderer = gtk_cell_renderer_pixbuf_new ();
   g_object_ref_sink (cell->renderer);
