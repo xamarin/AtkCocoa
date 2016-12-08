@@ -107,8 +107,6 @@
     cellSpace.x += x;
     cellSpace.y += y;
 
-    g_print ("Getting cellspace for cell\n");
-
     return cellSpace;
 }
 
