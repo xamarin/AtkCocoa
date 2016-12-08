@@ -29,7 +29,6 @@ GTK_VERSION=`$PKG_CONFIG --variable=gtk_binary_version gtk+-2.0`
 AC_SUBST(GTK_VERSION)
 
 AC_CONFIG_FILES([
-Makefile
 atk-cocoa/Makefile
 ])
 
