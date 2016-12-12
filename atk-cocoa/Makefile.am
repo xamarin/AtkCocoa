@@ -11,7 +11,6 @@ atkcocoa_c_sources =			\
 	acelement.c			\
 	acmarshal.c			\
 	acutils.c			\
-	gail-private-macros.h		\
 	gail.c				\
 	gailadjustment.c		\
 	gailarrow.c			\
@@ -70,7 +69,10 @@ atkcocoa_c_sources =			\
 	gailutil.c			\
 	gailwidget.c			\
 	gailwindow.c			\
-	NSAccessibilityElement+AtkCocoa.c
+	NSAccessibilityElement+AtkCocoa.c	\
+	$(NULL)
+
+atkcocoa_c_objs = $(atkcocoa_c_sources:.c=.o)
 
 libatkcocoaincludedir=$(includedir)/atkcocoa-1.0/atkcocoa
 
@@ -86,6 +88,7 @@ atkcocoa_private_h_sources =		\
 	acmarshal.h			\
 	acutils.h			\
 	gail.h				\
+	gail-private-macros.h		\
 	gailadjustment.h		\
 	gailarrow.h			\
 	gailbooleancell.h		\
@@ -176,14 +179,18 @@ libatkcocoa_LIBADD =  \
 	-lgmodule-2.0 	\
 	$(GTK_LIBS)
 
+%.o: %.c
+	xcrun clang $(libatkcocoa_CPPFLAGS) $(libatkcocoa_CFLAGS) -c $< -o $@
+
 libatkcocoa_LDFLAGS =    \
+	-ObjC -dynamiclib \
 	-rpath $(moduledir) -module -avoid-version \
 	$(no_undefined) \
 	-framework Foundation -framework Cocoa \
         $(LDFLAGS)
 
-libatkcocoa: $(BUILT_SOURCES) $(atkcocoa_c_sources)
-	xcrun clang $(libatkcocoa_CPPFLAGS) $(libatkcocoa_CFLAGS) $(atkcocoa_c_sources) $(libatkcocoa_LIBADD) $(libatkcocoa_LDFLAGS) -o libatkcocoa.so
+libatkcocoa: $(BUILT_SOURCES) $(atkcocoa_c_objs)
+	xcrun clang $(atkcocoa_c_objs) $(libatkcocoa_LIBADD) $(libatkcocoa_LDFLAGS) -o libatkcocoa.so
 
 acmarshal.h: stamp-acmarshal.h
 	@true
@@ -199,4 +206,5 @@ acmarshal.c: acmarshal.list
 	&& rm -f xgen-acmlc
 
 clean-local:
+	rm *.o
 	rm libatkcocoa.so
