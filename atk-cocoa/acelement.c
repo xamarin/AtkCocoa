@@ -160,6 +160,10 @@ ac_element_dispose (GObject *obj)
 static id<NSAccessibility>
 ac_element_get_real_accessibility_element (AcElement *element)
 {
+	if (element->priv->real_element == NULL) {
+		element->priv->real_element = (__bridge_retained void *) [[ACAccessibilityElement alloc] initWithDelegate:element];
+	}
+	
 	return (__bridge id<NSAccessibility>) element->priv->real_element;
 }
 
@@ -651,11 +655,12 @@ ac_element_set_owner (AcElement *element,
 	priv->owner = owner;
 	g_object_add_weak_pointer (owner, (gpointer *)&priv->owner);
 
-	priv->real_element = (__bridge_retained void *) [[ACAccessibilityElement alloc] initWithDelegate:element];
+	// This will call into subclasses to get the appropriate id<NSAccessibility> for that object
+	void *real_element = (__bridge_retained void *) ac_element_get_accessibility_element (element);
 
 	// Set the NSAccessibilityElement as data on the AtkObject
 	// so it can be accessed from managed code which can't know about AcElement
-	g_object_set_data (G_OBJECT (element), "xamarin-private-atkcocoa-nsaccessibility", priv->real_element);
+	g_object_set_data (G_OBJECT (element), "xamarin-private-atkcocoa-nsaccessibility", real_element);
 }
 
 GObject *

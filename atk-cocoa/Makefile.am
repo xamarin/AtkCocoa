@@ -5,6 +5,7 @@ atkcocoa_c_sources =			\
 	ACAccessibilityCellElement.c	\
 	ACAccessibilityElement.c	\
 	ACAccessibilityOutlineElement.c \
+	ACAccessibilityTextViewElement.c \
 	ACAccessibilityTreeCellElement.c \
 	ACAccessibilityTreeColumnElement.c \
 	ACAccessibilityTreeRowElement.c \
@@ -80,6 +81,7 @@ atkcocoa_private_h_sources =		\
 	ACAccessibilityCellElement.h	\
 	ACAccessibilityElement.h	\
 	ACAccessibilityOutlineElement.h \
+	ACAccessibilityTextViewElement.h \
 	ACAccessibilityTreeCellElement.h \
 	ACAccessibilityTreeColumnElement.h \
 	ACAccessibilityTreeRowElement.h \

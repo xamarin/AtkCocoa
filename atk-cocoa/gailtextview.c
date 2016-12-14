@@ -29,6 +29,8 @@
 #include "gailtextview.h"
 #include <atk-cocoa/gailmisc.h>
 
+#import "ACAccessibilityTextViewElement.h"
+
 static void       gail_text_view_class_init            (GailTextViewClass *klass);
 static void       gail_text_view_init                  (GailTextView      *text_view);
 
@@ -169,6 +171,7 @@ static gint             get_selection_bound            (GtkTextBuffer    *buffer
 static void             emit_text_caret_moved          (GailTextView     *gail_text_view,
                                                         gint             insert_offset);
 static gint             insert_idle_handler            (gpointer         data);
+static id<NSAccessibility> get_real_accessibility_element (AcElement *element);
 
 typedef struct _GailTextViewPaste                       GailTextViewPaste;
 
@@ -188,11 +191,15 @@ gail_text_view_class_init (GailTextViewClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   AtkObjectClass  *class = ATK_OBJECT_CLASS (klass);
+  AcElementClass *element_class = AC_ELEMENT_CLASS (klass);
+
   GailWidgetClass *widget_class;
 
   widget_class = (GailWidgetClass*)klass;
 
   gobject_class->finalize = gail_text_view_finalize;
+
+  element_class->get_accessibility_element = get_real_accessibility_element;
 
   class->ref_state_set = gail_text_view_ref_state_set;
   class->initialize = gail_text_view_real_initialize;
@@ -208,6 +215,17 @@ gail_text_view_init (GailTextView      *text_view)
   text_view->previous_insert_offset = -1;
   text_view->previous_selection_bound = -1;
   text_view->insert_notify_handler = 0;
+}
+
+static id<NSAccessibility>
+get_real_accessibility_element (AcElement *element)
+{
+  GailTextView *textview = GAIL_TEXT_VIEW (element);
+  if (textview->real_element == NULL) {
+    textview->real_element = (__bridge_retained void *)[[ACAccessibilityTextViewElement alloc] initWithDelegate:element];
+  }
+
+  return (__bridge id<NSAccessibility>) textview->real_element;
 }
 
 static void
