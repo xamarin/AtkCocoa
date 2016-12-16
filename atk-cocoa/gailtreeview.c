@@ -2905,20 +2905,18 @@ model_row_changed (GtkTreeModel *tree_model,
       cell_info = (GailTreeViewCellInfo *) l->data;
       if (cell_info->in_use) 
       {
-	  cell_path = gtk_tree_row_reference_get_path (cell_info->cell_row_ref);
-
-	  if (cell_path != NULL)
-	  {
-	      if (path && gtk_tree_path_compare (cell_path, path) == 0)
-	      {
-		  if (GAIL_IS_RENDERER_CELL (cell_info->cell))
-		  {
-		      update_cell_value (GAIL_RENDERER_CELL (cell_info->cell),
-					 gailview, TRUE);
-		  }
-	      }
-	      gtk_tree_path_free (cell_path);
-	  }
+	      cell_path = gtk_tree_row_reference_get_path (cell_info->cell_row_ref);
+        if (cell_path != NULL)
+        {
+          if (path && gtk_tree_path_compare (cell_path, path) == 0)
+          {
+            if (GAIL_IS_RENDERER_CELL (cell_info->cell))
+            {
+                update_cell_value (GAIL_RENDERER_CELL (cell_info->cell), gailview, TRUE);
+            }
+          }
+          gtk_tree_path_free (cell_path);
+        }
       }
     }
   g_signal_emit_by_name (gailview, "visible-data-changed");
@@ -3241,6 +3239,7 @@ make_accessibility_cell_for_column (GtkTreeModel *treeModel,
     gail_cell_initialise (gailCell,
                           GTK_WIDGET (treeView), ATK_OBJECT (gailView),
                           [rowElement rowReference], column, i);
+    cell_info_new (gailView, treeModel, path, column, gailCell);
 
     [cell accessibilityAddChildElement:renderer_element ?: (NSAccessibilityElement *) gail_cell_get_real_cell (gailCell)];
 
