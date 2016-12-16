@@ -75,7 +75,29 @@
 
 - (NSRect)accessibilityFrameForRange:(NSRange)range
 {
-    return NSZeroRect;
+    GtkTextView *textview = GTK_TEXT_VIEW (ac_element_get_owner ([self delegate]));
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer (textview);
+    GtkTextIter startIter, endIter;
+    GdkRectangle startRect, endRect;
+    int startWinX, endWinX, startWinY, endWinY;
+
+    gtk_text_buffer_get_iter_at_offset (buffer, &startIter, range.location);
+    gtk_text_buffer_get_iter_at_offset (buffer, &endIter, range.location + range.length - 1);
+
+    gtk_text_view_get_iter_location (textview, &startIter, &startRect);
+    gtk_text_view_get_iter_location (textview, &endIter, &endRect);
+
+    g_print ("Getting %d -> %d\n", range.location, range.location + range.length - 1);
+    g_print ("Buffer rect %d,%d -> %d,%d\n", startRect.x, startRect.y, endRect.x, endRect.y);
+
+    gtk_text_view_buffer_to_window_coords (textview, GTK_TEXT_WINDOW_WIDGET, startRect.x, startRect.y, &startWinX, &startWinY);
+    gtk_text_view_buffer_to_window_coords (textview, GTK_TEXT_WINDOW_WIDGET, endRect.x, endRect.y, &endWinX, &endWinY);
+
+    g_print ("Window rect %d,%d -> %d,%d\n", startWinX, startWinY, endWinX, endWinY);
+
+    // FIXME: Some cunning calculation to work out line wrap?
+    g_print ("Frame: %d,%d, %d x %x", startWinX, startWinY, endWinX - startWinX, endWinY - startWinY);
+    return NSMakeRect (startWinX, startWinY, endWinX - startWinX, endWinY - startWinY);
 }
 
 - (NSString *)accessibilityValue
