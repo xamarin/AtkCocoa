@@ -25,10 +25,13 @@
 #include <gdk/gdkkeysyms.h>
 #include "gailcombobox.h"
 
+#import "ACAccessibilityComboBoxElement.h"
+
 static void         gail_combo_box_class_init              (GailComboBoxClass *klass);
 static void         gail_combo_box_init                    (GailComboBox      *combo_box);
 static void         gail_combo_box_real_initialize         (AtkObject      *obj,
                                                             gpointer       data);
+static id<NSAccessibility> get_real_accessibility_element  (AcElement *element);
 
 static void         gail_combo_box_changed_gtk             (GtkWidget      *widget);
 
@@ -63,6 +66,8 @@ static gboolean     gail_combo_box_is_child_selected       (AtkSelection   *sele
                                                             gint           i);
 static gboolean     gail_combo_box_remove_selection        (AtkSelection   *selection,
                                                             gint           i);
+static gboolean real_perform_press (AcElement *element);
+static gboolean real_perform_show_menu (AcElement *element);
 
 G_DEFINE_TYPE_WITH_CODE (GailComboBox, gail_combo_box, GAIL_TYPE_CONTAINER,
                          G_IMPLEMENT_INTERFACE (ATK_TYPE_ACTION, atk_action_interface_init)
@@ -73,6 +78,7 @@ gail_combo_box_class_init (GailComboBoxClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   AtkObjectClass *class = ATK_OBJECT_CLASS (klass);
+  AcElementClass *element_class = AC_ELEMENT_CLASS (klass);
 
   gobject_class->finalize = gail_combo_box_finalize;
 
@@ -80,6 +86,10 @@ gail_combo_box_class_init (GailComboBoxClass *klass)
   class->get_n_children = gail_combo_box_get_n_children;
   class->ref_child = gail_combo_box_ref_child;
   class->initialize = gail_combo_box_real_initialize;
+
+  element_class->get_accessibility_element = get_real_accessibility_element;
+  element_class->perform_press = real_perform_press;
+  element_class->perform_show_menu = real_perform_show_menu;
 }
 
 static void
@@ -122,6 +132,18 @@ gail_combo_box_real_initialize (AtkObject *obj,
     atk_object_set_parent (gtk_widget_get_accessible (gtk_bin_get_child (GTK_BIN (combo_box))), obj);
 
   obj->role = ATK_ROLE_COMBO_BOX;
+}
+
+static id<NSAccessibility>
+get_real_accessibility_element (AcElement *element)
+{
+  GailComboBox *gail_combo_box = GAIL_COMBO_BOX (element);
+
+  if (gail_combo_box->real_element == NULL) {
+    gail_combo_box->real_element = (__bridge_retained void *)[[ACAccessibilityComboBoxElement alloc] initWithDelegate:element];
+  }
+
+  return (__bridge id<NSAccessibility>) gail_combo_box->real_element;
 }
 
 static void
@@ -305,6 +327,26 @@ gail_combo_box_do_action (AtkAction *action,
 }
 
 static gboolean
+maybe_show_popup (GailComboBox *gail_combo_box)
+{
+  GtkComboBox *combo_box;
+  GtkWidget *widget;
+  AtkObject *popup;
+  gboolean do_popup;
+
+  widget = GTK_ACCESSIBLE (gail_combo_box)->widget;
+
+    combo_box = GTK_COMBO_BOX (widget);
+
+  popup = gtk_combo_box_get_popup_accessible (combo_box);
+  do_popup = !gtk_widget_get_mapped (GTK_ACCESSIBLE (popup)->widget);
+  if (do_popup)
+      gtk_combo_box_popup (combo_box);
+  else
+      gtk_combo_box_popdown (combo_box);
+}
+
+static gboolean
 idle_do_action (gpointer data)
 {
   GtkComboBox *combo_box;
@@ -330,6 +372,20 @@ idle_do_action (gpointer data)
       gtk_combo_box_popdown (combo_box);
 
   return FALSE;
+}
+
+static gboolean
+real_perform_press (AcElement *element)
+{
+  maybe_show_popup (GAIL_COMBO_BOX (element));
+  return TRUE;
+}
+
+static gboolean
+real_perform_show_menu (AcElement *element)
+{
+  maybe_show_popup (GAIL_COMBO_BOX (element));
+  return TRUE;
 }
 
 static gint
@@ -584,5 +640,10 @@ gail_combo_box_finalize (GObject *object)
       g_source_remove (combo_box->action_idle_handler);
       combo_box->action_idle_handler = 0;
     }
+
+  if (combo_box->real_element) {
+    CFBridgingRelease (combo_box->real_element);
+    combo_box->real_element = NULL;
+  }
   G_OBJECT_CLASS (gail_combo_box_parent_class)->finalize (object);
 }

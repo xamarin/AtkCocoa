@@ -45,6 +45,8 @@ struct _GailComboBox
   gchar         *name;
   gint          old_selection;
   gboolean      popup_set;
+
+  void *real_element; /* ACAccessibilityComboBoxElement */
 };
 
 GType gail_combo_box_get_type (void);

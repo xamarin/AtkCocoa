@@ -88,7 +88,7 @@ fi
 $ACLOCAL $ACLOCAL_FLAGS
 
 #$LIBTOOLIZE --force --copy
-intltoolize --force --copy --automake
+#intltoolize --force --copy --automake
 
 autoheader
 

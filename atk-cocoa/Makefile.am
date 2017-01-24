@@ -3,7 +3,9 @@ BUILT_SOURCES = acmarshal.h acmarshal.c
 
 atkcocoa_c_sources =			\
 	ACAccessibilityCellElement.c	\
+	ACAccessibilityComboBoxElement.c \
 	ACAccessibilityElement.c	\
+	ACAccessibilityMenuItemElement.c	\
 	ACAccessibilityOutlineElement.c \
 	ACAccessibilityTextViewElement.c \
 	ACAccessibilityTreeCellElement.c \
@@ -79,7 +81,9 @@ libatkcocoaincludedir=$(includedir)/atkcocoa-1.0/atkcocoa
 
 atkcocoa_private_h_sources =		\
 	ACAccessibilityCellElement.h	\
+	ACAccessibilityComboBoxElement.h \
 	ACAccessibilityElement.h	\
+	ACAccessibilityMenuItemElement.h	\
 	ACAccessibilityOutlineElement.h \
 	ACAccessibilityTextViewElement.h \
 	ACAccessibilityTreeCellElement.h \

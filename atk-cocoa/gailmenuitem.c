@@ -22,6 +22,8 @@
 #include "gailmenuitem.h"
 #include "gailsubmenuitem.h"
 
+#import "ACAccessibilityMenuItemElement.h"
+
 #define KEYBINDING_SEPARATOR ";"
 
 static void gail_menu_item_class_init  (GailMenuItemClass *klass);
@@ -30,6 +32,7 @@ static void gail_menu_item_init        (GailMenuItem      *menu_item);
 static void                  gail_menu_item_real_initialize
                                                           (AtkObject       *obj,
                                                            gpointer        data);
+static id<NSAccessibility> get_real_accessibility_element  (AcElement *element);
 static gint                  gail_menu_item_get_n_children (AtkObject      *obj);
 static AtkObject*            gail_menu_item_ref_child      (AtkObject      *obj,
                                                             gint           i);
@@ -60,6 +63,7 @@ static gboolean              find_accel                    (GtkAccelKey    *key,
 static gboolean              find_accel_new                (GtkAccelKey    *key,
                                                             GClosure       *closure,
                                                             gpointer       data);
+static gboolean real_perform_press (AcElement *element);
 
 G_DEFINE_TYPE_WITH_CODE (GailMenuItem, gail_menu_item, GAIL_TYPE_ITEM,
                          G_IMPLEMENT_INTERFACE (ATK_TYPE_ACTION, atk_action_interface_init))
@@ -69,6 +73,7 @@ gail_menu_item_class_init (GailMenuItemClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   AtkObjectClass *class = ATK_OBJECT_CLASS (klass);
+  AcElementClass *element_class = AC_ELEMENT_CLASS (klass);
 
   gobject_class->finalize = gail_menu_item_finalize;
 
@@ -76,6 +81,9 @@ gail_menu_item_class_init (GailMenuItemClass *klass)
   class->ref_child = gail_menu_item_ref_child;
   class->ref_state_set = gail_menu_item_ref_state_set;
   class->initialize = gail_menu_item_real_initialize;
+
+  element_class->get_accessibility_element = get_real_accessibility_element;
+  element_class->perform_press = real_perform_press;
 }
 
 static void
@@ -119,6 +127,18 @@ gail_menu_item_real_initialize (AtkObject *obj,
     obj->role = ATK_ROLE_SEPARATOR;
   else
     obj->role = ATK_ROLE_MENU_ITEM;
+}
+
+static id<NSAccessibility>
+get_real_accessibility_element (AcElement *element)
+{
+  GailMenuItem *item = GAIL_MENU_ITEM (element);
+
+  if (item->real_element == NULL) {
+    item->real_element = (__bridge_retained void *)[[ACAccessibilityMenuItemElement alloc] initWithDelegate:element];
+  }
+
+  return (__bridge id<NSAccessibility>) item->real_element;
 }
 
 static void
@@ -362,6 +382,14 @@ idle_do_action (gpointer data)
     ensure_menus_unposted (menu_item);
 
   return FALSE;
+}
+
+static gboolean
+real_perform_press (AcElement *element)
+{
+  idle_do_action (element);
+
+  return TRUE;
 }
 
 static gint
@@ -614,6 +642,11 @@ gail_menu_item_finalize (GObject *object)
       g_source_remove (menu_item->action_idle_handler);
       menu_item->action_idle_handler = 0;
     }
+
+  if (menu_item->real_element) {
+    CFBridgingRelease (menu_item->real_element);
+    menu_item->real_element = NULL;
+  }
 
   G_OBJECT_CLASS (gail_menu_item_parent_class)->finalize (object);
 }
