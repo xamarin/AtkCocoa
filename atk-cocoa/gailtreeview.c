@@ -3243,6 +3243,10 @@ make_accessibility_cell_for_column (GtkTreeModel *treeModel,
 
     [cell accessibilityAddChildElement:renderer_element ?: (NSAccessibilityElement *) gail_cell_get_real_cell (gailCell)];
 
+    // Attach the NSAccessibility element for the cell to the cell renderer, so that a custom data function
+    // is able to fill in the appropriate attributes
+    g_object_set_data (G_OBJECT (renderer), "xamarin-private-atkcocoa-nsaccessibility", (__bridge gpointer) gail_cell_get_real_cell (gailCell));
+
     // FIXME: Work out how to do this for the managed renderer_element
     // Hmmm... 
     if (GAIL_IS_RENDERER_CELL (child) && GAIL_RENDERER_CELL (child)->renderer) {
