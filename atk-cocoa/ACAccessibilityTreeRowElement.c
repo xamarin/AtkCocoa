@@ -54,6 +54,7 @@
 {
     GdkRectangle cellSpace;
     GtkTreePath *path = gtk_tree_row_reference_get_path (_row);
+    int wx, wy;
     int x, y;
 
     gtk_tree_view_get_cell_area (GTK_TREE_VIEW (_view), path, NULL, &cellSpace);
@@ -61,10 +62,14 @@
     cellSpace.x = 0;
     cellSpace.width = _view->allocation.width;
 
+    // cellSpace coordinates are relative to bin_window, which doesn't include
+    // the offset for any headers. Convert to widget coords to add that offset.
+    gtk_tree_view_convert_bin_window_to_widget_coords (_view, 0, cellSpace.y, &wx, &wy);
+
     gtk_widget_translate_coordinates (_view, gtk_widget_get_toplevel (_view), 0, 0, &x, &y);
 
     cellSpace.x += x;
-    cellSpace.y += y;
+    cellSpace.y = wy + y;
 
     return cellSpace;
 }
