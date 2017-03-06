@@ -3260,7 +3260,7 @@ make_accessibility_cell_for_column (GtkTreeModel *treeModel,
       while (*prop_list) {
         GParamSpec *spec;
 
-        spec = g_object_class_find_property (G_OBJECT_CLASS (gtk_cell_renderer_class), *prop_list);
+        spec = g_object_class_find_property (G_OBJECT_GET_CLASS (renderer), *prop_list);
 
         if (spec != NULL) {
           GValue value = { 0, };
@@ -3271,7 +3271,9 @@ make_accessibility_cell_for_column (GtkTreeModel *treeModel,
                                   *prop_list, &value);
           g_value_unset(&value);
         } else {
-          g_warning ("Invalid property: %s\n", *prop_list);
+          // Invalid properties are quite common with managed types because we don't know the parent type
+          // so everything is defaulting to GtkCellRendererText at the moment.
+          //g_warning ("Invalid property: %s\n", *prop_list);
         }
         prop_list++;
       }
@@ -3882,7 +3884,7 @@ update_cell_value (GailRendererCell *renderer_cell,
       while (*prop_list)
         {
           spec = g_object_class_find_property
-                           (G_OBJECT_CLASS (gtk_cell_renderer_class), *prop_list);
+                           (G_OBJECT_GET_CLASS (cur_renderer->data), *prop_list);
 
           if (spec != NULL)
             {
@@ -3894,8 +3896,11 @@ update_cell_value (GailRendererCell *renderer_cell,
                                      *prop_list, &value);
               g_value_unset(&value);
             }
-          else
-            g_warning ("Invalid property: %s\n", *prop_list);
+          else {
+            // Silence this warning as invalid properties are quite command as we don't know the appropriate type for
+            // managed types.
+            // g_warning ("Invalid property: %s\n", *prop_list);
+          }
           prop_list++;
         }
     }
