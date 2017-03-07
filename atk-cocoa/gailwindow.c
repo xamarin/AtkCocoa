@@ -449,6 +449,11 @@ gail_window_real_get_accessibility_element (AcElement *element)
 
   window = gtk_accessible_get_widget (accessible);
 
+  // Element is defunct
+  if (window == NULL) {
+    return nil;
+  }
+
   AC_NOTE (WIDGETS, g_print ("Window %s is realised: %s\n", G_OBJECT_TYPE_NAME (ac_element_get_owner (element)), gtk_widget_get_realized (window) ? "yes" : "no"));
   AC_NOTE (WIDGETS, g_print ("GdkWindow: %p\n", gtk_widget_get_window (window)));
 
