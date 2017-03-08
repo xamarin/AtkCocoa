@@ -46,6 +46,11 @@
 	return _delegate;
 }
 
+- (void)dealloc
+{
+	AC_NOTE (DESTRUCTION, (NSLog (@"Deallocing: %@", [super description])));
+}
+
 - (NSString *)description
 {
 	return [NSString stringWithFormat:@"%@ (%s (%p)- %s (%p))", [super description], G_OBJECT_TYPE_NAME (_delegate), _delegate, G_OBJECT_TYPE_NAME (ac_element_get_owner (_delegate)), ac_element_get_owner (_delegate)];

@@ -877,7 +877,8 @@ static const GDebugKey ac_debug_keys[] = {
   { "actions", AC_DEBUG_ACTIONS },
   { "widgets", AC_DEBUG_WIDGETS },
   { "tree", AC_DEBUG_TREE },
-  { "layout", AC_DEBUG_LAYOUT }
+  { "layout", AC_DEBUG_LAYOUT },
+  { "destruction", AC_DEBUG_DESTRUCTION},
 };
 
 static void

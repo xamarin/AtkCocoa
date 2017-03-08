@@ -32,6 +32,7 @@
 static void ac_element_class_init (AcElementClass *klass);
 static void ac_element_init (AcElement *element);
 static void ac_element_dispose (GObject *obj);
+static void ac_element_finalize (GObject *obj);
 static ACAccessibilityElement *ac_element_get_real_accessibility_element (AcElement *element);
 static void ac_element_real_set_role (AtkObject *accessible,
 									  AtkRole role);
@@ -101,6 +102,7 @@ ac_element_class_init (AcElementClass *klass)
   klass->perform_show_menu = ac_element_real_perform_show_menu;
 
   object_class->dispose = ac_element_dispose;
+  object_class->finalize = ac_element_finalize;
   g_type_class_add_private (G_OBJECT_CLASS (klass), sizeof (AcElementPrivate));
 /*
   class->get_description = gail_widget_get_description;
@@ -151,10 +153,21 @@ ac_element_dispose (GObject *obj)
 {
 	AcElement *element = AC_ELEMENT (obj);
 
-	CFBridgingRelease (element->priv->real_element);
-	element->priv->real_element = nil;
+	if (element->priv->real_element != NULL) {
+		AC_NOTE (DESTRUCTION, g_print ("Disposing element %s - %ld\n", G_OBJECT_TYPE_NAME (obj), CFGetRetainCount (element->priv->real_element)));
+		CFRelease (element->priv->real_element);
+		element->priv->real_element = NULL;
+	}
 
 	G_OBJECT_CLASS (ac_element_parent_class)->dispose (obj);
+}
+
+static void
+ac_element_finalize (GObject *obj)
+{
+	AC_NOTE (DESTRUCTION, g_print ("Finalizing object %s\n", G_OBJECT_TYPE_NAME (obj)));
+
+	G_OBJECT_CLASS (ac_element_parent_class)->finalize (obj);
 }
 
 static id<NSAccessibility>
@@ -656,7 +669,7 @@ ac_element_set_owner (AcElement *element,
 	g_object_add_weak_pointer (owner, (gpointer *)&priv->owner);
 
 	// This will call into subclasses to get the appropriate id<NSAccessibility> for that object
-	void *real_element = (__bridge_retained void *) ac_element_get_accessibility_element (element);
+	void *real_element = (__bridge void *) ac_element_get_accessibility_element (element);
 
 	// Set the NSAccessibilityElement as data on the AtkObject
 	// so it can be accessed from managed code which can't know about AcElement
@@ -925,7 +938,6 @@ ac_element_remove_child (AcElement *parent,
 		// accessibility enabled, then it's just a simple case to remove the child from the parent
 		NSMutableArray *new_children = [[parent_element accessibilityChildren] mutableCopy];
 		[new_children removeObject:child_element];
-
 		[parent_element setAccessibilityChildren:new_children];
 	} else {
 		AC_NOTE (TREE, NSLog (@"   - Child is not accessible"));
