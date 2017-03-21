@@ -199,7 +199,13 @@ get_coords_in_window (GtkWidget *widget, int *x, int *y)
 
 - (NSString *)accessibilityTitle
 {
-	return _realTitle ?: nsstring_from_cstring (ac_element_get_text (_delegate));
+	GObject *owner = ac_element_get_owner (_delegate);
+
+	if (GTK_IS_LABEL (owner)) {
+		return _realTitle ?: nsstring_from_cstring (ac_element_get_text (_delegate));
+	} else {
+		return _realTitle;
+	}
 }
 
 - (void)setAccessibilityTitle:(NSString *)title
@@ -209,6 +215,17 @@ get_coords_in_window (GtkWidget *widget, int *x, int *y)
 	}
 
 	_realTitle = [title copy];
+}
+
+- (id)accessibilityValue
+{
+	GObject *owner = ac_element_get_owner (_delegate);
+
+	if (GTK_IS_ENTRY (owner)) {
+		return nsstring_from_cstring (ac_element_get_text (_delegate));
+	}
+
+	return nil;
 }
 
 - (NSString *)accessibilityIdentifier

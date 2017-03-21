@@ -27,8 +27,11 @@
 #include "gailcombobox.h"
 #include <atk-cocoa/gailmisc.h>
 
+#import "ACAccessibilityTextFieldElement.h"
+
 static void       gail_entry_class_init            (GailEntryClass       *klass);
 static void       gail_entry_init                  (GailEntry            *entry);
+static id<NSAccessibility> get_real_accessibility_element  (AcElement *element);
 static void	  gail_entry_real_initialize       (AtkObject            *obj,
                                                     gpointer             data);
 static void       text_setup                       (GailEntry            *entry,
@@ -179,6 +182,7 @@ gail_entry_class_init (GailEntryClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   AtkObjectClass  *class = ATK_OBJECT_CLASS (klass);
+  AcElementClass *element_class = AC_ELEMENT_CLASS (klass);
   GailWidgetClass *widget_class;
 
   widget_class = (GailWidgetClass*)klass;
@@ -190,6 +194,8 @@ gail_entry_class_init (GailEntryClass *klass)
   class->initialize = gail_entry_real_initialize;
 
   widget_class->notify_gtk = gail_entry_real_notify_gtk;
+
+  element_class->get_accessibility_element = get_real_accessibility_element;
 }
 
 static void
@@ -235,6 +241,18 @@ gail_entry_real_initialize (AtkObject *obj,
     obj->role = ATK_ROLE_TEXT;
   else
     obj->role = ATK_ROLE_PASSWORD_TEXT;
+}
+
+static id<NSAccessibility>
+get_real_accessibility_element (AcElement *element)
+{
+  GailEntry *entry = GAIL_ENTRY (element);
+
+  if (entry->real_element == NULL) {
+    entry->real_element = (__bridge_retained void *)[[ACAccessibilityTextFieldElement alloc] initWithDelegate:element];
+  }
+
+  return (__bridge id<NSAccessibility>) entry->real_element;
 }
 
 static void

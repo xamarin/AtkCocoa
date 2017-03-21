@@ -56,6 +56,8 @@ struct _GailEntry
   gchar          *activate_keybinding;
   guint          action_idle_handler;
   guint          insert_idle_handler;
+
+  void     *real_element; /* ACAccessibilityTextFieldElement */
 };
 
 GType gail_entry_get_type (void);
