@@ -46,6 +46,7 @@
     [_delegate performDisclosurePress];
     return YES;
 }
+
 @end
 
 // ACAccessibilityTreeCellElement is the child of the TreeRow/TreeColumn that holds all the individual ACAccessibilityCellElements
@@ -94,6 +95,7 @@
     GtkWidget *treeView;
     GtkTreePath *path;
     int x, y;
+    int wx, wy;
 
     column = [_columnElement column];
     treeView = gtk_tree_view_column_get_tree_view (column);
@@ -102,10 +104,14 @@
 	gtk_tree_view_get_cell_area (GTK_TREE_VIEW (treeView), path, column, &cellSpace);
 	gtk_tree_path_free (path);
 	
+    // cellSpace coordinates are relative to bin_window, which doesn't include
+    // the offset for any headers. Convert to widget coords to add that offset.
+    gtk_tree_view_convert_bin_window_to_widget_coords (treeView, 0, 0, &wx, &wy);
+
 	gtk_widget_translate_coordinates (treeView, gtk_widget_get_toplevel (treeView), 0, 0, &x, &y);
 
     cellSpace.x += x;
-    cellSpace.y += y;
+    cellSpace.y += y + wy;
 
     return cellSpace;
 }
