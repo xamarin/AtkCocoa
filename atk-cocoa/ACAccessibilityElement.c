@@ -18,11 +18,13 @@
  */
 
 #import "ACAccessibilityElement.h"
+
 #include "acelement.h"
 #include "acdebug.h"
 #include "acutils.h"
 
 @implementation ACAccessibilityElement {
+	id _accessibilityWindow;
 	AcElement *_delegate;
 	NSString *_realTitle;
 	NSString *_realRole;
@@ -49,6 +51,20 @@
 - (void)dealloc
 {
 	AC_NOTE (DESTRUCTION, (NSLog (@"Deallocing: %@", [super description])));
+}
+
+// Cocoa appears to have a bug where if accessibilityWindow is not set
+// it will get into an infinite loop looking for one. We can work around this in ACAccessibilityElement
+// by just returning nil if one isn't set.
+- (id)accessibilityWindow
+{
+	return _accessibilityWindow;
+}
+
+- (void)setAccessibilityWindow:(id)window
+{
+	[super setAccessibilityWindow:window];
+	_accessibilityWindow = window;
 }
 
 - (NSString *)description

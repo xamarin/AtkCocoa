@@ -72,24 +72,6 @@
 	return desc;
 }
 
-- (GdkRectangle)frameInGtkWindowSpace
-{
-	GdkRectangle cellSpace;
-	GtkWidget *treeView = gtk_tree_view_column_get_tree_view (_column);
-	GtkTreePath *path = gtk_tree_row_reference_get_path (_row_ref);
-	int x, y;
-
-	gtk_tree_view_get_cell_area (GTK_TREE_VIEW (treeView), path, _column, &cellSpace);
-	gtk_tree_path_free (path);
-
-	gtk_widget_translate_coordinates (treeView, gtk_widget_get_toplevel (treeView), 0, 0, &x, &y);
-
-    cellSpace.x += x;
-    cellSpace.y += y;
-
-	return cellSpace;
-}
-
 - (CGRect)accessibilityFrameInParentSpace
 {
 	GList *renderers;
@@ -109,7 +91,9 @@
 
 	gtk_tree_view_column_cell_get_position (_column, cell_renderer, &x, &width);
 
-	return CGRectMake (x, cellSpace.y - cellSpace.height, width, cellSpace.height);
+	// Ignore the y coordinate becaue cellSpace is in the binWindow coordinate system,
+	// and I don't think you can have cells that don't start at 0.
+	return CGRectMake (x, 0, width, cellSpace.height);
 }
 
 // Clear any actions that the accessibility system might try to inherit from the parent TreeView
