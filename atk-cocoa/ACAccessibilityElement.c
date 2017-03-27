@@ -217,7 +217,7 @@ get_coords_in_window (GtkWidget *widget, int *x, int *y)
 {
 	GObject *owner = ac_element_get_owner (_delegate);
 
-	if (GTK_IS_LABEL (owner)) {
+	if (GTK_IS_LABEL (owner) || GTK_IS_BUTTON (owner)) {
 		return _realTitle ?: nsstring_from_cstring (ac_element_get_text (_delegate));
 	} else {
 		return _realTitle;
