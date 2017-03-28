@@ -3260,7 +3260,18 @@ make_accessibility_cell_for_column (GtkTreeModel *treeModel,
       GtkCellRendererClass *gtk_cell_renderer_class = GTK_CELL_RENDERER_GET_CLASS (renderer_cell->renderer);
       GailRendererCellClass *gail_renderer_cell_class = GAIL_RENDERER_CELL_GET_CLASS (child);
       char **prop_list = gail_renderer_cell_class->property_list;
+      GValue value = G_VALUE_INIT;
 
+      // Check if the row has any data set yet. This function may be called when the row is inserted,
+      // but before any data has been set. This checks if the value is empty before continuing.
+      // Checking for peek_pointer being NULL helps to check for an empty value if the value is set from
+      // managed code, in which case G_VALUE_TYPE will be a GtkSharpValue.
+      gtk_tree_model_get_value (treeModel, rowIter, 0, &value);
+      if (G_VALUE_TYPE (&value) == 0 || g_value_peek_pointer (&value) == NULL) {
+        continue;
+      }
+
+      g_value_unset (&value);
       gtk_tree_view_column_cell_set_cell_data (column, treeModel, rowIter, isExpanderColumn, is_expanded);
 
       while (*prop_list) {
