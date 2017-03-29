@@ -20,6 +20,7 @@
 
 #include "config.h"
 
+#include <execinfo.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -32,6 +33,7 @@
 #define GNOME_ACCESSIBILITY_ENV "GNOME_ACCESSIBILITY"
 #define NO_GAIL_ENV "NO_GAIL"
 #define ATKCOCOA_DEBUG_OPTIONS_ENV "ATKCOCOA_DEBUG_OPTIONS"
+#define ATKCOCOA_DEBUG_BACKTRACE "ATKCOCOA_DEBUG_BACKTRACE"
 
 static gboolean gail_focus_watcher      (GSignalInvocationHint *ihint,
                                          guint                  n_param_values,
@@ -861,6 +863,29 @@ gail_set_focus_object (AtkObject *focus_obj,
     }
 }
 
+GLogFunc original_log;
+static void
+gail_log_handler (const char *log_domain,
+                  GLogLevelFlags flags,
+                  const char *message,
+                  gpointer userdata)
+{
+  void *traces[30];
+  size_t numberOfTraces;
+  char **traceStrings;
+
+  original_log (log_domain, flags, message, userdata);
+
+  numberOfTraces = backtrace (traces, 30);
+  traceStrings = backtrace_symbols (traces, numberOfTraces);
+
+  for (int i = 0; i < numberOfTraces; i++) {
+    g_print ("%s\n", traceStrings[i]);
+  }
+  g_print ("---\n\n");
+
+  free (traceStrings);
+}
 /*
  *   These exported symbols are hooked by gnome-program
  * to provide automatic module initialization and shutdown.
@@ -898,6 +923,12 @@ gail_accessibility_module_init (void)
   const char *debug = g_getenv (ATKCOCOA_DEBUG_OPTIONS_ENV);
   if (debug != NULL) {
     ac_debug_flags |= g_parse_debug_string (debug, ac_debug_keys, G_N_ELEMENTS (ac_debug_keys));
+  }
+
+  // Overwrite the Gtk log handlers to give a backtrace
+  if (g_getenv (ATKCOCOA_DEBUG_BACKTRACE) != NULL) {
+    original_log = g_log_set_default_handler (gail_log_handler, NULL);
+    g_log_set_handler ("Gtk", G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL | G_LOG_FLAG_RECURSION, gail_log_handler, NULL);
   }
 
   /*
