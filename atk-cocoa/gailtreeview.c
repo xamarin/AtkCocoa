@@ -979,6 +979,7 @@ gail_tree_view_ref_child (AtkObject *obj,
     cell = GAIL_CELL (child);
     renderer_cell = GAIL_RENDERER_CELL (child);
     renderer_cell->renderer = fake_renderer;
+    g_object_ref_sink (fake_renderer);
 
     /* Create the GailTreeViewCellInfo structure for this cell */
     cell_info_new (gailview, tree_model, path, tv_col, cell);
@@ -3164,6 +3165,34 @@ update_row_index (GtkTreeModel *treeModel,
   gather_visible_rows_and_columns (gailView);
 }
 
+static gboolean
+check_row_has_data (GtkTreeModel *treeModel,
+                    GtkTreeIter *rowIter)
+{
+  int idx, nCols;
+
+  nCols = gtk_tree_model_get_n_columns (treeModel);
+  for (idx = 0; idx < nCols; idx++) {
+    GValue value = G_VALUE_INIT;
+
+    // Check if the row has any data set yet. This function may be called when the row is inserted,
+    // but before any data has been set. This checks if the value is empty before continuing.
+    // Checking for peek_pointer being NULL helps to check for an empty value if the value is set from
+    // managed code, in which case G_VALUE_TYPE will be a GtkSharpValue.
+    gtk_tree_model_get_value (treeModel, rowIter, idx, &value);
+    gpointer p = g_value_fits_pointer (&value) ? g_value_peek_pointer (&value) : NULL;
+    if (G_VALUE_TYPE (&value) == 0 || p == NULL) {
+      g_value_unset (&value);
+      continue;
+    }
+
+    g_value_unset (&value);
+    return TRUE;
+  }
+
+  return FALSE;
+}
+
 static NSAccessibilityElement *
 make_accessibility_cell_for_column (GtkTreeModel *treeModel,
                                     GtkTreeView *treeView,
@@ -3183,6 +3212,7 @@ make_accessibility_cell_for_column (GtkTreeModel *treeModel,
   gboolean is_expanded = FALSE;
   gboolean needs_disclosure = FALSE;
   GtkTreeSelection *selection;
+  gboolean rowHasData = check_row_has_data (treeModel, rowIter);
 
   parentElement = ac_element_get_accessibility_element (AC_ELEMENT (gailView));
 
@@ -3227,9 +3257,12 @@ make_accessibility_cell_for_column (GtkTreeModel *treeModel,
       continue;
     }
 
-    // FIXME: Creating a render element from a non gail source (eg inside managed code)
-    // needs more thought and testing. 
-    // renderer_element = g_object_get_data (G_OBJECT (child), "xamarin-private-atkcocoa-nsaccessibility");
+    GType childType = G_OBJECT_TYPE (child);
+    if (childType == GAIL_TYPE_RENDERER_CELL) {
+      // If we have an unknown cell, then try to use it as a text cell
+      g_object_unref (child);
+      child = gail_text_cell_new ();
+    }
 
     if (!GAIL_IS_RENDERER_CELL (child)) {
       continue;
@@ -3253,25 +3286,12 @@ make_accessibility_cell_for_column (GtkTreeModel *treeModel,
     // is able to fill in the appropriate attributes
     g_object_set_data (G_OBJECT (renderer), "xamarin-private-atkcocoa-nsaccessibility", (__bridge gpointer) gail_cell_get_real_cell (gailCell));
 
-    // FIXME: Work out how to do this for the managed renderer_element
-    // Hmmm... 
-    if (GAIL_IS_RENDERER_CELL (child) && GAIL_RENDERER_CELL (child)->renderer) {
+    if (rowHasData && GAIL_IS_RENDERER_CELL (child) && GAIL_RENDERER_CELL (child)->renderer) {
       GailRendererCell *renderer_cell = GAIL_RENDERER_CELL (child);
       GtkCellRendererClass *gtk_cell_renderer_class = GTK_CELL_RENDERER_GET_CLASS (renderer_cell->renderer);
       GailRendererCellClass *gail_renderer_cell_class = GAIL_RENDERER_CELL_GET_CLASS (child);
       char **prop_list = gail_renderer_cell_class->property_list;
-      GValue value = G_VALUE_INIT;
 
-      // Check if the row has any data set yet. This function may be called when the row is inserted,
-      // but before any data has been set. This checks if the value is empty before continuing.
-      // Checking for peek_pointer being NULL helps to check for an empty value if the value is set from
-      // managed code, in which case G_VALUE_TYPE will be a GtkSharpValue.
-      gtk_tree_model_get_value (treeModel, rowIter, 0, &value);
-      if (G_VALUE_TYPE (&value) == 0 || g_value_peek_pointer (&value) == NULL) {
-        continue;
-      }
-
-      g_value_unset (&value);
       gtk_tree_view_column_cell_set_cell_data (column, treeModel, rowIter, isExpanderColumn, is_expanded);
 
       while (*prop_list) {
@@ -3887,14 +3907,13 @@ update_cell_value (GailRendererCell *renderer_cell,
    */
 
   if (cell_info->in_use) {
-      parent = atk_object_get_parent (ATK_OBJECT (cell));
-      if (!ATK_IS_OBJECT (cell)) g_on_error_query (NULL);
-      if (GAIL_IS_CONTAINER_CELL (parent))
-	  cur_renderer = g_list_nth (renderers, cell->index);
-      else
-	  cur_renderer = renderers;
-  }
-  else {
+    parent = atk_object_get_parent (ATK_OBJECT (cell));
+    if (!ATK_IS_OBJECT (cell)) {
+      g_on_error_query (NULL);
+    }
+
+    cur_renderer = g_list_nth (renderers, cell->index);
+  } else {
       return FALSE;
   }
   
