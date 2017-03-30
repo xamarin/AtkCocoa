@@ -3379,6 +3379,11 @@ find_row_element_for_path (GailTreeView *gailView,
   for (ACAccessibilityTreeRowElement *rowElement in rows) {
     GtkTreeRowReference *rowRef = [rowElement rowReference];
     GtkTreePath *rowPath = gtk_tree_row_reference_get_path (rowRef);
+
+    if (rowPath == NULL) {
+      continue;
+    }
+    
     int compared = gtk_tree_path_compare (path, rowPath);
 
     gtk_tree_path_free (rowPath);
