@@ -173,11 +173,7 @@ ac_element_finalize (GObject *obj)
 static id<NSAccessibility>
 ac_element_get_real_accessibility_element (AcElement *element)
 {
-	if (element->priv->real_element == NULL) {
-		element->priv->real_element = (__bridge_retained void *) [[ACAccessibilityElement alloc] initWithDelegate:element];
-	}
-	
-	return (__bridge id<NSAccessibility>) element->priv->real_element;
+	return [[ACAccessibilityElement alloc] initWithDelegate:element];
 }
 
 static NSArray *
@@ -695,9 +691,16 @@ ac_element_get_accessibility_element (AcElement *element)
 
 	g_return_val_if_fail (AC_IS_ELEMENT (element), NULL);
 
-	klass = AC_ELEMENT_GET_CLASS (element);
+	if (element->priv->real_element == NULL) {
+		klass = AC_ELEMENT_GET_CLASS (element);
+		if (klass->get_accessibility_element) {
+			element->priv->real_element = (__bridge_retained void *) klass->get_accessibility_element (element);
+		} else {
+			g_warning ("No accessibility element method for %s", G_OBJECT_TYPE_NAME (element));
+		}
+	}
 
-	return klass->get_accessibility_element (element);
+	return (__bridge id<NSAccessibility>) element->priv->real_element;
 }
 
 id<NSAccessibility>

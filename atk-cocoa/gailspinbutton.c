@@ -25,6 +25,8 @@
 #include "gailadjustment.h"
 #include "gail-private-macros.h"
 
+#import "ACAccessibilitySpinnerElement.h"
+
 static void      gail_spin_button_class_init        (GailSpinButtonClass *klass);
 static void      gail_spin_button_init              (GailSpinButton *button);
 static void      gail_spin_button_real_initialize   (AtkObject      *obj,
@@ -48,6 +50,8 @@ static gboolean  gail_spin_button_set_current_value (AtkValue       *obj,
                                                      const GValue   *value);
 static void      gail_spin_button_value_changed     (GtkAdjustment  *adjustment,
                                                      gpointer       data);
+id<NSAccessibility> gail_spin_button_real_get_accessibility_element (AcElement *element);
+
         
 G_DEFINE_TYPE_WITH_CODE (GailSpinButton, gail_spin_button, GAIL_TYPE_ENTRY,
                          G_IMPLEMENT_INTERFACE (ATK_TYPE_VALUE, atk_value_interface_init))
@@ -57,6 +61,7 @@ gail_spin_button_class_init (GailSpinButtonClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   AtkObjectClass *class = ATK_OBJECT_CLASS (klass);
+  AcElementClass *element_class = AC_ELEMENT_CLASS (klass);
   GailWidgetClass *widget_class;
 
   widget_class = (GailWidgetClass*)klass;
@@ -65,6 +70,7 @@ gail_spin_button_class_init (GailSpinButtonClass *klass)
 
   class->initialize = gail_spin_button_real_initialize;
 
+  element_class->get_accessibility_element = gail_spin_button_real_get_accessibility_element;
   gobject_class->finalize = gail_spin_button_finalize;
 }
 
@@ -100,6 +106,12 @@ gail_spin_button_real_initialize (AtkObject *obj,
 
   obj->role = ATK_ROLE_SPIN_BUTTON;
 
+}
+
+id<NSAccessibility>
+gail_spin_button_real_get_accessibility_element (AcElement *element)
+{
+  return [[ACAccessibilitySpinnerElement alloc] initWithDelegate:element];
 }
 
 static void
