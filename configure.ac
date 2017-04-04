@@ -1,6 +1,6 @@
 AC_PREREQ([2.63])
 
-AC_INIT([atk-cocoa], [1.0])
+AC_INIT([atk-cocoa], [1.1])
 
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_SRCDIR([atk-cocoa/acelement.h])
