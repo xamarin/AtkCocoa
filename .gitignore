@@ -21,3 +21,17 @@
 /libgail.la
 /so_locations
 /tags
+aclocal.m4
+atk-cocoa/acmarshal.c
+atk-cocoa/acmarshal.h
+atk-cocoa/libatkcocoa.so
+atk-cocoa/stamp-acmarshal.h
+autom4te.cache/
+config.h
+config.h.in
+config.log
+config.status
+configure
+install-sh
+missing
+stamp-h1
