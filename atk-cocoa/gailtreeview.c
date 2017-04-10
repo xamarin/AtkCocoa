@@ -36,6 +36,8 @@
 #include "gailcellparent.h"
 #include "gail-private-macros.h"
 
+#include "acdebug.h"
+
 #import "ACAccessibilityTreeCellElement.h"
 #import "ACAccessibilityTreeColumnElement.h"
 #import "ACAccessibilityTreeRowElement.h"
@@ -2408,14 +2410,13 @@ idle_expand_row (gpointer data)
 
   row = get_row_from_tree_path (tree_view, path);
 
-  /* shouldn't ever happen */
-  if (row == -1)
-    g_assert_not_reached ();
-
-  /* Must add 1 because the "added rows" are below the row being expanded */
-  row += 1;
+  /* row can equal -1 if the row requested to be expanded, is contained within an unexpanded row itself */
+  if (row != -1) {
+    /* Must add 1 because the "added rows" are below the row being expanded */
+    row += 1;
   
-  g_signal_emit_by_name (gailview, "row_inserted", row, n_inserted);
+    g_signal_emit_by_name (gailview, "row_inserted", row, n_inserted);
+  }
 
   gailview->idle_expand_path = NULL;
 
@@ -2472,6 +2473,7 @@ gail_tree_view_collapse_row_gtk (GtkTreeView       *tree_view,
   GailTreeView *gailview = GAIL_TREE_VIEW (atk_obj);
   gint row;
 
+  AC_NOTE (TREEWIDGET, g_print ("Collapsing row: %s\n", gtk_tree_path_to_string (path)));
   NSAccessibilityElement *treeElement;
   ACAccessibilityTreeRowElement *collapsedElement;
 
@@ -3525,6 +3527,8 @@ model_row_inserted (GtkTreeModel *tree_model,
   GailTreeView *gailview = GAIL_TREE_VIEW (atk_obj);
   gint row, n_inserted, child_row;
 
+  AC_NOTE (TREEWIDGET, g_print ("Model row inserted: %s\n", gtk_tree_path_to_string (path)));
+
   if (gailview->idle_expand_id)
     {
       g_source_remove (gailview->idle_expand_id);
@@ -3540,6 +3544,7 @@ model_row_inserted (GtkTreeModel *tree_model,
   /* Check to see if row is visible */
   row = get_row_from_tree_path (tree_view, path);
 
+  AC_NOTE (TREEWIDGET, g_print ("Inserted row %d: %s\n", row, gtk_tree_path_to_string (path)));
  /*
   * A row insert is not necessarily visible.  For example,
   * a row can be draged & dropped into another row, which
@@ -3553,6 +3558,7 @@ model_row_inserted (GtkTreeModel *tree_model,
       NSAccessibilityElement *element, *parentElement;
       gint n_cols, col;
 
+      AC_NOTE (TREEWIDGET, g_print ("Row is visible\n"));
       gtk_tree_model_get_iter (tree_model, &iter, path);
 
       element = make_accessibility_element_for_row (tree_model, tree_view, gailview, &iter, row);
@@ -3608,11 +3614,13 @@ model_row_inserted (GtkTreeModel *tree_model,
       * cause a row that previously couldn't be expanded to now
       * be expandable.
       */
+      AC_NOTE(TREEWIDGET, g_print ("Not visible, maybe expand\n"));
       path_copy = gtk_tree_path_copy (path);
       gtk_tree_path_up (path_copy);
-      set_expand_state (tree_view, tree_model, gailview, path_copy, TRUE);
 
+      set_expand_state (tree_view, tree_model, gailview, path_copy, TRUE);
       update_expandability (tree_view, tree_model, gailview, path_copy);
+
       gtk_tree_path_free (path_copy);
     }
 }
@@ -4139,16 +4147,22 @@ iterate_thru_children(GtkTreeView  *tree_view,
 {
   GtkTreeIter iter;
 
+  AC_NOTE (TREEWIDGET, g_print ("%d - Iterate thru children: from %s to %s (%d)\n", depth, orig ? gtk_tree_path_to_string (orig) : "<null>", gtk_tree_path_to_string (tree_path), *count));
+
   if (!gtk_tree_model_get_iter (tree_model, &iter, tree_path)) {
+    AC_NOTE (TREEWIDGET, g_print ("   No iter for %s\n", gtk_tree_path_to_string (tree_path)));
     return;
   }
 
-  if (tree_path && orig && !gtk_tree_path_compare (tree_path, orig))
+  if (tree_path && orig && !gtk_tree_path_compare (tree_path, orig)) {
     /* Found it! */
+    AC_NOTE (TREEWIDGET, g_print ("   Found it\n"));
     return;
+  }
 
   if (tree_path && orig && gtk_tree_path_compare (tree_path, orig) > 0)
     {
+      AC_NOTE (TREEWIDGET, g_print ("   Past it\n"));
       /* Past it, so return -1 */
       *count = -1;
       return;
@@ -4156,6 +4170,7 @@ iterate_thru_children(GtkTreeView  *tree_view,
   else if (gtk_tree_view_row_expanded (tree_view, tree_path) && 
     gtk_tree_model_iter_has_child (tree_model, &iter)) 
     {
+      AC_NOTE (TREEWIDGET, g_print ("   Expanded and has child\n"));
       (*count)++;
       gtk_tree_path_append_index (tree_path, 0);
       iterate_thru_children (tree_view, tree_model, tree_path,
@@ -4164,10 +4179,12 @@ iterate_thru_children(GtkTreeView  *tree_view,
     }
   else if (gtk_tree_model_iter_next (tree_model, &iter)) 
     {
+      AC_NOTE (TREEWIDGET, g_print ("   Check next iter\n"));
       (*count)++;
       tree_path = gtk_tree_model_get_path (tree_model, &iter);
        if (tree_path)
          {
+           AC_NOTE(TREEWIDGET, g_print ("   new path: %s\n", gtk_tree_path_to_string (tree_path)));
            iterate_thru_children (tree_view, tree_model, tree_path,
                                  orig, count, depth); 
            gtk_tree_path_free (tree_path);
@@ -4180,6 +4197,7 @@ iterate_thru_children(GtkTreeView  *tree_view,
       gboolean exit_loop = FALSE;
       gint new_depth = depth - 1;
 
+      AC_NOTE (TREEWIDGET, g_print ("   Tree path up\n"));
       (*count)++;
 
      /*
@@ -4188,9 +4206,11 @@ iterate_thru_children(GtkTreeView  *tree_view,
       */
       while (!exit_loop)
         {
-          if (gtk_tree_path_get_depth (tree_path) == 0)
+          if (gtk_tree_path_get_depth (tree_path) == 0) {
+            AC_NOTE (TREEWIDGET, g_print ("   Depth now 0, return with count: %d\n", *count));
               /* depth is now zero so */
             return;
+          }
           gtk_tree_path_next (tree_path);	
 
           /* Verify that the next row is a valid row! */
@@ -4210,14 +4230,18 @@ iterate_thru_children(GtkTreeView  *tree_view,
                   * If depth is 1 and gtk_tree_model_get_iter returns FALSE,
                   * then we are at the last row, so just return.
                   */ 
+                  AC_NOTE (TREEWIDGET, g_print ("   Can't find new path. Return -1\n"));
                   if (orig != NULL)
                     *count = -1;
 
                   return;
                 }
+            } else {
+              AC_NOTE (TREEWIDGET, g_print ("   Exit loop\n"));
             }
         }
 
+      AC_NOTE (TREEWIDGET, g_print ("   Got new path to check: %s (depth: %d)\n", gtk_tree_path_to_string (tree_path), new_depth));
      /*
       * This guarantees that we will stop when we hit the end of the
       * children.
@@ -4230,6 +4254,7 @@ iterate_thru_children(GtkTreeView  *tree_view,
       return;
     }
 
+  AC_NOTE (TREEWIDGET, g_print ("   Search failed, return -1\n"));
  /*
   * If it gets here, then the path wasn't found.  Situations
   * that would cause this would be if the path passed in is
