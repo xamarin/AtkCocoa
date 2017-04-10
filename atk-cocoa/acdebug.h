@@ -29,7 +29,7 @@ typedef enum {
 	AC_DEBUG_TREE = 1 << 4,
 	AC_DEBUG_LAYOUT = 1 << 5,
 	AC_DEBUG_DESTRUCTION = 1 << 6,
-
+	AC_DEBUG_TREEWIDGET = 1 << 7,
 	/* Insert others here */
 
 	AC_DEBUG_ALWAYS = 1 << 31

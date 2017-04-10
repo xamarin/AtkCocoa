@@ -863,18 +863,12 @@ gail_set_focus_object (AtkObject *focus_obj,
     }
 }
 
-GLogFunc original_log;
-static void
-gail_log_handler (const char *log_domain,
-                  GLogLevelFlags flags,
-                  const char *message,
-                  gpointer userdata)
+void
+dump_call_tree (void)
 {
   void *traces[30];
   size_t numberOfTraces;
   char **traceStrings;
-
-  original_log (log_domain, flags, message, userdata);
 
   numberOfTraces = backtrace (traces, 30);
   traceStrings = backtrace_symbols (traces, numberOfTraces);
@@ -882,10 +876,22 @@ gail_log_handler (const char *log_domain,
   for (int i = 0; i < numberOfTraces; i++) {
     g_print ("%s\n", traceStrings[i]);
   }
-  g_print ("---\n\n");
+  g_print ("---\n");
 
   free (traceStrings);
 }
+
+GLogFunc original_log;
+static void
+gail_log_handler (const char *log_domain,
+                  GLogLevelFlags flags,
+                  const char *message,
+                  gpointer userdata)
+{
+  original_log (log_domain, flags, message, userdata);
+  dump_call_tree ();
+}
+
 /*
  *   These exported symbols are hooked by gnome-program
  * to provide automatic module initialization and shutdown.
@@ -901,9 +907,10 @@ static const GDebugKey ac_debug_keys[] = {
   { "frames", AC_DEBUG_FRAMES },
   { "actions", AC_DEBUG_ACTIONS },
   { "widgets", AC_DEBUG_WIDGETS },
-  { "tree", AC_DEBUG_TREE },
+  { "uitree", AC_DEBUG_TREE },
   { "layout", AC_DEBUG_LAYOUT },
-  { "destruction", AC_DEBUG_DESTRUCTION},
+  { "destruction", AC_DEBUG_DESTRUCTION },
+  { "tree", AC_DEBUG_TREEWIDGET },
 };
 
 static void
