@@ -407,6 +407,8 @@ gail_window_realized (GtkWidget *window,
   if ([prerealized_children count] == 0) {
     CFBridgingRelease (priv->prerealized_element);
     priv->prerealized_element = NULL;
+
+    ac_element_invalidate_accessibility_element (AC_ELEMENT (data));
     return;
   }
 
@@ -433,6 +435,7 @@ gail_window_realized (GtkWidget *window,
 
   CFBridgingRelease (priv->prerealized_element);
   priv->prerealized_element = NULL;
+  ac_element_invalidate_accessibility_element (AC_ELEMENT (data));
 }
 
 static id<NSAccessibility>
@@ -460,8 +463,7 @@ gail_window_real_get_accessibility_element (AcElement *element)
   if (gtk_widget_get_realized (window)) {
     ns_window = gdk_quartz_window_get_nswindow (gtk_widget_get_window (window));
     return (id<NSAccessibility>)ns_window;
-  } else
-    {
+  } else {
     if (priv->prerealized_element) {
       return (__bridge id<NSAccessibility>)priv->prerealized_element;
     }
@@ -471,10 +473,6 @@ gail_window_real_get_accessibility_element (AcElement *element)
 
     [prerealizedElement setAccessibilityRole:@"AXWindow"];
 
-    if (gtk_widget_get_realized (window)) {
-      ns_window = gdk_quartz_window_get_nswindow (gtk_widget_get_window (window));
-
-    }
     return prerealizedElement;
   }
 }

@@ -703,6 +703,19 @@ ac_element_get_accessibility_element (AcElement *element)
 	return (__bridge id<NSAccessibility>) element->priv->real_element;
 }
 
+/* Force the system to drop its cache of the accessibility element, in case the accessibility element changes
+   like when a GtkWindow is realised */
+void
+ac_element_invalidate_accessibility_element (AcElement *element)
+{
+	g_return_if_fail (AC_IS_ELEMENT (element));
+
+	if (element->priv->real_element != NULL) {
+		CFRelease (element->priv->real_element);
+		element->priv->real_element = NULL;
+	}
+}
+
 id<NSAccessibility>
 get_real_accessibility_parent (AcElement *element,
 							   GtkWidget **ownerWidget)
@@ -769,14 +782,12 @@ ac_element_add_child (AcElement *parent,
 
 	parent_priv = parent->priv;
 	child_priv = child->priv;
-
 	AC_NOTE (TREE, g_print ("Adding child: %s\n", atk_object_get_name (ATK_OBJECT (child))));
 	AC_NOTE (TREE, g_print ("Adding parent: %s\n", atk_object_get_name (ATK_OBJECT (parent))));
 	AC_NOTE (TREE, g_print ("ATKCocoa: Adding child %s(%s) to %s(%s)\n", G_OBJECT_TYPE_NAME (child), G_OBJECT_TYPE_NAME (child_priv->owner), G_OBJECT_TYPE_NAME (parent), G_OBJECT_TYPE_NAME (parent_priv->owner)));
 
 	parent_element = get_real_accessibility_parent (parent, &parentOwnerWidget);
 	child_element = ac_element_get_accessibility_element (child);
-
 	realChildAdded = child_element;
 
 	// We can't use -accessibilityWindow or -accessibilityTopLevelUIElement here because

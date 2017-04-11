@@ -80,6 +80,7 @@ void ac_element_add_child (AcElement *parent,
 void ac_element_remove_child (AcElement *parent,
                               AcElement *child);
 id<NSAccessibility> ac_element_get_accessibility_element (AcElement *element);
+void ac_element_invalidate_accessibility_element (AcElement *element);
 const char *ac_element_get_text (AcElement *element);
 
 NSArray *ac_element_get_actions (AcElement *element);
