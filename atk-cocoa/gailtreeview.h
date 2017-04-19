@@ -60,7 +60,7 @@ struct _GailTreeView
   gboolean      garbage_collection_pending;
 
   void *columns; /* NSMutableArray * */
-  void *rows; /* NSMutableArray * */
+  void *rowRootNode; /* The root ACAccessibilityTreeRowElement * */
 };
 
 GType gail_tree_view_get_type (void);
