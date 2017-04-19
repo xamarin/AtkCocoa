@@ -176,10 +176,12 @@ libatkcocoa_CPPFLAGS = \
 	-DGTK_VERSION=\"$(GTK_VERSION)\"\
 	-DGDK_DISABLE_DEPRECATED	\
 	-DGTK_DISABLE_DEPRECATED	\
+	-g \
 	$(AM_CPPFLAGS)
 
 libatkcocoa_CFLAGS = \
 	-arch x86_64 -ObjC -dynamiclib \
+	-g \
 	-xobjective-c   \
 	-fobjc-arc	\
 	$(GTK_CFLAGS)	\
