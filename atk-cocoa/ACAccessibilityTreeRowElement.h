@@ -29,4 +29,20 @@
 - (void)addChildRowElement:(ACAccessibilityTreeRowElement *)child;
 - (void)removeChildRowElement:(ACAccessibilityTreeRowElement *)child;
 
+// Treat Row element like a tree
+- (void)insertChild:(ACAccessibilityTreeRowElement *)child atIndex:(int)idx;
+- (void)removeChild:(ACAccessibilityTreeRowElement *)child;
+- (void)removeChildAtIndex:(int)idx;
+- (void)removeFromParent;
+- (void)removeAllChildren;
+- (ACAccessibilityTreeRowElement *)childAtIndex:(int)idx;
+
+// path should be  in 0:1:2:3 format
+- (ACAccessibilityTreeRowElement *)childAtPath:(const char *)path;
+
+- (void)foreachChild:(void(^)(ACAccessibilityTreeRowElement *parent, ACAccessibilityTreeRowElement *child, void *userData))handler userData:(void *)userdata;
+- (int)descendantCount;
+
+int last_path_index (const char *path);
+
 @end

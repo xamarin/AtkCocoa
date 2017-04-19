@@ -365,8 +365,7 @@ static ACAccessibilityTreeColumnElement *find_column_element_for_column (GailTre
 static NSAccessibilityElement *make_accessibility_element_for_row (GtkTreeModel *treeModel,
                                                                    GtkTreeView *treeView,
                                                                    GailTreeView *gailView,
-                                                                   GtkTreeIter  *rowIter,
-                                                                   int rowIndex);
+                                                                   GtkTreeIter  *rowIter);
 static void update_row_index (GtkTreeModel *treeModel,
                               GtkTreeView *treeView,
                               GailTreeView *gailView);
@@ -447,6 +446,67 @@ gail_tree_view_init (GailTreeView *view)
 {
 }
 
+#define ROOT_NODE(view) ((__bridge ACAccessibilityTreeRowElement *)(view)->rowRootNode)
+
+static void
+add_row_to_row_map (GailTreeView *view,
+                    ACAccessibilityTreeRowElement *row_element)
+{
+  ACAccessibilityTreeRowElement *parent;
+  GtkTreePath *path = gtk_tree_row_reference_get_path ([row_element rowReference]);
+  char *pathString = gtk_tree_path_to_string (path);
+  char *parentPathString;
+  int idx;
+
+  // g_print ("Adding %s depth: %d\n", pathString, gtk_tree_path_get_depth (path));
+
+  if (gtk_tree_path_get_depth (path) > 1) {
+    gtk_tree_path_up (path);
+    parentPathString = gtk_tree_path_to_string (path);
+
+    parent = [ROOT_NODE (view) childAtPath:parentPathString];
+
+    if (parent == nil) {
+      g_warning ("No parent found at %s for %s", parentPathString, pathString);
+      g_free (parentPathString);
+      return;
+    }
+
+    g_free (parentPathString);
+  } else {
+    parent = ROOT_NODE (view);
+  }
+
+  idx = last_path_index (pathString);
+  g_free (pathString);
+
+  [parent insertChild:row_element atIndex:idx];
+
+  // g_print ("Added row: %p\n", row_element);
+  // g_print ("   Row Reference: %p\n", [row_element rowReference]);
+}
+
+static ACAccessibilityTreeRowElement *
+get_row_from_row_map (GailTreeView *view,
+                      GtkTreePath *path)
+{
+  ACAccessibilityTreeRowElement *row;
+  char *pathString = gtk_tree_path_to_string (path);
+
+  row = [ROOT_NODE (view) childAtPath:pathString];
+
+  g_free (pathString);
+  return row;
+}
+
+static void
+remove_row_from_row_map (GailTreeView *view,
+                         ACAccessibilityTreeRowElement *row)
+{
+  // NSLog (@"Remove row from parent: %@", row);
+  [row removeFromParent];
+}
+
 static void
 gail_tree_view_real_initialize (AtkObject *obj,
                                 gpointer  data)
@@ -475,7 +535,11 @@ gail_tree_view_real_initialize (AtkObject *obj,
   view->n_children_deleted = 0;
 
   view->columns = (__bridge_retained void *) [[NSMutableArray alloc] init];
-  view->rows = (__bridge_retained void *) [[NSMutableArray alloc] init];
+
+  // We make a tree from the ACAccessibilityTreeRowElements that matches the GtkTreeModel
+  // so we can quickly access the appropriate element given a row path. Using an array is too slow
+  // with large tables, and a hashtable isn't feasible due to how GtkTreeModel works
+  view->rowRootNode = (__bridge_retained void *)[[ACAccessibilityTreeRowElement alloc] initWithDelegate:NULL];
 
   widget = GTK_WIDGET (data);
   g_signal_connect_after (widget,
@@ -700,16 +764,10 @@ gail_tree_view_finalize (GObject	    *object)
       g_array_free (array, TRUE);
     }
 
-  CFBridgingRelease (view->rows);
+  CFBridgingRelease (view->rowRootNode);
   CFBridgingRelease (view->columns);
 
   G_OBJECT_CLASS (gail_tree_view_parent_class)->finalize (object);
-}
-
-static NSMutableArray *
-get_rows_array (GailTreeView *view)
-{
-  return (__bridge NSMutableArray *) view->rows;
 }
 
 static NSMutableArray *
@@ -2297,6 +2355,8 @@ gail_tree_view_expand_row_gtk (GtkTreeView       *tree_view,
   NSAccessibilityElement *treeElement;
   ACAccessibilityTreeRowElement *expandedElement;
 
+  // g_print ("Expanding row: %s\n", gtk_tree_path_to_string (path));
+
   g_assert (GTK_IS_TREE_VIEW (tree_view));
 
   atk_obj = gtk_widget_get_accessible (GTK_WIDGET (tree_view));
@@ -2312,18 +2372,19 @@ gail_tree_view_expand_row_gtk (GtkTreeView       *tree_view,
   treeElement = ac_element_get_accessibility_element (AC_ELEMENT (gailview));
 
   if (expandedElement == nil) {
-    g_warning ("Expanding row without a11y element");
+    g_warning ("Expanding row without a11y element %s", gtk_tree_path_to_string (path));
   } else {
     GtkTreeIter childIter;
     if (gtk_tree_model_iter_children (tree_model, &childIter, iter)) {
+      // g_print ("Got children\n");
       NSMutableArray *disclosedRows = [[NSMutableArray alloc] init];
 
       do {
-        NSMutableArray *realRows = get_rows_array (gailview);
-        NSAccessibilityElement *element = make_accessibility_element_for_row (tree_model, tree_view, gailview, &childIter, 0);
+        // g_print ("Making element\n");
+        NSAccessibilityElement *element = make_accessibility_element_for_row (tree_model, tree_view, gailview, &childIter);
 
         [treeElement accessibilityAddChildElement:element];
-        [realRows addObject:element];
+        add_row_to_row_map (gailview, (ACAccessibilityTreeRowElement *) element);
 
         [disclosedRows addObject:element];
 
@@ -2426,41 +2487,20 @@ idle_expand_row (gpointer data)
 }
 
 static void
-remove_all_children (GtkTreeView *treeView,
-                     GtkTreeModel *model,
-                     GtkTreeIter *iter,
-                     GailTreeView *gailview,
+remove_all_children (GailTreeView *gailview,
                      NSAccessibilityElement *treeElement,
                      ACAccessibilityTreeRowElement *parentElement)
 {
-  GtkTreeIter childIter;
+  [parentElement foreachChild:^void (ACAccessibilityTreeRowElement *parent, ACAccessibilityTreeRowElement *child, void *userdata) {
+    remove_all_children ((GailTreeView *)userdata, treeElement, child);
+    [treeElement ac_accessibilityRemoveChildElement:child];
+  } userData:gailview];
 
-  if (gtk_tree_model_iter_children (model, &childIter, iter)) {
-    do {
-      GtkTreePath *childPath = gtk_tree_model_get_path (model, &childIter);
-      ACAccessibilityTreeRowElement *rowElement = find_row_element_for_path (gailview, childPath);
+  [parentElement removeAllChildren];
+  [parentElement setAccessibilityDisclosedRows:nil];
 
-      gtk_tree_path_free (childPath);
-
-      if (rowElement == nil) {
-        // Because we have to iterate over all children of a collapsed row
-        // we may come across rows that were never visible in the first place.
-
-        continue;
-      }
-
-      // Can't only remove expanded rows' children because everything is collapsed internally without
-      // a collapse row signal being sent
-      remove_all_children (treeView, model, &childIter, gailview, treeElement, rowElement);
-
-      [treeElement ac_accessibilityRemoveChildElement:rowElement];
-      [parentElement removeChildRowElement:rowElement];
-      [parentElement setAccessibilityDisclosedRows:nil];
-
-      NSMutableArray *realRows = get_rows_array (gailview);
-      [realRows removeObject:rowElement];
-    } while (gtk_tree_model_iter_next (model, &childIter));
-  }
+  // FIXME:
+  // Update the rows/columns
 }
 
 static gboolean
@@ -2483,7 +2523,7 @@ gail_tree_view_collapse_row_gtk (GtkTreeView       *tree_view,
 
   treeElement = ac_element_get_accessibility_element (AC_ELEMENT (gailview));
   collapsedElement = find_row_element_for_path (gailview, path);
-  remove_all_children (tree_view, tree_model, iter, gailview, treeElement, collapsedElement);
+  remove_all_children (gailview, treeElement, collapsedElement);
   update_row_index (tree_model, tree_view, gailview);
 
   /*
@@ -3154,6 +3194,8 @@ update_row_index (GtkTreeModel *treeModel,
                   GtkTreeView *treeView,
                   GailTreeView *gailView)
 {
+  // FIXME: Need to reimplement this
+  /*
   int idx = 0;
 
   GtkTreeIter rootIter;
@@ -3165,6 +3207,8 @@ update_row_index (GtkTreeModel *treeModel,
   sort_child_elements (gailView);
 
   gather_visible_rows_and_columns (gailView);
+  */
+
 }
 
 static gboolean
@@ -3376,26 +3420,8 @@ static ACAccessibilityTreeRowElement *
 find_row_element_for_path (GailTreeView *gailView,
                            GtkTreePath *path)
 {
-  // FIXME: Make custom hashtable
-  NSMutableArray *rows = get_rows_array (gailView);
-  for (ACAccessibilityTreeRowElement *rowElement in rows) {
-    GtkTreeRowReference *rowRef = [rowElement rowReference];
-    GtkTreePath *rowPath = gtk_tree_row_reference_get_path (rowRef);
-
-    if (rowPath == NULL) {
-      continue;
-    }
-    
-    int compared = gtk_tree_path_compare (path, rowPath);
-
-    gtk_tree_path_free (rowPath);
-
-    if (compared == 0) {
-      return rowElement;
-    }
-  }
-
-  return NULL;
+  ACAccessibilityTreeRowElement *row = get_row_from_row_map (gailView, path);
+  return row;
 }
 
 static ACAccessibilityTreeColumnElement *
@@ -3417,8 +3443,7 @@ static NSAccessibilityElement *
 make_accessibility_element_for_row (GtkTreeModel *treeModel,
                                     GtkTreeView *treeView,
                                     GailTreeView *gailView,
-                                    GtkTreeIter  *rowIter,
-                                    int rowIndex)
+                                    GtkTreeIter  *rowIter)
 {
   id<NSAccessibility> parentElement;
   ACAccessibilityTreeRowElement *rowElement;
@@ -3485,6 +3510,7 @@ update_expandability (GtkTreeView *tree_view,
     [cell removeDisclosureButton];
   }
 }
+
 static gboolean
 check_visibility (GtkTreeModel *tree_model,
                   GtkTreeIter *iter,
@@ -3525,7 +3551,7 @@ model_row_inserted (GtkTreeModel *tree_model,
   GtkTreePath *path_copy;
   AtkObject *atk_obj = gtk_widget_get_accessible (GTK_WIDGET (tree_view));
   GailTreeView *gailview = GAIL_TREE_VIEW (atk_obj);
-  gint row, n_inserted, child_row;
+  gint n_inserted, child_row;
 
   AC_NOTE (TREEWIDGET, g_print ("Model row inserted: %s\n", gtk_tree_path_to_string (path)));
 
@@ -3541,10 +3567,9 @@ model_row_inserted (GtkTreeModel *tree_model,
       if (gailview->idle_expand_path) 
 	      gtk_tree_path_free (gailview->idle_expand_path);
     }
-  /* Check to see if row is visible */
-  row = get_row_from_tree_path (tree_view, path);
 
-  AC_NOTE (TREEWIDGET, g_print ("Inserted row %d: %s\n", row, gtk_tree_path_to_string (path)));
+  /* Check to see if row is visible */
+
  /*
   * A row insert is not necessarily visible.  For example,
   * a row can be draged & dropped into another row, which
@@ -3557,15 +3582,16 @@ model_row_inserted (GtkTreeModel *tree_model,
       GtkTreeIter iter;
       NSAccessibilityElement *element, *parentElement;
       gint n_cols, col;
+      int row = -1;
+
+      //row = get_row_from_tree_path (tree_view, path);
 
       AC_NOTE (TREEWIDGET, g_print ("Row is visible\n"));
       gtk_tree_model_get_iter (tree_model, &iter, path);
 
-      element = make_accessibility_element_for_row (tree_model, tree_view, gailview, &iter, row);
+      element = make_accessibility_element_for_row (tree_model, tree_view, gailview, &iter);
 
-      NSMutableArray *rows = get_rows_array (gailview);
-      [rows addObject:element];
-
+      add_row_to_row_map (gailview, (ACAccessibilityTreeRowElement *) element);
       parentElement = ac_element_get_accessibility_element (AC_ELEMENT (gailview));
       [parentElement accessibilityAddChildElement:element];
 
@@ -3585,17 +3611,17 @@ model_row_inserted (GtkTreeModel *tree_model,
           n_inserted++;
         }
       else
-      n_inserted = 1;
+        n_inserted = 1;
 
       /* Set rows below the inserted row to ATK_STATE_STALE */
       traverse_cells (gailview, path, TRUE, TRUE);
 
       /* Generate row-inserted signal */
-      g_signal_emit_by_name (atk_obj, "row_inserted", row, n_inserted);
+      g_signal_emit_by_name (atk_obj, "row_inserted", 0, n_inserted);
 
       /* Generate children-changed signals */
       n_cols = gail_tree_view_get_n_columns (ATK_TABLE (atk_obj));
-      for (child_row = row; child_row < (row + n_inserted); child_row++)
+      for (child_row = 0; child_row < n_inserted; child_row++)
         {
           for (col = 0; col < n_cols; col++)
             {
@@ -3603,7 +3629,7 @@ model_row_inserted (GtkTreeModel *tree_model,
               * Pass NULL as the child object, i.e. 4th argument
               */
               g_signal_emit_by_name (atk_obj, "children_changed::add",
-                                    ((row * n_cols) + col), NULL, NULL);
+                                    ((n_cols) + col), NULL, NULL);
             }
         }
     }
@@ -3645,15 +3671,14 @@ model_row_deleted (GtkTreeModel *tree_model,
   rowElement = find_row_element_for_path (gailview, path);
   if (rowElement != NULL) {
     GtkTreeIter iter;
-    NSMutableArray *rows = get_rows_array (gailview);
 
-    [rows removeObject:rowElement];
+    remove_row_from_row_map (gailview, rowElement);
   
     treeElement = ac_element_get_accessibility_element (AC_ELEMENT (gailview));
     [treeElement ac_accessibilityRemoveChildElement:rowElement];
 
     gtk_tree_model_get_iter (tree_model, &iter, path);
-    remove_all_children (tree_view, tree_model, &iter, gailview, treeElement, rowElement);
+    remove_all_children (gailview, treeElement, rowElement);
     update_row_index (tree_model, tree_view, gailview);
   }
 
