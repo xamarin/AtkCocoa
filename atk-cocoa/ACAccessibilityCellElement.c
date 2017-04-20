@@ -18,7 +18,9 @@
  * Boston, MA 02111-1307, USA.
  */
 #import "ACAccessibilityCellElement.h"
+#import "ACAccessibilityTreeRowElement.h"
 #include "gailrenderercell.h"
+#include "gailtreeview.h"
 
 #include "acdebug.h"
 #include "acutils.h"
@@ -30,10 +32,11 @@
 	GtkTreeRowReference *_row_ref;
 	GtkTreeViewColumn *_column;
 	int _indexInColumn;
+	ACAccessibilityTreeRowElement *_rowElement;
 }
 
 - (instancetype)initWithDelegate:(GailCell *)delegate
-							 row:(GtkTreeRowReference *)row_ref 
+					  rowElement:(ACAccessibilityTreeRowElement *)rowElement
 						  column:(GtkTreeViewColumn *)column
 						   index:(int)indexInColumn
 {
@@ -43,7 +46,8 @@
 	}
 
 	_delegate = delegate;
-	_row_ref = row_ref;
+	_rowElement = rowElement;
+	_row_ref = [rowElement rowReference];
 	_column = column;
 	_indexInColumn = indexInColumn;
 
@@ -68,8 +72,31 @@
 
 	desc = nsstring_from_cstring (description);
 	g_free (description);
+	g_free (pathStr);
 
 	return desc;
+}
+
+- (GtkTreeViewColumn *)column
+{
+	return _column;
+}
+
+- (NSString *)accessibilityLabel
+{
+	NSLog (@"Getting label");
+	if ([_rowElement rowIsDirty]) {
+		GtkTreeView *treeview = GTK_TREE_VIEW (_delegate->widget);
+		GailTreeView *gailview = GAIL_TREE_VIEW (gtk_widget_get_accessible (_delegate->widget));
+
+		gail_tree_view_update_row_cells (gailview, treeview, _rowElement);
+	}
+	return [super accessibilityLabel];
+}
+
+- (id)accessibilityValue
+{
+	return nil;
 }
 
 - (CGRect)accessibilityFrameInParentSpace

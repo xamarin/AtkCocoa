@@ -88,6 +88,11 @@
     [rowElement accessibilityAddChildElement:self];
 }
 
+- (ACAccessibilityTreeColumnElement *)columnElement
+{
+    return _columnElement;
+}
+
 - (GdkRectangle)frameInGtkWindowSpace
 {
     GdkRectangle cellSpace;

@@ -21,12 +21,16 @@
 #include <gtk/gtk.h>
 #include "gailcell.h"
 
+@class ACAccessibilityTreeRowElement;
+
 @interface ACAccessibilityCellElement : NSAccessibilityElement
 
 - (instancetype)initWithDelegate:(GailCell *)delegate
-							 row:(GtkTreeRowReference *)row_ref 
+					  rowElement:(ACAccessibilityTreeRowElement *)rowElement 
 						  column:(GtkTreeViewColumn *)column
 						   index:(int)indexInColumn;
 - (GailCell *)delegate;
 
+- (GtkTreeViewColumn *)column;
+- (int)index;
 @end

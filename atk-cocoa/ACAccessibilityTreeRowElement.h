@@ -24,6 +24,8 @@
 
 @interface ACAccessibilityTreeRowElement : ACAccessibilityElement
 
+@property (readwrite) BOOL rowIsDirty;
+
 - (instancetype)initWithDelegate:(AcElement *)delegate treeRow:(GtkTreeRowReference *)row treeView:(GtkTreeView *)treeView;
 - (GtkTreeRowReference *)rowReference;
 - (void)addChildRowElement:(ACAccessibilityTreeRowElement *)child;
