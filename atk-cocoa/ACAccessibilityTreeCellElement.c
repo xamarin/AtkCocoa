@@ -111,7 +111,7 @@
 	
     // cellSpace coordinates are relative to bin_window, which doesn't include
     // the offset for any headers. Convert to widget coords to add that offset.
-    gtk_tree_view_convert_bin_window_to_widget_coords (treeView, 0, 0, &wx, &wy);
+    gtk_tree_view_convert_bin_window_to_widget_coords (GTK_TREE_VIEW (treeView), 0, 0, &wx, &wy);
 
 	gtk_widget_translate_coordinates (treeView, gtk_widget_get_toplevel (treeView), 0, 0, &x, &y);
 
