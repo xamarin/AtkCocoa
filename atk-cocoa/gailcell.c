@@ -98,7 +98,7 @@ void
 gail_cell_initialise (GailCell  *cell,
                       GtkWidget *widget,
                       AtkObject *parent,
-                      GtkTreeRowReference *row_ref,
+                      ACAccessibilityTreeRowElement *rowElement,
                       GtkTreeViewColumn *column,
                       gint      index)
 {
@@ -109,8 +109,8 @@ gail_cell_initialise (GailCell  *cell,
   atk_object_set_parent (ATK_OBJECT (cell), parent);
   cell->index = index;
 
-  if (row_ref != NULL) {
-    cell->cell_element = (__bridge_retained void *) [[ACAccessibilityCellElement alloc] initWithDelegate:cell row:row_ref column:column index:index];
+  if (rowElement != NULL) {
+    cell->cell_element = (__bridge_retained void *) [[ACAccessibilityCellElement alloc] initWithDelegate:cell rowElement:rowElement column:column index:index];
   }
 
   g_signal_connect_object (G_OBJECT (widget),

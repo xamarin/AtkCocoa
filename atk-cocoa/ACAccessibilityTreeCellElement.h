@@ -32,4 +32,5 @@
 - (void)addDisclosureButton;
 - (void)removeDisclosureButton;
 
+- (ACAccessibilityTreeColumnElement *)columnElement;
 @end

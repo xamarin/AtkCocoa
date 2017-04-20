@@ -41,6 +41,7 @@
 #import "ACAccessibilityTreeCellElement.h"
 #import "ACAccessibilityTreeColumnElement.h"
 #import "ACAccessibilityTreeRowElement.h"
+#import "ACAccessibilityCellElement.h"
 #import "NSAccessibilityElement+AtkCocoa.h"
 
 typedef struct _GailTreeViewRowInfo    GailTreeViewRowInfo;
@@ -268,6 +269,14 @@ static void             traverse_cells                  (GailTreeView           
                                                          GtkTreePath            *tree_path,
                                                          gboolean               set_stale,
                                                          gboolean               inc_row);
+static void update_column_cells (GtkTreeView *tree_view,
+                                 GtkTreePath *path,
+                                 GtkTreeViewColumn *column);
+static gboolean cocoa_update_cell_value (GailRendererCell *renderer_cell,
+                                         GailTreeView     *gailview,
+                                         ACAccessibilityTreeRowElement *rowElement,
+                                         GtkTreeViewColumn *column,
+                                         gboolean         emit_change_signal);
 static gboolean         update_cell_value               (GailRendererCell       *renderer_cell,
                                                          GailTreeView           *gailview,
                                                          gboolean               emit_change_signal);
@@ -1088,6 +1097,7 @@ gail_tree_view_ref_child (AtkObject *obj,
         else
           cell->refresh_index = refresh_cell_index;
 
+        g_print ("Calling from ref_child\n");
         update_cell_value (renderer_cell, gailview, FALSE);
         /* Add the actions appropriate for this cell */
         add_cell_actions (cell, editable);
@@ -1589,10 +1599,7 @@ gail_tree_view_add_row_selection (AtkTable *table,
       else
         { 
           set_iter_nth_row (tree_view, &iter_to_row, row);
-          if (&iter_to_row != NULL)
-            gtk_tree_selection_select_iter (selection, &iter_to_row);
-          else
-            return FALSE;
+          gtk_tree_selection_select_iter (selection, &iter_to_row);
         }
     }
 
@@ -2440,6 +2447,8 @@ idle_expand_row (gpointer data)
    * Update visibility of cells below expansion row
    */
   traverse_cells (gailview, path, FALSE, FALSE);
+
+#if 0  
   /*
    * Figure out number of visible children, the following test
    * should not fail
@@ -2478,6 +2487,7 @@ idle_expand_row (gpointer data)
   
     g_signal_emit_by_name (gailview, "row_inserted", row, n_inserted);
   }
+#endif
 
   gailview->idle_expand_path = NULL;
 
@@ -2935,34 +2945,53 @@ model_row_changed (GtkTreeModel *tree_model,
 {
   GtkTreeView *tree_view = GTK_TREE_VIEW(user_data);
   GailTreeView *gailview;
-  GtkTreePath *cell_path;
-  GList *l;
-  GailTreeViewCellInfo *cell_info;
+  ACAccessibilityTreeRowElement *row;
  
   gailview = GAIL_TREE_VIEW (gtk_widget_get_accessible (GTK_WIDGET (tree_view)));
 
-  /* Loop through our cached cells */
-  /* Must loop through them all */
-  for (l = gailview->cell_data; l; l = l->next)
-    {
-      cell_info = (GailTreeViewCellInfo *) l->data;
-      if (cell_info->in_use) 
-      {
-	      cell_path = gtk_tree_row_reference_get_path (cell_info->cell_row_ref);
-        if (cell_path != NULL)
-        {
-          if (path && gtk_tree_path_compare (cell_path, path) == 0)
-          {
-            if (GAIL_IS_RENDERER_CELL (cell_info->cell))
-            {
-                update_cell_value (GAIL_RENDERER_CELL (cell_info->cell), gailview, TRUE);
-            }
-          }
-          gtk_tree_path_free (cell_path);
-        }
+  row = find_row_element_for_path (gailview, path);
+  if (row == nil) {
+    return;
+  }
+
+  [row setRowIsDirty:YES];
+}
+
+// FIXME: This should probably be done on a signal on GailCell
+void
+gail_tree_view_update_row_cells (GailTreeView *gailview,
+                                 GtkTreeView *tree_view,
+                                 ACAccessibilityTreeRowElement *rowElement)
+{
+  GtkTreePath *row_path;
+
+  NSArray *children = [rowElement accessibilityChildren];
+  if ([children count] == 0) {
+    return;
+  }
+
+  row_path = gtk_tree_row_reference_get_path ([rowElement rowReference]);
+  for (ACAccessibilityTreeCellElement *tree_cell in children) {
+    ACAccessibilityTreeColumnElement *columnElement = [tree_cell columnElement];
+    GtkTreeViewColumn *column = [columnElement column];
+    NSArray *cell_children = [tree_cell accessibilityChildren];
+
+    // There should be one TreeCellElement per column, so only update the column cells once
+    update_column_cells (tree_view, row_path, column);
+
+    for (id<NSAccessibility> c in cell_children) {
+      // c may be a disclosure triangle element.
+      if ([c isKindOfClass:[ACAccessibilityCellElement class]]) {
+        ACAccessibilityCellElement *cellElement = (ACAccessibilityCellElement *)c;
+
+        GailRendererCell *renderer = (GailRendererCell *)[cellElement delegate];
+        cocoa_update_cell_value (renderer, gailview, rowElement, column, TRUE);
       }
     }
-  g_signal_emit_by_name (gailview, "visible-data-changed");
+  }
+
+  gtk_tree_path_free (row_path);
+  [rowElement setRowIsDirty:NO];
 }
 
 static void
@@ -2984,37 +3013,28 @@ column_visibility_changed (GObject    *object,
       GtkTreeViewColumn *this_col = GTK_TREE_VIEW_COLUMN (object);
       GtkTreeViewColumn *tv_col;
 
-      gailview = GAIL_TREE_VIEW (gtk_widget_get_accessible (GTK_WIDGET (tree_view))
-);
+      gailview = GAIL_TREE_VIEW (gtk_widget_get_accessible (GTK_WIDGET (tree_view)));
       g_signal_emit_by_name (gailview, "model_changed");
 
       for (l = gailview->cell_data; l; l = l->next)
         {
           cell_info = (GailTreeViewCellInfo *) l->data;
-	  if (cell_info->in_use) 
-	  {
-	      tv_col = cell_info->cell_col_ref;
-	      if (tv_col == this_col)
-	      {
-		  GtkTreePath *row_path;
-		  row_path = gtk_tree_row_reference_get_path (cell_info->cell_row_ref);
-		  if (GAIL_IS_RENDERER_CELL (cell_info->cell))
-		  {
-		      if (gtk_tree_view_column_get_visible (tv_col))
-			  set_cell_visibility (tree_view, 
-					       cell_info->cell, 
-					       tv_col, row_path, FALSE);
-		      else
-		      {
-			  gail_cell_remove_state (cell_info->cell, 
-						  ATK_STATE_VISIBLE, TRUE);
-			  gail_cell_remove_state (cell_info->cell, 
-						  ATK_STATE_SHOWING, TRUE);
-		      }
-		  }
-		  gtk_tree_path_free (row_path);
-	      }
-	  }
+          if (cell_info->in_use) {
+            tv_col = cell_info->cell_col_ref;
+            if (tv_col == this_col) {
+              GtkTreePath *row_path;
+              row_path = gtk_tree_row_reference_get_path (cell_info->cell_row_ref);
+              if (GAIL_IS_RENDERER_CELL (cell_info->cell)) {
+                if (gtk_tree_view_column_get_visible (tv_col))
+                  set_cell_visibility (tree_view, cell_info->cell, tv_col, row_path, FALSE);
+                else {
+                  gail_cell_remove_state (cell_info->cell, ATK_STATE_VISIBLE, TRUE);
+                  gail_cell_remove_state (cell_info->cell, ATK_STATE_SHOWING, TRUE);
+                }
+              }
+              gtk_tree_path_free (row_path);
+            }
+          }
         }
     }
 }
@@ -3321,7 +3341,7 @@ make_accessibility_cell_for_column (GtkTreeModel *treeModel,
     // or AxRow
     gail_cell_initialise (gailCell,
                           GTK_WIDGET (treeView), ATK_OBJECT (gailView),
-                          [rowElement rowReference], column, i);
+                          rowElement, column, i);
     cell_info_new (gailView, treeModel, path, column, gailCell);
 
     id<NSAccessibility> realElement = renderer_element ?: gail_cell_get_real_cell (gailCell);
@@ -3597,6 +3617,7 @@ model_row_inserted (GtkTreeModel *tree_model,
 
       update_row_index (tree_model, tree_view, gailview);
       /* Figure out number of visible children. */
+#if 0      
       if (gtk_tree_model_iter_has_child (tree_model, &iter))
         {
          /*
@@ -3632,6 +3653,7 @@ model_row_inserted (GtkTreeModel *tree_model,
                                     ((n_cols) + col), NULL, NULL);
             }
         }
+#endif
     }
   else
     {
@@ -3689,10 +3711,10 @@ model_row_deleted (GtkTreeModel *tree_model,
       gailview->idle_expand_id = 0;
     }
   /* Check to see if row is visible */
-  clean_rows (gailview);
+  // clean_rows (gailview);
 
   /* Set rows at or below the specified row to ATK_STATE_STALE */
-  traverse_cells (gailview, path, TRUE, TRUE);
+  // traverse_cells (gailview, path, TRUE, TRUE);
 
   /*
    * If deleting a row with a depth > 1, then this may affect the
@@ -3706,7 +3728,9 @@ model_row_deleted (GtkTreeModel *tree_model,
       set_expand_state (tree_view, tree_model, gailview, path_copy, TRUE);
       gtk_tree_path_free (path_copy);
     }
-  row = get_row_from_tree_path (tree_view, path);
+  
+#if 0
+  //row = get_row_from_tree_path (tree_view, path);
   /*
    * If the row which is deleted is not visible because it is a child of
    * a collapsed row then row will be -1
@@ -3726,6 +3750,7 @@ model_row_deleted (GtkTreeModel *tree_model,
     g_signal_emit_by_name (atk_obj, "children_changed::remove",
                            ((row * n_cols) + col), NULL, NULL);
   }
+#endif
 }
 
 /* 
@@ -3864,6 +3889,111 @@ is_cell_showing (GtkTreeView   *tree_view,
 
 /* Misc Public */
 
+static void
+update_column_cells (GtkTreeView *tree_view,
+                     GtkTreePath *path,
+                     GtkTreeViewColumn *column)
+{
+  GtkTreeModel *tree_model;
+  GtkTreeIter iter;
+  gboolean is_expander, is_expanded;
+
+  tree_model = gtk_tree_view_get_model (tree_view);
+
+  if (!gtk_tree_model_get_iter (tree_model, &iter, path)) {
+    g_warning ("Invalid iter: %s", gtk_tree_path_to_string (path));
+    return;
+  }
+
+  is_expander = FALSE;
+  is_expanded = FALSE;
+  if (gtk_tree_model_iter_has_child (tree_model, &iter))
+    {
+      GtkTreeViewColumn *expander_tv;
+
+      expander_tv = gtk_tree_view_get_expander_column (tree_view);
+      if (expander_tv == column)
+        {
+          is_expander = TRUE;
+          is_expanded = gtk_tree_view_row_expanded (tree_view, path);
+        }
+    } 
+
+  gtk_tree_view_column_cell_set_cell_data (column, tree_model, &iter, is_expander, is_expanded);
+}
+
+static gboolean
+cocoa_update_cell_value (GailRendererCell *renderer_cell,
+                         GailTreeView     *gailview,
+                         ACAccessibilityTreeRowElement *rowElement,
+                         GtkTreeViewColumn *column,
+                         gboolean         emit_change_signal)
+{
+  GtkTreeView *tree_view;
+  GtkTreeModel *tree_model;
+  GtkTreePath *path;
+  GtkTreeIter iter;
+  GList *renderers, *cur_renderer;
+  GParamSpec *spec;
+  GailRendererCellClass *gail_renderer_cell_class;
+  GtkCellRendererClass *gtk_cell_renderer_class;
+  GailCell *cell;
+  gchar **prop_list;
+  AtkObject *parent;
+  
+  gail_renderer_cell_class = GAIL_RENDERER_CELL_GET_CLASS (renderer_cell);
+  if (renderer_cell->renderer)
+    gtk_cell_renderer_class = GTK_CELL_RENDERER_GET_CLASS (renderer_cell->renderer);
+  else
+    gtk_cell_renderer_class = NULL;
+
+  prop_list = gail_renderer_cell_class->property_list;
+
+  cell = GAIL_CELL (renderer_cell);
+
+  renderers = gtk_cell_layout_get_cells (GTK_CELL_LAYOUT (column));
+  gail_return_val_if_fail (renderers, FALSE);
+
+  parent = atk_object_get_parent (ATK_OBJECT (cell));
+  if (!ATK_IS_OBJECT (cell)) {
+    g_on_error_query (NULL);
+  }
+
+  cur_renderer = g_list_nth (renderers, cell->index);
+  
+  gail_return_val_if_fail (cur_renderer != NULL, FALSE);
+
+  if (gtk_cell_renderer_class)
+    {
+      while (*prop_list)
+        {
+          spec = g_object_class_find_property
+                           (G_OBJECT_GET_CLASS (cur_renderer->data), *prop_list);
+
+          if (spec != NULL)
+            {
+              GValue value = { 0, };
+
+              g_value_init (&value, spec->value_type);
+              g_object_get_property (cur_renderer->data, *prop_list, &value);
+              g_object_set_property (G_OBJECT (renderer_cell->renderer),
+                                     *prop_list, &value);
+              g_value_unset(&value);
+            }
+          else {
+            // Silence this warning as invalid properties are quite command as we don't know the appropriate type for
+            // managed types.
+            // g_warning ("Invalid property: %s\n", *prop_list);
+          }
+          prop_list++;
+        }
+    }
+  g_list_free (renderers);
+
+  //return gail_renderer_cell_update_cache (renderer_cell, emit_change_signal);
+  return TRUE;
+}
+
 /*
  * This function is called when a cell's flyweight is created in
  * gail_tree_view_table_ref_at with emit_change_signal set to FALSE
@@ -3899,7 +4029,7 @@ update_cell_value (GailRendererCell *renderer_cell,
 
   cell = GAIL_CELL (renderer_cell);
   cell_info = find_cell_info (gailview, cell, NULL, TRUE);
-  
+
   gail_return_val_if_fail (cell_info, FALSE);
   gail_return_val_if_fail (cell_info->cell_col_ref, FALSE);
   gail_return_val_if_fail (cell_info->cell_row_ref, FALSE);
@@ -4500,6 +4630,7 @@ traverse_cells (GailTreeView *tree_view,
                 gboolean     set_stale,
                 gboolean     inc_row)
 {
+  #if 0
   if (tree_view->cell_data != NULL)
     {
       GailTreeViewCellInfo *cell_info;
@@ -4558,6 +4689,7 @@ traverse_cells (GailTreeView *tree_view,
 	}
     }
   g_signal_emit_by_name (tree_view, "visible-data-changed");
+  #endif
 }
 
 static void

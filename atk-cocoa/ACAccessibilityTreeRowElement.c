@@ -29,6 +29,7 @@
     GSequence *_children;
     ACAccessibilityTreeRowElement *_parent;
     GSequenceIter *_iterInParent;
+    BOOL _rowIsDirty;
 }
 
 - (instancetype)initWithDelegate:(AcElement *)delegate treeRow:(GtkTreeRowReference *)row treeView:(GtkTreeView *)treeView
@@ -41,6 +42,7 @@
     _descendantCount = 0;
     _children = NULL;
     _parent = nil;
+    _rowIsDirty = YES;
 
     [self setAccessibilityRole:NSAccessibilityRowRole];
     [self setAccessibilitySubrole:NSAccessibilityOutlineRowSubrole];
@@ -61,6 +63,16 @@
 - (GtkTreeRowReference *)rowReference
 {
     return _row;
+}
+
+- (BOOL)rowIsDirty
+{
+    return _rowIsDirty;
+}
+
+- (void)setRowIsDirty:(BOOL)dirty
+{
+    _rowIsDirty = dirty;
 }
 
 - (GdkRectangle)frameInGtkWindowSpace
