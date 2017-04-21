@@ -300,10 +300,7 @@ static void             toggle_cell_toggled             (GailCell               
 static void             edit_cell                       (GailCell               *cell);
 static void             activate_cell                   (GailCell               *cell);
 static void             cell_destroyed                  (gpointer               data);
-#if 0
-static void             cell_info_remove                (GailTreeView           *tree_view, 
-                                                         GailCell               *cell);
-#endif
+
 static void             cell_info_get_index             (GtkTreeView            *tree_view, 
                                                          GailTreeViewCellInfo   *info,
                                                          gint                   *index);
@@ -669,7 +666,14 @@ gail_tree_view_real_notify_gtk (GObject             *obj,
           g_object_remove_weak_pointer (G_OBJECT (gailview->tree_model), (gpointer *)&gailview->tree_model);
           disconnect_model_signals (gailview);
         }
+
       clear_cached_data (gailview);
+
+      CFBridgingRelease (gailview->rowRootNode);
+      gailview->rowRootNode = nil;
+      CFBridgingRelease (gailview->columns);
+      gailview->columns = nil;
+
       gailview->tree_model = tree_model;
       /*
        * if there is no model the GtkTreeView is probably being destroyed
@@ -687,6 +691,13 @@ gail_tree_view_real_notify_gtk (GObject             *obj,
             role = ATK_ROLE_TREE_TABLE;
           }
 
+          gailview->columns = (__bridge_retained void *) [[NSMutableArray alloc] init];
+
+          // We make a tree from the ACAccessibilityTreeRowElements that matches the GtkTreeModel
+          // so we can quickly access the appropriate element given a row path. Using an array is too slow
+          // with large tables, and a hashtable isn't feasible due to how GtkTreeModel works
+          gailview->rowRootNode = (__bridge_retained void *)[[ACAccessibilityTreeRowElement alloc] initWithDelegate:NULL];
+
           // When a model is set build the row cache
           if (gtk_tree_model_get_iter_first (tree_model, &iter)) {
             make_row_cache (tree_model, tree_view, gailview, &iter);
@@ -695,7 +706,6 @@ gail_tree_view_real_notify_gtk (GObject             *obj,
       else
         {
           role = ATK_ROLE_UNKNOWN;
-
           // FIXME: Tear down the row cache
         }
 
@@ -2793,10 +2803,12 @@ columns_changed (GtkTreeView *tree_view)
   g_array_free (gailview->col_data, TRUE);
 
   NSMutableArray *realColumns = get_columns_array (gailview);
-  for (id<NSAccessibility> colElement in realColumns) {
-    [parentElement ac_accessibilityRemoveChildElement:colElement];
+  if (realColumns != nil) {
+    for (id<NSAccessibility> colElement in realColumns) {
+      [parentElement ac_accessibilityRemoveChildElement:colElement];
+    }
+    [realColumns removeAllObjects];
   }
-  [realColumns removeAllObjects];
 
   gailview->col_data = g_array_sized_new (FALSE, TRUE,
     sizeof(GtkTreeViewColumn *), 0);
@@ -5010,24 +5022,6 @@ cell_destroyed (gpointer data)
       }
   }
 }
-
-#if 0
-static void
-cell_info_remove (GailTreeView *tree_view, 
-                  GailCell     *cell)
-{
-  GailTreeViewCellInfo *info;
-  GList *temp_list;
-
-  info = find_cell_info (tree_view, cell, &temp_list, FALSE);
-  if (info)
-    {
-      info->in_use = FALSE;
-      return;
-    }
-  g_warning ("No cell removed in cell_info_remove\n");
-}
-#endif
 
 static void
 cell_info_get_index (GtkTreeView            *tree_view, 
