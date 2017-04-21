@@ -3990,6 +3990,7 @@ cocoa_update_cell_value (GailRendererCell *renderer_cell,
               g_object_get_property (cur_renderer->data, *prop_list, &value);
               g_object_set_property (G_OBJECT (renderer_cell->renderer),
                                      *prop_list, &value);
+
               g_value_unset(&value);
             }
           else {

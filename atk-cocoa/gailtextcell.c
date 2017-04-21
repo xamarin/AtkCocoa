@@ -95,6 +95,7 @@ static void             add_attr                        (PangoAttrList  *attr_li
 static gboolean gail_text_cell_update_cache		(GailRendererCell *cell,
 							 gboolean	emit_change_signal);
 
+#if 0
 gchar *gail_text_cell_property_list[] = {
   /* Set font_desc first since it resets other values if it is NULL */
   "font_desc",
@@ -130,6 +131,13 @@ gchar *gail_text_cell_property_list[] = {
   "underline_set",
   "variant_set",
   "weight_set",
+  NULL
+};
+#endif
+
+// TBH all we care about with Cocoa is the text property
+gchar *gail_text_cell_property_list[] = {
+  "text",
   NULL
 };
 

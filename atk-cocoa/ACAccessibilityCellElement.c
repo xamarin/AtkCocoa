@@ -84,14 +84,31 @@
 
 - (NSString *)accessibilityLabel
 {
-	NSLog (@"Getting label");
 	if ([_rowElement rowIsDirty]) {
 		GtkTreeView *treeview = GTK_TREE_VIEW (_delegate->widget);
 		GailTreeView *gailview = GAIL_TREE_VIEW (gtk_widget_get_accessible (_delegate->widget));
 
 		gail_tree_view_update_row_cells (gailview, treeview, _rowElement);
 	}
-	return [super accessibilityLabel];
+
+	GailRendererCell *rendererCell = GAIL_RENDERER_CELL (_delegate);
+	GtkCellRenderer *renderer = rendererCell->renderer;
+
+	char *label = NULL;
+	GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (renderer), "text");
+	if (pspec == NULL) {
+		return nil;
+	}
+
+	g_object_get (renderer, "text", &label, NULL);
+	if (label == NULL) {
+		return nil;
+	}
+
+	NSString *labelReturn = nsstring_from_cstring (label);
+	g_free (label);
+
+	return labelReturn;
 }
 
 - (id)accessibilityValue
