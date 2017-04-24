@@ -936,6 +936,8 @@ gail_accessibility_module_init (void)
   if (g_getenv (ATKCOCOA_DEBUG_BACKTRACE) != NULL) {
     original_log = g_log_set_default_handler (gail_log_handler, NULL);
     g_log_set_handler ("Gtk", G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL | G_LOG_FLAG_RECURSION, gail_log_handler, NULL);
+    g_log_set_handler ("GLib", G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL | G_LOG_FLAG_RECURSION, gail_log_handler, NULL);
+    g_log_set_handler (NULL, G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL | G_LOG_FLAG_RECURSION, gail_log_handler, NULL);
   }
 
   /*
