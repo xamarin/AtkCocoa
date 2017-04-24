@@ -52,8 +52,13 @@
 
 - (void)dealloc
 {
-    gtk_tree_row_reference_free (_row);
-    g_object_unref (_view);
+    if (_row) {
+        gtk_tree_row_reference_free (_row);
+    }
+
+    if (_view) {
+        g_object_unref (_view);
+    }
 
     if (_children != NULL) {
         g_sequence_free (_children);
