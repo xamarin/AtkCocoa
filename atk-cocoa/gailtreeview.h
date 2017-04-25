@@ -43,22 +43,11 @@ struct _GailTreeView
 {
   GailContainer parent;
 
-  AtkObject*	caption;
-  AtkObject*	summary;
-  gint          n_children_deleted;
-  GArray*       col_data;
-  GArray*	row_data;
-  GList*        cell_data;
   GtkTreeModel  *tree_model;
-  AtkObject     *focus_cell;
   GtkAdjustment *old_hadj;
   GtkAdjustment *old_vadj;
-  guint         idle_expand_id;
-  guint         idle_garbage_collect_id;
-  guint         idle_cursor_changed_id;
-  GtkTreePath   *idle_expand_path;
-  gboolean      garbage_collection_pending;
 
+  /* These are void * because ARC doesn't like ObjC object types in C structs */
   void *columns; /* NSMutableArray * */
   void *rowRootNode; /* The root ACAccessibilityTreeRowElement * */
 };
