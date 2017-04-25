@@ -414,7 +414,6 @@ gail_tree_view_real_notify_gtk (GObject             *obj,
 
       atk_object_set_role (atk_obj, role);
       g_object_freeze_notify (G_OBJECT (atk_obj));
-      g_signal_emit_by_name (atk_obj, "model_changed");
       g_signal_emit_by_name (atk_obj, "visible_data_changed");
       g_object_thaw_notify (G_OBJECT (atk_obj));
     }
@@ -695,9 +694,6 @@ gail_tree_view_changed_gtk (GtkTreeSelection *selection,
   tree_view = GTK_TREE_VIEW (widget);
 
   tree_selection = gtk_tree_view_get_selection (tree_view);
-
-  if (gtk_widget_get_realized (widget))
-    g_signal_emit_by_name (gailview, "selection_changed");
 }
 
 static void
@@ -1313,11 +1309,6 @@ model_rows_reordered (GtkTreeModel *tree_model,
                       gint         *new_order, 
                       gpointer     user_data)
 {
-  GtkTreeView *tree_view = (GtkTreeView *)user_data;
-  AtkObject *atk_obj = gtk_widget_get_accessible (GTK_WIDGET (tree_view));
-  GailTreeView *gailview = GAIL_TREE_VIEW (atk_obj);
-
-  g_signal_emit_by_name (atk_obj, "row_reordered");
 }
 
 static void
