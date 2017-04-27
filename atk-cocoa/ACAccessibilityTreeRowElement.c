@@ -237,6 +237,18 @@
     [self adjustDescendantCountBy:1];
 }
 
+- (void)appendChild:(ACAccessibilityTreeRowElement *)child
+{
+    if (_children == NULL) {
+        _children = g_sequence_new (NULL);
+    }
+
+    child->_iterInParent = g_sequence_append (_children, (__bridge void *) child);
+    child->_parent = self;
+
+    [self adjustDescendantCountBy:1];
+}
+
 - (void)removeChildAtIndex:(int)idx
 {
     GSequenceIter *iter;

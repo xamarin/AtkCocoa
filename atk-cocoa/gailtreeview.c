@@ -846,17 +846,47 @@ iterate_row_children (GtkTreeModel *treeModel,
 }
 
 static void
+make_row_cache_recursive (GtkTreeModel *model,
+                          GtkTreeView *view,
+                          GailTreeView *gailView,
+                          GtkTreeIter *iter,
+                          ACAccessibilityTreeRowElement *parentElement)
+{
+  do {
+      ACAccessibilityTreeRowElement *element;
+      NSAccessibilityElement *treeElement;
+      GtkTreeIter childIter;
+
+      element = (ACAccessibilityTreeRowElement *)make_accessibility_element_for_row (model, view, gailView, iter);
+      // Add to the parent row
+      [parentElement appendChild:element];
+
+      // Add to the parent tree
+      treeElement = ac_element_get_accessibility_element (AC_ELEMENT (gailView));
+      [treeElement accessibilityAddChildElement:element];
+
+      if (gtk_tree_model_iter_children (model, &childIter, iter)) {
+        GtkTreePath *path = gtk_tree_model_get_path (model, iter);
+        if (gtk_tree_view_row_expanded (view, path)) {
+          make_row_cache_recursive (model, view, gailView, &childIter, element);
+        }
+        gtk_tree_path_free (path);
+      }
+  } while (gtk_tree_model_iter_next (model, iter));
+}
+
+static void
 make_row_cache (GtkTreeModel *model,
                 GtkTreeView *treeView,
                 GailTreeView *gailView,
                 GtkTreeIter  *rootIter)
 {
-  GtkTreeIter iter;
+  ACAccessibilityTreeRowElement *element;
 
-  gtk_tree_model_get_iter_first (model, &iter);
-  while (gtk_tree_model_iter_next (model, &iter)) {
-    // g_print ("path: %s\n", gtk_tree_path_to_string (gtk_tree_model_get_path (model, &iter)));
-  }
+  element = ROOT_NODE (gailView);
+
+  AC_NOTE (TREEWIDGET, g_print ("Making row cache\n"));
+  make_row_cache_recursive (model, treeView, gailView, rootIter, element);
 }
 
 // Cocoa appears to perform a sort on the children of an outline to keep them in
