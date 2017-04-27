@@ -570,8 +570,6 @@ gail_tree_view_expand_row_gtk (GtkTreeView       *tree_view,
       NSMutableArray *disclosedRows = [[NSMutableArray alloc] init];
 
       do {
-        GtkTreePath *cpath = gtk_tree_model_get_path (tree_model, &childIter);
-        // g_print ("Making element %s\n", gtk_tree_path_to_string (cpath));
         NSAccessibilityElement *element = make_accessibility_element_for_row (tree_model, tree_view, gailview, &childIter);
 
         [treeElement accessibilityAddChildElement:element];
