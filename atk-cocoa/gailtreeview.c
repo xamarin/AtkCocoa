@@ -186,6 +186,7 @@ gail_tree_view_init (GailTreeView *view)
 {
 }
 
+#define COLUMNS_ARRAY(view) ((__bridge NSMutableArray *) view->columns)
 #define ROOT_NODE(view) ((__bridge ACAccessibilityTreeRowElement *)(view)->rowRootNode)
 
 static void
@@ -374,9 +375,11 @@ gail_tree_view_real_notify_gtk (GObject             *obj,
 
       CFBridgingRelease (gailview->rowRootNode);
       gailview->rowRootNode = nil;
-      CFBridgingRelease (gailview->columns);
-      gailview->columns = nil;
 
+      // The columns are part of the tree view, but the child elements are part of the model
+      for (id<NSAccessibility> c in COLUMNS_ARRAY (gailview)) {
+        [c setAccessibilityChildren:nil];
+      }
       gailview->tree_model = tree_model;
       /*
        * if there is no model the GtkTreeView is probably being destroyed
@@ -393,8 +396,6 @@ gail_tree_view_real_notify_gtk (GObject             *obj,
           } else {
             role = ATK_ROLE_TREE_TABLE;
           }
-
-          gailview->columns = (__bridge_retained void *) [[NSMutableArray alloc] init];
 
           // We make a tree from the ACAccessibilityTreeRowElements that matches the GtkTreeModel
           // so we can quickly access the appropriate element given a row path. Using an array is too slow
@@ -1162,6 +1163,7 @@ make_accessibility_element_for_row (GtkTreeModel *treeModel,
     ACAccessibilityTreeColumnElement *columnElement = find_column_element_for_column (gailView, c->data);
 
     if (columnElement == nil) {
+      g_warning ("No column element found for column %s", gtk_tree_view_column_get_title (c->data));
       continue;
     }
 
