@@ -10,3 +10,6 @@ install-md:
 
 clean:
 	$(MAKE) -C atk-cocoa clean
+
+run:
+	$(MAKE) -C ../monodevelop run
