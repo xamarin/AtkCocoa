@@ -186,7 +186,6 @@ gail_tree_view_init (GailTreeView *view)
 {
 }
 
-#define COLUMNS_ARRAY(view) ((__bridge NSMutableArray *) view->columns)
 #define ROOT_NODE(view) ((__bridge ACAccessibilityTreeRowElement *)(view)->rowRootNode)
 
 static void
@@ -259,7 +258,7 @@ gail_tree_view_real_initialize (AtkObject *obj,
   view->old_hadj = NULL;
   view->old_vadj = NULL;
 
-  view->columns = (__bridge_retained void *) [[NSMutableArray alloc] init];
+  view->columnMap = g_hash_table_new (NULL, NULL);
 
   // We make a tree from the ACAccessibilityTreeRowElements that matches the GtkTreeModel
   // so we can quickly access the appropriate element given a row path. Using an array is too slow
@@ -347,6 +346,15 @@ gail_tree_view_real_initialize (AtkObject *obj,
 }
 
 static void
+clear_column_elements (gpointer key,
+                       gpointer value,
+                       gpointer data)
+{
+  id<NSAccessibility> c = (__bridge id<NSAccessibility>)value;
+  [c setAccessibilityChildren:nil];
+}
+
+static void
 gail_tree_view_real_notify_gtk (GObject             *obj,
                                 GParamSpec          *pspec)
 {
@@ -377,9 +385,8 @@ gail_tree_view_real_notify_gtk (GObject             *obj,
       gailview->rowRootNode = nil;
 
       // The columns are part of the tree view, but the child elements are part of the model
-      for (id<NSAccessibility> c in COLUMNS_ARRAY (gailview)) {
-        [c setAccessibilityChildren:nil];
-      }
+      g_hash_table_foreach (gailview->columnMap, clear_column_elements, NULL);
+
       gailview->tree_model = tree_model;
       /*
        * if there is no model the GtkTreeView is probably being destroyed
@@ -460,15 +467,9 @@ gail_tree_view_finalize (GObject	    *object)
     }
 
   CFBridgingRelease (view->rowRootNode);
-  CFBridgingRelease (view->columns);
+  g_hash_table_destroy (view->columnMap);
 
   G_OBJECT_CLASS (gail_tree_view_parent_class)->finalize (object);
-}
-
-static NSMutableArray *
-get_columns_array (GailTreeView *view)
-{
-  return (__bridge NSMutableArray *) view->columns;
 }
 
 static void
@@ -696,6 +697,20 @@ gail_tree_view_changed_gtk (GtkTreeSelection *selection,
   tree_selection = gtk_tree_view_get_selection (tree_view);
 }
 
+static gboolean
+remove_column_from_parent (gpointer key,
+                           gpointer value,
+                           gpointer data)
+{
+  NSAccessibilityElement *parent = (__bridge NSAccessibilityElement *)data;
+  id<NSAccessibility> columnElement = (__bridge id<NSAccessibility>)value;
+
+  [parent ac_accessibilityRemoveChildElement:columnElement];
+
+  // Remove this from the hashtable
+  return TRUE;
+}
+
 static void
 columns_changed (GtkTreeView *tree_view)
 {
@@ -709,13 +724,7 @@ columns_changed (GtkTreeView *tree_view)
   int idx;
   NSAccessibilityElement *parentElement = ac_element_get_accessibility_element (AC_ELEMENT (atk_obj));
 
-  NSMutableArray *realColumns = get_columns_array (gailview);
-  if (realColumns != nil) {
-    for (id<NSAccessibility> colElement in realColumns) {
-      [parentElement ac_accessibilityRemoveChildElement:colElement];
-    }
-    [realColumns removeAllObjects];
-  }
+  g_hash_table_foreach_remove (gailview->columnMap, remove_column_from_parent, (__bridge void *)parentElement);
 
   idx = 0;
   for (tmp_list = tv_cols; tmp_list; tmp_list = tmp_list->next) {
@@ -724,7 +733,7 @@ columns_changed (GtkTreeView *tree_view)
     /* create a column for NSAccessibility */
     tc = [[ACAccessibilityTreeColumnElement alloc] initWithDelegate:AC_ELEMENT (atk_obj) treeColumn:tmp_list->data];
     [tc setAccessibilityIndex:idx];
-    [realColumns addObject:tc];
+    g_hash_table_insert (gailview->columnMap, tmp_list->data, (__bridge void *)tc);
 
     /* Add the column as an accessibillty child */
     [parentElement accessibilityAddChildElement:tc];
@@ -1126,15 +1135,7 @@ static ACAccessibilityTreeColumnElement *
 find_column_element_for_column (GailTreeView *gailView,
                                 GtkTreeViewColumn *column)
 {
-  // FIXME: Make custom hashtable
-  NSMutableArray *columns = get_columns_array (gailView);
-  for (ACAccessibilityTreeColumnElement *columnElement in columns) {
-    if (column == [columnElement column]) {
-      return columnElement;
-    }
-  }
-
-  return NULL;
+  return (__bridge ACAccessibilityTreeColumnElement *)g_hash_table_lookup (gailView->columnMap, column);
 }
 
 static NSAccessibilityElement *

@@ -47,8 +47,8 @@ struct _GailTreeView
   GtkAdjustment *old_hadj;
   GtkAdjustment *old_vadj;
 
+  GHashTable *columnMap; /* Maps GtkTreeViewColumn to ACAccessibilityTreeColumnElement */
   /* These are void * because ARC doesn't like ObjC object types in C structs */
-  void *columns; /* NSMutableArray * */
   void *rowRootNode; /* The root ACAccessibilityTreeRowElement * */
 };
 
