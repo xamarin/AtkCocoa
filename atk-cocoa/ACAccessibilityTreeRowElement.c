@@ -215,14 +215,15 @@
 {
     GSequenceIter *iter;
 
-    // NSLog (@"InsertChild:atIndex: - %@ - %d", child, idx);
+    //  NSLog (@"InsertChild:atIndex: - %@ - %d", child, idx);
     // g_print ("   Parent: %p\n", self);
     // g_print ("   Child: %p\n", child);
     // if ([self rowReference]) {
-    //     g_print ("   %s :: %d\n", gtk_tree_path_to_string (gtk_tree_row_reference_get_path ([self rowReference])), idx);
+        // g_print ("   %s :: %d\n", gtk_tree_path_to_string (gtk_tree_row_reference_get_path ([self rowReference])), idx);
     // } else {
-    //     g_print ("   Fake Root node\n");
+        // g_print ("   Fake Root node\n");
     // }
+    // g_print ("   Children count: %d\n", _children ? g_sequence_get_length (_children) + 1 : -1);
 
     if (_children == NULL) {
         _children = g_sequence_new (NULL);
@@ -339,7 +340,7 @@ last_path_index (const char *path)
 {
     GSequenceIter *iter;
 
-    // g_print ("Child at index: %d (%p)\n", idx, self);
+    // g_print ("Child at index: %d (%p) - %d\n", idx, self, _children ? g_sequence_get_length (_children) : 0);
     if (_children == NULL) {
         // g_print ("   No children\n");
         return NULL;
@@ -461,5 +462,52 @@ last_path_index (const char *path)
 {
     char *pathCopy;
     return -1;
+}
+
+- (void)reorderChildrenToNewIndicies:(int *)indicies
+{
+    GSequence *childrenCopy;
+    GSequenceIter *orig, *end;
+
+    if (_children == NULL) {
+        return;
+    }
+
+    childrenCopy = g_sequence_new (NULL);
+    for (int i = 0; i < g_sequence_get_length (_children); i++) {
+        GSequenceIter *idx = g_sequence_get_iter_at_pos (_children, indicies[i]);
+
+        if (g_sequence_iter_is_end (idx)) {
+            return;
+        }
+
+        ACAccessibilityTreeRowElement *e = GET_DATA (idx);
+
+        if (e == NULL) {
+            continue;
+        }
+        e->_iterInParent = g_sequence_append (childrenCopy, g_sequence_get (idx));
+    }
+
+    g_sequence_free (_children);
+    _children = childrenCopy;
+}
+
+- (void)dumpChildrenRecursive:(BOOL)recurse
+{
+    GtkTreePath *path = [self rowReference] ? gtk_tree_row_reference_get_path ([self rowReference]): NULL;
+    g_print ("%s (%d)\n", path ? gtk_tree_path_to_string (path) : "<null>", _children ? g_sequence_get_length (_children): 0 );
+
+    if (_children == NULL) {
+        return;
+    }
+
+    if (!recurse) {
+        return;
+    }
+    for (int i = 0; i < g_sequence_get_length (_children); i++) {
+        ACAccessibilityTreeRowElement *e = GET_DATA (g_sequence_get_iter_at_pos (_children, i));
+        [e dumpChildrenRecursive:YES];
+    }
 }
 @end

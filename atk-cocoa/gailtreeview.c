@@ -570,7 +570,8 @@ gail_tree_view_expand_row_gtk (GtkTreeView       *tree_view,
       NSMutableArray *disclosedRows = [[NSMutableArray alloc] init];
 
       do {
-        // g_print ("Making element\n");
+        GtkTreePath *cpath = gtk_tree_model_get_path (tree_model, &childIter);
+        // g_print ("Making element %s\n", gtk_tree_path_to_string (cpath));
         NSAccessibilityElement *element = make_accessibility_element_for_row (tree_model, tree_view, gailview, &childIter);
 
         [treeElement accessibilityAddChildElement:element];
@@ -847,11 +848,17 @@ iterate_row_children (GtkTreeModel *treeModel,
 }
 
 static void
-make_row_cache (GtkTreeModel *treeModel,
+make_row_cache (GtkTreeModel *model,
                 GtkTreeView *treeView,
                 GailTreeView *gailView,
                 GtkTreeIter  *rootIter)
 {
+  GtkTreeIter iter;
+
+  gtk_tree_model_get_iter_first (model, &iter);
+  while (gtk_tree_model_iter_next (model, &iter)) {
+    // g_print ("path: %s\n", gtk_tree_path_to_string (gtk_tree_model_get_path (model, &iter)));
+  }
 }
 
 // Cocoa appears to perform a sort on the children of an outline to keep them in
@@ -1118,6 +1125,7 @@ make_accessibility_element_for_row (GtkTreeModel *treeModel,
   rowPath = gtk_tree_model_get_path (treeModel, rowIter);
   rowRef = gtk_tree_row_reference_new (treeModel, rowPath);
   rowElement = [[ACAccessibilityTreeRowElement alloc] initWithDelegate:AC_ELEMENT (gailView) treeRow:rowRef treeView:treeView];
+// g_print("made row for %s\n", gtk_tree_path_to_string (rowPath));
   [rowElement setAccessibilityWindow:[parentElement accessibilityWindow]];
   gtk_tree_path_free (rowPath);
 
@@ -1309,6 +1317,17 @@ model_rows_reordered (GtkTreeModel *tree_model,
                       gint         *new_order, 
                       gpointer     user_data)
 {
+  GtkTreeView *view = GTK_TREE_VIEW (user_data);
+  GailTreeView *gailview = GAIL_TREE_VIEW (gtk_widget_get_accessible (GTK_WIDGET (view)));
+  ACAccessibilityTreeRowElement *parentElement = gtk_tree_path_get_depth (path) > 0 ? find_row_element_for_path (gailview, path) : ROOT_NODE (gailview);
+
+  if (parentElement == nil) {
+    // We might get reorders for rows that aren't visible yet, so we don't care about them
+    AC_NOTE (TREEWIDGET, g_print ("No reorder for %p %s - %d\n", path, path ? gtk_tree_path_to_string (path) : "<null>", gtk_tree_path_get_depth (path)));
+    return;
+  }
+
+  [parentElement reorderChildrenToNewIndicies:new_order];
 }
 
 static void

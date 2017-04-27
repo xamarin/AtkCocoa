@@ -45,6 +45,8 @@
 - (void)foreachChild:(void(^)(ACAccessibilityTreeRowElement *parent, ACAccessibilityTreeRowElement *child, void *userData))handler userData:(void *)userdata;
 - (int)descendantCount;
 
+- (void)reorderChildrenToNewIndicies:(int *)indicies;
 int last_path_index (const char *path);
+- (void)dumpChildrenRecursive:(BOOL)recurse;
 
 @end
