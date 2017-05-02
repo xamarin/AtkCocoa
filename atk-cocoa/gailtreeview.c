@@ -991,46 +991,28 @@ check_row_has_data (GtkTreeModel *treeModel,
   return FALSE;
 }
 
-static NSAccessibilityElement *
-make_accessibility_cell_for_column (GtkTreeModel *treeModel,
-                                    GtkTreeView *treeView,
-                                    GailTreeView *gailView,
-                                    GtkTreeIter *rowIter,
-                                    GtkTreeViewColumn *column,
-                                    ACAccessibilityTreeRowElement *rowElement,
-                                    ACAccessibilityTreeColumnElement *columnElement)
+static gboolean
+make_renderer_cells_for_column (GailTreeView *gailView,
+                                ACAccessibilityTreeCellElement *treeCellElement,
+                                ACAccessibilityTreeRowElement *rowElement,
+                                GtkTreeViewColumn *column,
+                                GtkTreeIter *rowIter,
+                                GtkTreePath *path)
 {
-  id<NSAccessibility> parentElement;
-  ACAccessibilityTreeCellElement *cell;
+  ACAccessibilityElement *parentElement = ac_element_get_accessibility_element (AC_ELEMENT (gailView));
+  GtkTreeView *treeView = GTK_TREE_VIEW (ac_element_get_owner (AC_ELEMENT (gailView)));
+  GtkTreeModel *model = gailView->tree_model;
   GList *renderers, *r;
   AtkRegistry *default_registry = atk_get_default_registry ();
   int i;
-  GtkTreePath *path = gtk_tree_model_get_path (treeModel, rowIter);
+  gboolean rowHasData = check_row_has_data (model, rowIter);
   gboolean isExpanderColumn = (gtk_tree_view_get_expander_column (treeView) == column);
   gboolean is_expanded = FALSE;
-  gboolean needs_disclosure = FALSE;
-  GtkTreeSelection *selection;
-  gboolean rowHasData = check_row_has_data (treeModel, rowIter);
-
-  parentElement = ac_element_get_accessibility_element (AC_ELEMENT (gailView));
 
   renderers = gtk_cell_layout_get_cells (GTK_CELL_LAYOUT (column));
-  if (isExpanderColumn && gtk_tree_model_iter_has_child (treeModel, rowIter)) {
-    needs_disclosure = TRUE;
-  }
-
-  cell = [[ACAccessibilityTreeCellElement alloc] initWithDelegate:AC_ELEMENT (gailView) withDisclosureButton:needs_disclosure];
-  [cell setAccessibilityParent:[parentElement accessibilityWindow]];
-  [cell addToRow:rowElement column:columnElement];
 
   if (isExpanderColumn) {
     is_expanded = gtk_tree_view_row_expanded (treeView, path);
-  }
-
-  // If the row is selected, the cell is selected, but the contents are not
-  selection = gtk_tree_view_get_selection (treeView);
-  if (gtk_tree_selection_path_is_selected (selection, path)) {
-    [cell setAccessibilitySelected:YES];
   }
 
   for (r = renderers, i = 0; r; r = r->next, i++) {
@@ -1074,11 +1056,10 @@ make_accessibility_cell_for_column (GtkTreeModel *treeModel,
     gail_cell_initialise (gailCell,
                           GTK_WIDGET (treeView), ATK_OBJECT (gailView),
                           rowElement, column, i);
-    //cell_info_new (gailView, treeModel, path, column, gailCell);
 
     id<NSAccessibility> realElement = renderer_element ?: gail_cell_get_real_cell (gailCell);
     [realElement setAccessibilityWindow:[parentElement accessibilityWindow]];
-    [cell accessibilityAddChildElement:renderer_element ?: (NSAccessibilityElement *) gail_cell_get_real_cell (gailCell)];
+    [treeCellElement accessibilityAddChildElement:renderer_element ?: (NSAccessibilityElement *) gail_cell_get_real_cell (gailCell)];
 
     // Attach the NSAccessibility element for the cell to the cell renderer, so that a custom data function
     // is able to fill in the appropriate attributes
@@ -1090,7 +1071,7 @@ make_accessibility_cell_for_column (GtkTreeModel *treeModel,
       GailRendererCellClass *gail_renderer_cell_class = GAIL_RENDERER_CELL_GET_CLASS (child);
       char **prop_list = gail_renderer_cell_class->property_list;
 
-      gtk_tree_view_column_cell_set_cell_data (column, treeModel, rowIter, isExpanderColumn, is_expanded);
+      gtk_tree_view_column_cell_set_cell_data (column, model, rowIter, isExpanderColumn, is_expanded);
 
       while (*prop_list) {
         GParamSpec *spec;
@@ -1118,6 +1099,49 @@ make_accessibility_cell_for_column (GtkTreeModel *treeModel,
   }
 
   g_list_free (renderers);
+
+  return TRUE;
+}
+
+static NSAccessibilityElement *
+make_accessibility_cell_for_column (GtkTreeModel *treeModel,
+                                    GtkTreeView *treeView,
+                                    GailTreeView *gailView,
+                                    GtkTreeIter *rowIter,
+                                    GtkTreeViewColumn *column,
+                                    ACAccessibilityTreeRowElement *rowElement,
+                                    ACAccessibilityTreeColumnElement *columnElement)
+{
+  id<NSAccessibility> parentElement;
+  ACAccessibilityTreeCellElement *cell;
+  GtkTreePath *path = gtk_tree_model_get_path (treeModel, rowIter);
+  gboolean isExpanderColumn = (gtk_tree_view_get_expander_column (treeView) == column);
+  gboolean is_expanded = FALSE;
+  gboolean needs_disclosure = FALSE;
+  GtkTreeSelection *selection;
+
+  parentElement = ac_element_get_accessibility_element (AC_ELEMENT (gailView));
+
+  if (isExpanderColumn && gtk_tree_model_iter_has_child (treeModel, rowIter)) {
+    needs_disclosure = TRUE;
+  }
+
+  cell = [[ACAccessibilityTreeCellElement alloc] initWithDelegate:AC_ELEMENT (gailView) withDisclosureButton:needs_disclosure];
+  [cell setAccessibilityParent:[parentElement accessibilityWindow]];
+  [cell addToRow:rowElement column:columnElement];
+
+  if (isExpanderColumn) {
+    is_expanded = gtk_tree_view_row_expanded (treeView, path);
+  }
+
+  // If the row is selected, the cell is selected, but the contents are not
+  selection = gtk_tree_view_get_selection (treeView);
+  if (gtk_tree_selection_path_is_selected (selection, path)) {
+    [cell setAccessibilitySelected:YES];
+  }
+
+  make_renderer_cells_for_column (gailView, cell, rowElement, column, rowIter, path);
+
   gtk_tree_path_free (path);
 
   return cell;
