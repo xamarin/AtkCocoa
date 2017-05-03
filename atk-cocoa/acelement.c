@@ -647,7 +647,7 @@ ac_element_real_set_role (AtkObject *accessible,
 			break;
 	}
 
-	id<NSAccessibility> realElement = ac_element_get_real_accessibility_element (element);
+	id<NSAccessibility> realElement = ac_element_get_accessibility_element (element);
 	[realElement setAccessibilityRole:ns_role];
 	if (ns_subrole) {
 		[realElement setAccessibilitySubrole:ns_subrole];
@@ -882,7 +882,7 @@ find_accessible_children (GtkWidget *widget,
 	}
 
 	element = AC_ELEMENT (atkElement);
-	realElement = ac_element_get_real_accessibility_element (element);
+	realElement = ac_element_get_accessibility_element (element);
 
 	AC_NOTE (TREE, NSLog (@"      - Found %@", realElement));
 	if ([realElement isAccessibilityElement]) {
@@ -924,6 +924,7 @@ ac_element_remove_child (AcElement *parent,
 
 	GtkWidget *parentWidget;
 	parent_element = get_real_accessibility_parent (parent, &parentWidget);
+
 	AC_NOTE (TREE, NSLog (@"Real parent element: %p - %@ %s", parent_element, parent_element, G_OBJECT_TYPE_NAME (parentWidget)));
 
 	BOOL childAccessible = [child_element isAccessibilityElement];
@@ -934,6 +935,7 @@ ac_element_remove_child (AcElement *parent,
 	// until the tree is complete)
 	if (childAccessible) {
 		AC_NOTE (TREE, NSLog (@"   - Child is accessible"));
+
 		// If both the child and the parent (after getting the correct parent) are both
 		// accessibility enabled, then it's just a simple case to remove the child from the parent
 		NSMutableArray *new_children = [[parent_element accessibilityChildren] mutableCopy];
@@ -965,6 +967,7 @@ ac_element_remove_child (AcElement *parent,
 
 		NSMutableArray *parentChildren = [[parent_element accessibilityChildren] mutableCopy];
 		AC_NOTE (TREE, NSLog (@"   - parent had %lu children", [parentChildren count]));
+
 		int i = 0;
 		for (id<NSAccessibility> child in allyChildren) {
 			AC_NOTE (TREE, NSLog (@"   %d %@ - %@", i, child, [child accessibilityParent]));
