@@ -353,7 +353,6 @@ ac_element_real_set_role (AtkObject *accessible,
 			break;
 
 		case ATK_ROLE_FILLER:
-			ns_role = NSAccessibilityGroupRole;
 			break;
 
 		case ATK_ROLE_FONT_CHOOSER:

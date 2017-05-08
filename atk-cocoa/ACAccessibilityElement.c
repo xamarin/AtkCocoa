@@ -24,10 +24,12 @@
 #include "acutils.h"
 
 @implementation ACAccessibilityElement {
+	BOOL _isCreated;
 	id _accessibilityWindow;
 	AcElement *_delegate;
 	NSString *_realTitle;
 	NSString *_realRole;
+	BOOL _accessibilityElementSet;
 	BOOL _accElement;
 }
 
@@ -40,6 +42,7 @@
 
 	_delegate = delegate;
 
+	_isCreated = YES;
 	return self;
 }
 
@@ -51,6 +54,26 @@
 - (void)dealloc
 {
 	AC_NOTE (DESTRUCTION, (NSLog (@"Deallocing: %@", [super description])));
+}
+
+- (void)setAccessibilityElement:(BOOL)isElement
+{
+	if (_isCreated) {
+		// setAccessibilityElement is called from NSAccessibilityElement::init so we want to ignore any calls
+		// until the init process is finished
+		_accessibilityElementSet = YES;
+	}
+	[super setAccessibilityElement:isElement];
+}
+
+- (BOOL)isAccessibilityElement
+{
+	if (_accessibilityElementSet) {
+		return [super isAccessibilityElement];
+	}
+
+	// Deduce this from the AtkRole
+	return atk_object_get_role (ATK_OBJECT (_delegate)) != ATK_ROLE_FILLER;
 }
 
 // Cocoa appears to have a bug where if accessibilityWindow is not set

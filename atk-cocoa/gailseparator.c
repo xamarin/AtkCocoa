@@ -50,7 +50,7 @@ gail_separator_initialize (AtkObject *accessible,
 {
   ATK_OBJECT_CLASS (gail_separator_parent_class)->initialize (accessible, data);
 
-  accessible->role = ATK_ROLE_SEPARATOR;
+  accessible->role = ATK_ROLE_FILLER;
 }
 
 static AtkStateSet*
