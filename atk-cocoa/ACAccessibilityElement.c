@@ -221,7 +221,7 @@ get_coords_in_window (GtkWidget *widget, int *x, int *y)
 
 		GtkWidget *ownerWidget = GTK_WIDGET (owner);
 
-		if (!gtk_widget_get_visible (ownerWidget)) {
+		if (!gtk_widget_get_visible (ownerWidget) || !gtk_widget_get_realized (ownerWidget)) {
 			continue;
 		}
 
