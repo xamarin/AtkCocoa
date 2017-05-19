@@ -522,4 +522,38 @@ last_path_index (const char *path)
         [e dumpChildrenRecursive:YES];
     }
 }
+
+- (void)recursiveFlattenTreeIntoArray:(NSMutableArray *)arr addingSelf:(BOOL)addSelf
+{
+    if (addSelf) {
+        [arr addObject:self];
+    }
+
+    if (_children == NULL || g_sequence_get_length (_children) == 0) {
+        return;
+    }
+
+    GSequenceIter *iter = g_sequence_get_begin_iter (_children);
+
+    while (!g_sequence_iter_is_end (iter)) {
+        ACAccessibilityTreeRowElement *r = GET_DATA (iter);
+
+        [r recursiveFlattenTreeIntoArray:arr addingSelf:YES];
+        iter = g_sequence_iter_next (iter);
+    }
+}
+
+- (NSArray *)flattenTree
+{
+    if (_children == NULL) {
+        return nil;
+    }
+
+    NSMutableArray *flat = [NSMutableArray array];
+
+    // Don't want to add the fake root node to the tree.
+    [self recursiveFlattenTreeIntoArray:flat addingSelf:NO];
+
+    return flat;
+}
 @end

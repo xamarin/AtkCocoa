@@ -50,4 +50,6 @@
 int last_path_index (const char *path);
 - (void)dumpChildrenRecursive:(BOOL)recurse;
 
+- (NSArray *)flattenTree;
+
 @end

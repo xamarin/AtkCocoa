@@ -137,6 +137,7 @@ static void sort_child_elements (GailTreeView *gailView);
 static NSInteger row_column_index_sort (id objA,
                                         id objB,
                                         void *data);
+static void update_accessibility_rows (GailTreeView *gailView);
 
 static GQuark quark_column_desc_object = 0;
 static GQuark quark_column_header_object = 0;
@@ -374,6 +375,12 @@ gail_tree_view_real_notify_gtk (GObject             *obj,
       GtkTreeModel *tree_model;
       AtkRole role;
 
+      // Cancel any rows being updated
+      if (gailview->rowUpdateId > 0) {
+        g_source_remove (gailview->rowUpdateId);
+        gailview->rowUpdateId = 0;
+      }
+
       tree_model = gtk_tree_view_get_model (tree_view);
       if (gailview->tree_model)
         {
@@ -495,6 +502,12 @@ gail_tree_view_destroyed (GtkWidget *widget,
   gail_return_if_fail (GTK_IS_TREE_VIEW (widget));
 
   gailview = GAIL_TREE_VIEW (accessible);
+
+  if (gailview->rowUpdateId > 0) {
+    g_source_remove (gailview->rowUpdateId);
+    gailview->rowUpdateId = 0;
+  }
+
   adj = gailview->old_hadj;
   if (adj)
     g_signal_handlers_disconnect_by_func (adj, 
@@ -571,6 +584,7 @@ gail_tree_view_expand_row_gtk (GtkTreeView       *tree_view,
       // g_print ("Got children\n");
       NSMutableArray *disclosedRows = [[NSMutableArray alloc] init];
 
+      // FIXME: I think the disclosedRows need to have the whole subtree flattened, not just the direct children
       do {
         NSAccessibilityElement *element = make_accessibility_element_for_row (tree_model, tree_view, gailview, &childIter);
 
@@ -596,6 +610,12 @@ remove_all_children (GailTreeView *gailview,
                      NSAccessibilityElement *treeElement,
                      ACAccessibilityTreeRowElement *parentElement)
 {
+  // Cancel any pending update until after we've removed these rows
+  if (gailview->rowUpdateId > 0) {
+    g_source_remove (gailview->rowUpdateId);
+    gailview->rowUpdateId = 0;
+  }
+
   [parentElement foreachChild:^void (ACAccessibilityTreeRowElement *parent, ACAccessibilityTreeRowElement *child, void *userdata) {
     remove_all_children ((GailTreeView *)userdata, treeElement, child);
     [treeElement ac_accessibilityRemoveChildElement:child];
@@ -604,8 +624,8 @@ remove_all_children (GailTreeView *gailview,
   [parentElement removeAllChildren];
   [parentElement setAccessibilityDisclosedRows:nil];
 
-  // FIXME:
-  // Update the rows/columns
+  // Update the rows
+  update_accessibility_rows (gailview);
 }
 
 static gboolean
@@ -706,6 +726,7 @@ remove_column_from_parent (gpointer key,
   id<NSAccessibility> columnElement = (__bridge id<NSAccessibility>)value;
 
   [parent ac_accessibilityRemoveChildElement:columnElement];
+  [parent ac_accessibilityRemoveColumnElement:columnElement];
 
   // Remove this from the hashtable
   return TRUE;
@@ -737,6 +758,8 @@ columns_changed (GtkTreeView *tree_view)
 
     /* Add the column as an accessibillty child */
     [parentElement accessibilityAddChildElement:tc];
+    [parentElement ac_accessibilityAddColumnElement:tc];
+    [parentElement setAccessibilityVisibleColumns:[parentElement accessibilityColumns]];
 
     idx++;
   }
@@ -1162,6 +1185,32 @@ find_column_element_for_column (GailTreeView *gailView,
   return (__bridge ACAccessibilityTreeColumnElement *)g_hash_table_lookup (gailView->columnMap, column);
 }
 
+static gboolean
+update_accessibility_rows_idle (gpointer data)
+{
+  GailTreeView *gailView = (GailTreeView *)data;
+
+  gailView->rowUpdateId = 0;
+
+  NSArray *rows = [ROOT_NODE (gailView) flattenTree];
+  id <NSAccessibility> parentElement = ac_element_get_accessibility_element (AC_ELEMENT (gailView));
+
+  [parentElement setAccessibilityRows:rows];
+  [parentElement setAccessibilityVisibleRows:rows];
+
+  return FALSE;
+}
+
+static void
+update_accessibility_rows (GailTreeView *gailView)
+{
+  if (gailView->rowUpdateId > 0) {
+    return;
+  }
+
+  gailView->rowUpdateId = g_idle_add (update_accessibility_rows_idle, gailView);
+}
+
 static NSAccessibilityElement *
 make_accessibility_element_for_row (GtkTreeModel *treeModel,
                                     GtkTreeView *treeView,
@@ -1195,6 +1244,7 @@ make_accessibility_element_for_row (GtkTreeModel *treeModel,
     make_accessibility_cell_for_column (treeModel, treeView, gailView, rowIter, c->data, rowElement, columnElement);
   }
 
+  update_accessibility_rows (gailView);
   return rowElement;
 }
 

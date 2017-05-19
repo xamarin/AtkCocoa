@@ -50,6 +50,8 @@ struct _GailTreeView
   GHashTable *columnMap; /* Maps GtkTreeViewColumn to ACAccessibilityTreeColumnElement */
   /* These are void * because ARC doesn't like ObjC object types in C structs */
   void *rowRootNode; /* The root ACAccessibilityTreeRowElement * */
+
+  guint32 rowUpdateId;
 };
 
 GType gail_tree_view_get_type (void);
