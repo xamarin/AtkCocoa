@@ -174,6 +174,16 @@
     gtk_tree_path_free (path);
 }
 
+- (NSInteger)accessibilityDisclosureLevel
+{
+    GtkTreePath *path = gtk_tree_row_reference_get_path (_row);
+    int depth = gtk_tree_path_get_depth (path) - 1;
+
+    gtk_tree_path_free (path);
+
+    return depth;
+}
+
 - (void)addChildRowElement:(ACAccessibilityTreeRowElement *)child
 {
     NSMutableArray *disclosedChildren = [[self accessibilityDisclosedRows] mutableCopy];
