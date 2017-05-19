@@ -264,6 +264,10 @@ get_coords_in_window (GtkWidget *widget, int *x, int *y)
 		return nsstring_from_cstring (ac_element_get_text (_delegate));
 	}
 
+	if (GTK_IS_TOGGLE_BUTTON (owner)) {
+		return gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (owner)) ? @(1) : @(0);
+	}
+
 	return nil;
 }
 
