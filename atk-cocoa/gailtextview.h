@@ -50,8 +50,6 @@ struct _GailTextView
   gint           length;
 
   guint          insert_notify_handler;
-
-  void *real_element; /* ACAccessibilityTextViewElement */
 };
 
 GType gail_text_view_get_type (void);

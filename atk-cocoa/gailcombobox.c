@@ -137,6 +137,7 @@ gail_combo_box_real_initialize (AtkObject *obj,
 static id<NSAccessibility>
 get_real_accessibility_element (AcElement *element)
 {
+  /*
   GailComboBox *gail_combo_box = GAIL_COMBO_BOX (element);
 
   if (gail_combo_box->real_element == NULL) {
@@ -144,6 +145,8 @@ get_real_accessibility_element (AcElement *element)
   }
 
   return (__bridge id<NSAccessibility>) gail_combo_box->real_element;
+  */
+  return [[ACAccessibilityComboBoxElement alloc] initWithDelegate:element];
 }
 
 static void
@@ -336,7 +339,7 @@ maybe_show_popup (GailComboBox *gail_combo_box)
 
   widget = GTK_ACCESSIBLE (gail_combo_box)->widget;
 
-    combo_box = GTK_COMBO_BOX (widget);
+  combo_box = GTK_COMBO_BOX (widget);
 
   popup = gtk_combo_box_get_popup_accessible (combo_box);
   do_popup = !gtk_widget_get_mapped (GTK_ACCESSIBLE (popup)->widget);
@@ -344,6 +347,8 @@ maybe_show_popup (GailComboBox *gail_combo_box)
       gtk_combo_box_popup (combo_box);
   else
       gtk_combo_box_popdown (combo_box);
+
+  return TRUE;
 }
 
 static gboolean
@@ -641,9 +646,5 @@ gail_combo_box_finalize (GObject *object)
       combo_box->action_idle_handler = 0;
     }
 
-  if (combo_box->real_element) {
-    CFBridgingRelease (combo_box->real_element);
-    combo_box->real_element = NULL;
-  }
   G_OBJECT_CLASS (gail_combo_box_parent_class)->finalize (object);
 }

@@ -31,7 +31,6 @@ static void         gail_notebook_init                (GailNotebook      *notebo
 static void         gail_notebook_finalize            (GObject           *object);
 static void         gail_notebook_real_initialize     (AtkObject         *obj,
                                                        gpointer          data);
-
 static void         gail_notebook_real_notify_gtk     (GObject           *obj,
                                                        GParamSpec        *pspec);
 

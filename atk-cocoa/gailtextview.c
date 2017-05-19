@@ -220,12 +220,15 @@ gail_text_view_init (GailTextView      *text_view)
 static id<NSAccessibility>
 get_real_accessibility_element (AcElement *element)
 {
+  /*
   GailTextView *textview = GAIL_TEXT_VIEW (element);
   if (textview->real_element == NULL) {
     textview->real_element = (__bridge_retained void *)[[ACAccessibilityTextViewElement alloc] initWithDelegate:element];
   }
 
   return (__bridge id<NSAccessibility>) textview->real_element;
+  */
+  return [[ACAccessibilityTextViewElement alloc] initWithDelegate:element];
 }
 
 static void

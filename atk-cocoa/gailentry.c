@@ -246,13 +246,6 @@ gail_entry_real_initialize (AtkObject *obj,
 static id<NSAccessibility>
 get_real_accessibility_element (AcElement *element)
 {
-  /*
-  GailEntry *entry = GAIL_ENTRY (element);
-
-  if (entry->real_element == NULL) {
-    entry->real_element = (__bridge_retained void *)[[ACAccessibilityTextFieldElement alloc] initWithDelegate:element];
-  }
-*/
   return [[ACAccessibilityTextFieldElement alloc] initWithDelegate:element];
 }
 

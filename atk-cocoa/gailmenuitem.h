@@ -41,8 +41,6 @@ struct _GailMenuItem
   gchar    *click_keybinding;
   gchar    *click_description;
   guint    action_idle_handler;
-
-  void     *real_element; /* ACAccessibilityMenuItem */
 };
 
 GType gail_menu_item_get_type (void);

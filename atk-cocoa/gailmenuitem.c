@@ -132,6 +132,7 @@ gail_menu_item_real_initialize (AtkObject *obj,
 static id<NSAccessibility>
 get_real_accessibility_element (AcElement *element)
 {
+  /*
   GailMenuItem *item = GAIL_MENU_ITEM (element);
 
   if (item->real_element == NULL) {
@@ -139,6 +140,8 @@ get_real_accessibility_element (AcElement *element)
   }
 
   return (__bridge id<NSAccessibility>) item->real_element;
+  */
+  return [[ACAccessibilityMenuItemElement alloc] initWithDelegate:element];
 }
 
 static void
@@ -642,11 +645,6 @@ gail_menu_item_finalize (GObject *object)
       g_source_remove (menu_item->action_idle_handler);
       menu_item->action_idle_handler = 0;
     }
-
-  if (menu_item->real_element) {
-    CFBridgingRelease (menu_item->real_element);
-    menu_item->real_element = NULL;
-  }
 
   G_OBJECT_CLASS (gail_menu_item_parent_class)->finalize (object);
 }
