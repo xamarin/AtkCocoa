@@ -25,6 +25,9 @@
 #include <atk-cocoa/gailmisc.h>
 #include "gail-private-macros.h"
 
+#import <Foundation/Foundation.h>
+#import "ACAccessibilityNotebookTabElement.h"
+
 static void      gail_notebook_page_class_init      (GailNotebookPageClass     *klass);
 static void                  gail_notebook_page_init           (GailNotebookPage *page);
 static void                  gail_notebook_page_finalize       (GObject   *object);
@@ -192,6 +195,8 @@ gail_notebook_page_new (GtkNotebook *notebook,
   page->page = list->data;
   page->textutil = NULL;
   
+  page->element = (__bridge_retained void *) [[ACAccessibilityNotebookTabElement alloc] initWithDelegate:page];
+
   atk_object = ATK_OBJECT (page);
   atk_object->role = ATK_ROLE_PAGE_TAB;
   atk_object->layer = ATK_LAYER_WIDGET;
@@ -282,6 +287,11 @@ static void
 gail_notebook_page_finalize (GObject *object)
 {
   GailNotebookPage *page = GAIL_NOTEBOOK_PAGE (object);
+
+  if (page->element) {
+    CFRelease (page->element);
+    page->element = NULL;
+  }
 
   if (page->notebook)
     g_object_remove_weak_pointer (G_OBJECT (page->notebook), (gpointer *)&page->notebook);

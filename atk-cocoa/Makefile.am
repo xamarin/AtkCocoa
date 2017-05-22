@@ -6,6 +6,8 @@ atkcocoa_c_sources =			\
 	ACAccessibilityComboBoxElement.c \
 	ACAccessibilityElement.c	\
 	ACAccessibilityMenuItemElement.c	\
+	ACAccessibilityNotebookElement.c	\
+	ACAccessibilityNotebookTabElement.c	\
 	ACAccessibilityOutlineElement.c \
 	ACAccessibilitySpinnerElement.c \
 	ACAccessibilityTextFieldElement.c \
@@ -86,6 +88,8 @@ atkcocoa_private_h_sources =		\
 	ACAccessibilityComboBoxElement.h \
 	ACAccessibilityElement.h	\
 	ACAccessibilityMenuItemElement.h	\
+	ACAccessibilityNotebookElement.h \
+	ACAccessibilityNotebookTabElement.h	\
 	ACAccessibilityOutlineElement.h \
 	ACAccessibilitySpinnerElement.h \
 	ACAccessibilityTextFieldElement.h \

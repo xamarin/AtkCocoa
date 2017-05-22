@@ -23,6 +23,8 @@
 #include <atk-cocoa/gailnotebook.h>
 #include <atk-cocoa/gailtextutil.h>
 
+@protocol NSAccessibility;
+
 G_BEGIN_DECLS
 
 #define GAIL_TYPE_NOTEBOOK_PAGE            (gail_notebook_page_get_type ())
@@ -50,6 +52,7 @@ struct _GailNotebookPage
   guint notify_child_added_id;
 
   GailTextUtil *textutil;
+  void *element; // ACAccessibilityNotebookPageElement
 };
 
 GType gail_notebook_page_get_type (void);
@@ -60,6 +63,8 @@ struct _GailNotebookPageClass
 };
 
 AtkObject *gail_notebook_page_new(GtkNotebook *notebook, gint pagenum);
+
+#define gail_notebook_page_get_element(p) ((__bridge id<NSAccessibility>)(p)->element);
 
 G_END_DECLS
 

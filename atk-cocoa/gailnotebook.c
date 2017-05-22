@@ -26,11 +26,16 @@
 #include "gailnotebookpage.h"
 #include "gail-private-macros.h"
 
+#import "ACAccessibilityNotebookElement.h"
+#import "ACAccessibilityNotebookTabElement.h"
+
 static void         gail_notebook_class_init          (GailNotebookClass *klass);
 static void         gail_notebook_init                (GailNotebook      *notebook);
 static void         gail_notebook_finalize            (GObject           *object);
 static void         gail_notebook_real_initialize     (AtkObject         *obj,
                                                        gpointer          data);
+static id<NSAccessibility> get_real_accessibility_element  (AcElement *element);
+
 static void         gail_notebook_real_notify_gtk     (GObject           *obj,
                                                        GParamSpec        *pspec);
 
@@ -53,7 +58,7 @@ static void         check_cache                       (GailNotebook   *gail_note
                                                        GtkNotebook    *notebook);
 static void         reset_cache                       (GailNotebook   *gail_notebook,
                                                        gint           index);
-static void         create_notebook_page_accessible   (GailNotebook   *gail_notebook,
+static GailNotebookPage * create_notebook_page_accessible   (GailNotebook   *gail_notebook,
                                                        GtkNotebook    *notebook,
                                                        gint           index,
                                                        gboolean       insert_before,
@@ -77,9 +82,11 @@ gail_notebook_class_init (GailNotebookClass *klass)
   AtkObjectClass  *class = ATK_OBJECT_CLASS (klass);
   GailWidgetClass *widget_class;
   GailContainerClass *container_class;
+  AcElementClass *element_class;
 
   widget_class = (GailWidgetClass*)klass;
   container_class = (GailContainerClass*)klass;
+  element_class = (AcElementClass *)klass;
 
   gobject_class->finalize = gail_notebook_finalize;
 
@@ -93,6 +100,8 @@ gail_notebook_class_init (GailNotebookClass *klass)
    * number of children.
    */
   container_class->remove_gtk = gail_notebook_real_remove_gtk;
+
+  element_class->get_accessibility_element = get_real_accessibility_element;
 }
 
 static void
@@ -136,6 +145,45 @@ gail_notebook_ref_child (AtkObject      *obj,
   return accessible;
 }
 
+static NSInteger
+sort_rows (id a, id b, void *data)
+{
+  ACAccessibilityNotebookTabElement *tabA, *tabB;
+
+  tabA = (ACAccessibilityNotebookTabElement *)a;
+  tabB = (ACAccessibilityNotebookTabElement *)b;
+
+  return [tabA delegate]->index - [tabB delegate]->index;
+}
+
+static void
+create_accessibility_arrays (GailNotebook *gailbook)
+{
+  NSMutableArray *tabs, *content, *newChildren;
+  id<NSAccessibility> element;
+
+  tabs = [NSMutableArray array];
+  content = [NSMutableArray array];
+
+  element = ac_element_get_accessibility_element (AC_ELEMENT (gailbook));
+  for (id c in [element accessibilityChildren]) {
+    if ([c isKindOfClass:[ACAccessibilityNotebookTabElement class]]) {
+      [tabs addObject:c];
+    } else {
+      [content addObject:c];
+    }
+  }
+
+  [tabs sortUsingFunction:sort_rows context:NULL];
+
+  newChildren = [tabs mutableCopy];
+  [newChildren addObjectsFromArray:content];
+
+  [element setAccessibilityTabs:tabs];
+  [element setAccessibilityContents:content];
+  [element setAccessibilityChildren:newChildren];
+}
+
 static void
 gail_notebook_page_added (GtkNotebook *gtk_notebook,
                           GtkWidget   *child,
@@ -144,11 +192,18 @@ gail_notebook_page_added (GtkNotebook *gtk_notebook,
 {
   AtkObject *atk_obj;
   GailNotebook *notebook;
+  GailNotebookPage *page;
 
   atk_obj = gtk_widget_get_accessible (GTK_WIDGET (gtk_notebook));
   notebook = GAIL_NOTEBOOK (atk_obj);
-  create_notebook_page_accessible (notebook, gtk_notebook, page_num, FALSE, NULL);
+  page = create_notebook_page_accessible (notebook, gtk_notebook, page_num, FALSE, NULL);
   notebook->page_count++;
+
+  id<NSAccessibility> tabElement = gail_notebook_page_get_element (page);
+  ACAccessibilityElement *element = ac_element_get_accessibility_element (AC_ELEMENT (atk_obj));
+  [element accessibilityAddChildElement:tabElement];
+
+  create_accessibility_arrays (notebook);
 }
 
 static void
@@ -163,7 +218,8 @@ gail_notebook_real_initialize (AtkObject *obj,
 
   notebook = GAIL_NOTEBOOK (obj);
   gtk_notebook = GTK_NOTEBOOK (data);
-  for (i = 0; i < g_list_length (gtk_notebook->children); i++)
+  int length = g_list_length (gtk_notebook->children);
+  for (i = 0; i < length; i++)
     {
       create_notebook_page_accessible (notebook, gtk_notebook, i, FALSE, NULL);
     }
@@ -186,6 +242,12 @@ gail_notebook_real_initialize (AtkObject *obj,
                      obj);                     
 
   obj->role = ATK_ROLE_PAGE_TAB_LIST;
+}
+
+static id<NSAccessibility>
+get_real_accessibility_element  (AcElement *element)
+{
+  return [[ACAccessibilityNotebookElement alloc] initWithDelegate:element];
 }
 
 static void
@@ -240,6 +302,8 @@ gail_notebook_real_notify_gtk (GObject           *obj,
           */
           ac_element_remove_child (element, oldPageElement);
           ac_element_add_child (element, newPageElement);
+
+          create_accessibility_arrays (gail_notebook);
 
           if (old_page_num != -1)
             {
@@ -488,7 +552,7 @@ reset_cache (GailNotebook *gail_notebook,
     }
 }
 
-static void
+static GailNotebookPage *
 create_notebook_page_accessible (GailNotebook *gail_notebook,
                                  GtkNotebook  *notebook,
                                  gint         index,
@@ -507,6 +571,8 @@ create_notebook_page_accessible (GailNotebook *gail_notebook,
                     "parent_set",
                     G_CALLBACK (gail_notebook_child_parent_set),
                     obj);
+
+  return (GailNotebookPage *)obj;
 }
 
 static void
@@ -613,4 +679,9 @@ gail_notebook_destroyed (gpointer data)
       g_source_remove (gail_notebook->idle_focus_id);
       gail_notebook->idle_focus_id = 0;
     }
+
+  id<NSAccessibility> element = ac_element_get_accessibility_element (AC_ELEMENT (gail_notebook));
+  [element setAccessibilityChildren:nil];
+  [element setAccessibilityContents:nil];
+  [element setAccessibilityTabs:nil];
 }
