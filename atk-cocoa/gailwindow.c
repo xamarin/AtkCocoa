@@ -134,6 +134,7 @@ enum {
 
 struct _GailWindowPrivate {
   void *prerealized_element; /* ACAccessibilityElement */
+  int audit_id;
 };
 
 #define GAIL_WINDOW_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GAIL_TYPE_WINDOW, GailWindowPrivate))
@@ -290,6 +291,58 @@ gail_window_init (GailWindow   *accessible)
 }
 
 static void
+audit_element (id<NSAccessibility> element, int depth, int *invalidCount)
+{
+  NSArray *children = nil;
+
+  if ([element respondsToSelector:@selector (accessibilityChildren)]) {
+    children = [element accessibilityChildren];
+  }
+
+  if ([element isKindOfClass:[ACAccessibilityElement class]]) {
+    ACAccessibilityElement *realElement = (ACAccessibilityElement *)element;
+    AcElement *e = [realElement delegate];
+
+    g_print ("%*s--- %p - %p\n", depth, " ", e, realElement);
+    g_print ("%*s   Valid: %d\n", depth, " ", AC_IS_ELEMENT (e));
+    if (!AC_IS_ELEMENT (e)) {
+      g_print ("***********************************\n");
+      (*invalidCount)++;
+    }
+    g_print ("%*s   Type: %s\n", depth, " ", G_OBJECT_TYPE_NAME (e));
+  } else {
+    g_print ("%*s--- %p\n", depth, " ", element);
+    g_print ("%*s   Type: %s\n", depth, " ", [[element debugDescription] UTF8String]);
+  }
+
+  g_print ("%*s   --- %lu children\n", depth, " ", [children count]);
+
+  for (id<NSAccessibility> c in children) {
+    audit_element (c, depth + 1, invalidCount);
+  }
+
+  g_print ("%*s--- end %p\n", depth, " ", element);
+}
+
+static gboolean
+audit_accessibility_tree (gpointer data)
+{
+  AcElement *window = AC_ELEMENT (data);
+  int invalidCount = 0;
+  int depth = 0;
+
+  g_print ("--- --- --- BEGIN AUDIT --- --- ---\n");
+  if (AC_IS_ELEMENT (window)) {
+    audit_element (ac_element_get_accessibility_element (window), depth, &invalidCount);
+  } else {
+    invalidCount = 1;
+  }
+  g_print ("--- --- --- END AUDIT --- --- ---\n");
+  g_print ("%d invalid elements\n", invalidCount);
+  return TRUE;
+}
+
+static void
 gail_window_real_initialize (AtkObject *obj,
                              gpointer  data)
 {
@@ -352,6 +405,9 @@ gail_window_real_initialize (AtkObject *obj,
   if (obj->role == ATK_ROLE_TOOL_TIP &&
       gtk_widget_get_mapped (widget))
     atk_object_notify_state_change (obj, ATK_STATE_SHOWING, 1);
+
+  // window->priv->audit_id = g_timeout_add (10000, audit_accessibility_tree, window);
+  window->priv->audit_id = 0;
 }
 
 static void
@@ -485,6 +541,11 @@ gail_window_finalize (GObject *object)
   if (window->priv->prerealized_element) {
     CFBridgingRelease (window->priv->prerealized_element);
     window->priv->prerealized_element = NULL;
+  }
+
+  if (window->priv->audit_id > 0) {
+    g_source_remove (window->priv->audit_id);
+    window->priv->audit_id = 0;
   }
 
   if (window->name_change_handler)

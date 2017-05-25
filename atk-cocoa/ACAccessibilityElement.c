@@ -31,6 +31,10 @@
 	NSString *_realRole;
 	BOOL _accessibilityElementSet;
 	BOOL _accElement;
+
+	NSString *_delegate_type;
+	NSString *_owner_type;
+	NSString *_identifier;
 }
 
 - (instancetype) initWithDelegate:(AcElement *)delegate
@@ -43,6 +47,12 @@
 	_delegate = delegate;
 
 	_isCreated = YES;
+
+	if (delegate != NULL) {
+		_delegate_type = nsstring_from_cstring (g_strdup (G_OBJECT_TYPE_NAME (delegate)));
+		_owner_type = nsstring_from_cstring (g_strdup (G_OBJECT_TYPE_NAME (ac_element_get_owner (delegate))));
+	}
+
 	return self;
 }
 
@@ -92,7 +102,7 @@
 
 - (NSString *)description
 {
-	return [NSString stringWithFormat:@"%@ (%s (%p)- %s (%p))", [super description], G_OBJECT_TYPE_NAME (_delegate), _delegate, G_OBJECT_TYPE_NAME (ac_element_get_owner (_delegate)), ac_element_get_owner (_delegate)];
+	return [NSString stringWithFormat:@"%@ (%@ (%p)- %@ (%p) - %@)", [super description], _delegate_type, _delegate, _owner_type, ac_element_get_owner (_delegate), _identifier ?: @"None set"];
 }
 
 static char *get_full_object_path (GtkWidget *object)
@@ -214,6 +224,13 @@ get_coords_in_window (GtkWidget *widget, int *x, int *y)
 		}
 
 		ACAccessibilityElement *e = (ACAccessibilityElement *)nsa;
+		if (!AC_IS_ELEMENT (e->_delegate)) {
+			NSLog (@"Invalid delegate %p found for %@", e->_delegate, [super description]);
+			NSLog (@"If anyone finds this message, please attach the log file it is in to https://bugzilla.xamarin.com/show_bug.cgi?id=56649");
+			NSLog (@"And inform iain");
+			continue;
+		}
+
 		GObject *owner = ac_element_get_owner (e->_delegate);
 		if (!GTK_IS_WIDGET (owner)) {
 			continue;
@@ -277,7 +294,12 @@ get_coords_in_window (GtkWidget *widget, int *x, int *y)
 	if (name == NULL) {
 		name = G_OBJECT_TYPE_NAME (ac_element_get_owner (_delegate));
 	}
-	return nsstring_from_cstring (name);
+	NSString *ident = nsstring_from_cstring (name);
+	if (_identifier == nil) {
+		_identifier = ident;
+	}
+
+	return ident;
 }
 
 - (NSString *)accessibilityHelp
