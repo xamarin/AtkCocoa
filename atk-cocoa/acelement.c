@@ -621,7 +621,7 @@ ac_element_remove_child (AcElement *parent,
 	}
 }
 
-const char *
+char *
 ac_element_get_text (AcElement *element)
 {
 	if (ATK_IS_TEXT (element)) {

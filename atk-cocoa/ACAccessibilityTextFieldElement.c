@@ -30,12 +30,18 @@
 	return [super initWithDelegate:delegate];
 }
 
+- (BOOL)respondsToSelector:(SEL)sel
+{
+    // NSLog (@"Entry: %@", NSStringFromSelector (sel));
+    return [super respondsToSelector:sel];
+}
+
 - (NSString *)accessibilityValue
 {
 	GObject *owner = ac_element_get_owner ([self delegate]);
 
 	if (!GTK_IS_ENTRY (owner)) {
-        return nil;
+        return @"";
 	}
 
     return nsstring_from_cstring (ac_element_get_text ([self delegate]));
@@ -70,4 +76,89 @@
 {
     return [super accessibilityParent];
 }
+
+- (NSInteger)accessibilityNumberOfCharacters
+{
+    AcElement *delegate = [self delegate];
+    if (!ATK_IS_TEXT (delegate)) {
+        return 0;
+    }
+
+    return atk_text_get_character_count (ATK_TEXT (delegate));
+}
+
+- (NSInteger)accessibilityInsertionPointLineNumber
+{
+    return 0;
+}
+
+- (NSString *)accessibilitySelectedText
+{
+    AcElement *delegate = [self delegate];
+    if (!ATK_IS_TEXT (delegate)) {
+        return @"";
+    }
+
+    int s, e;
+    return nsstring_from_cstring (atk_text_get_selection (ATK_TEXT (delegate), 0, &s, &e));
+}
+
+- (NSRange)accessibilitySelectedTextRange
+{
+    AcElement *delegate = [self delegate];
+    if (!ATK_IS_TEXT (delegate)) {
+        return NSMakeRange (0, 0);
+    }
+
+    int s, e;
+    char *sel = atk_text_get_selection (ATK_TEXT (delegate), 0, &s, &e);
+    if (sel == NULL) {
+        return NSMakeRange (atk_text_get_caret_offset (ATK_TEXT (delegate)), 0);
+    } else {
+        g_free (sel);
+        return NSMakeRange (s, e - s);
+    }
+}
+
+- (NSString *)accessibilityStringForRange:(NSRange)range
+{
+    AcElement *delegate = [self delegate];
+    if (!ATK_IS_TEXT (delegate)) {
+        return @"";
+    }
+
+    int e = range.location + range.length;
+    return nsstring_from_cstring (atk_text_get_text (ATK_TEXT (delegate), range.location, e));
+}
+
+- (NSRect)accessibilityFrameForRange:(NSRange)range
+{
+    return NSMakeRect (200, 200, 50, 50);
+}
+
+- (NSRange)accessibilityVisibleCharacterRange
+{
+    AcElement *delegate = [self delegate];
+    if (!ATK_IS_TEXT (delegate)) {
+        return NSMakeRange (0, 0);
+    }
+
+    return NSMakeRange (0, atk_text_get_character_count (ATK_TEXT (delegate)));
+}
+
+- (NSRange)accessibilityRangeForLine:(NSInteger)line
+{
+    AcElement *delegate = [self delegate];
+    if (!ATK_IS_TEXT (delegate)) {
+        return NSMakeRange (0, 0);
+    }
+
+    return NSMakeRange (0, atk_text_get_character_count (ATK_TEXT (delegate)));
+}
+
+- (NSInteger)accessibilityLineForIndex:(NSInteger)index
+{
+    return 0;
+}
+
 @end
