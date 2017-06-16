@@ -195,8 +195,10 @@ libatkcocoa_LIBADD =  \
 	-lgmodule-2.0 	\
 	$(GTK_LIBS)
 
+CLANG_ARGS = -mmacosx-version-min=10.10
+
 %.o: %.c
-	xcrun clang $(libatkcocoa_CPPFLAGS) $(libatkcocoa_CFLAGS) -c $< -o $@
+	xcrun clang $(CLANG_ARGS) $(libatkcocoa_CPPFLAGS) $(libatkcocoa_CFLAGS) -c $< -o $@
 
 libatkcocoa_LDFLAGS =    \
 	-ObjC -dynamiclib \
@@ -206,7 +208,7 @@ libatkcocoa_LDFLAGS =    \
         $(LDFLAGS)
 
 libatkcocoa: $(BUILT_SOURCES) $(atkcocoa_c_objs)
-	xcrun clang $(atkcocoa_c_objs) $(libatkcocoa_LIBADD) $(libatkcocoa_LDFLAGS) -o libatkcocoa.so
+	xcrun clang $(CLANG_ARGS) $(atkcocoa_c_objs) $(libatkcocoa_LIBADD) $(libatkcocoa_LDFLAGS) -o libatkcocoa.so
 
 acmarshal.h: stamp-acmarshal.h
 	@true
