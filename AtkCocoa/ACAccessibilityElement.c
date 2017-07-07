@@ -603,6 +603,7 @@ ns_role_from_atk (AtkRole atk_role, NSString **ns_role, NSString **ns_subrole)
 			break;
 
 		case ATK_ROLE_RULER:
+            *ns_role = NSAccessibilityRulerRole;
 			break;
 
 		case ATK_ROLE_APPLICATION:
