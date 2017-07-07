@@ -6,3 +6,6 @@ all:
 install:
 	mkdir -p $(INSTALL_ROOT)
 	cp build/Release/libAtkCocoa.dylib $(INSTALL_ROOT)/libatkcocoa.so
+
+clean:
+	xcodebuild -alltargets clean
