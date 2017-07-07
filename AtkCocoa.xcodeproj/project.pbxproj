@@ -1,0 +1,674 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AE47D3E51F0E764B00678275 /* ACAccessibilityCellElement.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3961F0E764B00678275 /* ACAccessibilityCellElement.c */; };
+		AE47D3E61F0E764B00678275 /* ACAccessibilityComboBoxElement.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3971F0E764B00678275 /* ACAccessibilityComboBoxElement.c */; };
+		AE47D3E71F0E764B00678275 /* ACAccessibilityElement.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3981F0E764B00678275 /* ACAccessibilityElement.c */; };
+		AE47D3E81F0E764B00678275 /* ACAccessibilityMenuItemElement.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3991F0E764B00678275 /* ACAccessibilityMenuItemElement.c */; };
+		AE47D3E91F0E764B00678275 /* ACAccessibilityNotebookElement.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D39A1F0E764B00678275 /* ACAccessibilityNotebookElement.c */; };
+		AE47D3EA1F0E764B00678275 /* ACAccessibilityNotebookTabElement.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D39B1F0E764B00678275 /* ACAccessibilityNotebookTabElement.c */; };
+		AE47D3EB1F0E764B00678275 /* ACAccessibilityOutlineElement.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D39C1F0E764B00678275 /* ACAccessibilityOutlineElement.c */; };
+		AE47D3EC1F0E764B00678275 /* ACAccessibilitySpinnerElement.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D39D1F0E764B00678275 /* ACAccessibilitySpinnerElement.c */; };
+		AE47D3ED1F0E764B00678275 /* ACAccessibilityTextFieldElement.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D39E1F0E764B00678275 /* ACAccessibilityTextFieldElement.c */; };
+		AE47D3EE1F0E764B00678275 /* ACAccessibilityTextViewElement.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D39F1F0E764B00678275 /* ACAccessibilityTextViewElement.c */; };
+		AE47D3EF1F0E764B00678275 /* ACAccessibilityTreeCellElement.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3A01F0E764B00678275 /* ACAccessibilityTreeCellElement.c */; };
+		AE47D3F01F0E764B00678275 /* ACAccessibilityTreeColumnElement.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3A11F0E764B00678275 /* ACAccessibilityTreeColumnElement.c */; };
+		AE47D3F11F0E764B00678275 /* ACAccessibilityTreeRowElement.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3A21F0E764B00678275 /* ACAccessibilityTreeRowElement.c */; };
+		AE47D3F21F0E764B00678275 /* acelement.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3A31F0E764B00678275 /* acelement.c */; };
+		AE47D3F31F0E764B00678275 /* acutils.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3A41F0E764B00678275 /* acutils.c */; };
+		AE47D3F41F0E764B00678275 /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = AE47D3A51F0E764B00678275 /* config.h */; };
+		AE47D3F51F0E764B00678275 /* gail.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3A61F0E764B00678275 /* gail.c */; };
+		AE47D3F61F0E764B00678275 /* gailadjustment.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3A71F0E764B00678275 /* gailadjustment.c */; };
+		AE47D3F71F0E764B00678275 /* gailarrow.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3A81F0E764B00678275 /* gailarrow.c */; };
+		AE47D3F81F0E764B00678275 /* gailbooleancell.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3A91F0E764B00678275 /* gailbooleancell.c */; };
+		AE47D3F91F0E764B00678275 /* gailbox.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3AA1F0E764B00678275 /* gailbox.c */; };
+		AE47D3FA1F0E764B00678275 /* gailbutton.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3AB1F0E764B00678275 /* gailbutton.c */; };
+		AE47D3FB1F0E764B00678275 /* gailcalendar.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3AC1F0E764B00678275 /* gailcalendar.c */; };
+		AE47D3FC1F0E764B00678275 /* gailcell.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3AD1F0E764B00678275 /* gailcell.c */; };
+		AE47D3FD1F0E764B00678275 /* gailcellparent.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3AE1F0E764B00678275 /* gailcellparent.c */; };
+		AE47D3FE1F0E764B00678275 /* gailcheckmenuitem.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3AF1F0E764B00678275 /* gailcheckmenuitem.c */; };
+		AE47D3FF1F0E764B00678275 /* gailchecksubmenuitem.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3B01F0E764B00678275 /* gailchecksubmenuitem.c */; };
+		AE47D4021F0E764B00678275 /* gailcombo.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3B31F0E764B00678275 /* gailcombo.c */; };
+		AE47D4031F0E764B00678275 /* gailcombobox.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3B41F0E764B00678275 /* gailcombobox.c */; };
+		AE47D4041F0E764B00678275 /* gailcontainer.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3B51F0E764B00678275 /* gailcontainer.c */; };
+		AE47D4051F0E764B00678275 /* gailcontainercell.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3B61F0E764B00678275 /* gailcontainercell.c */; };
+		AE47D4061F0E764B00678275 /* gailentry.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3B71F0E764B00678275 /* gailentry.c */; };
+		AE47D4071F0E764B00678275 /* gailexpander.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3B81F0E764B00678275 /* gailexpander.c */; };
+		AE47D4081F0E764B00678275 /* gailframe.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3B91F0E764B00678275 /* gailframe.c */; };
+		AE47D40D1F0E764B00678275 /* gailimage.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3BE1F0E764B00678275 /* gailimage.c */; };
+		AE47D40E1F0E764B00678275 /* gailimagecell.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3BF1F0E764B00678275 /* gailimagecell.c */; };
+		AE47D40F1F0E764B00678275 /* gailitem.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3C01F0E764B00678275 /* gailitem.c */; };
+		AE47D4101F0E764B00678275 /* gaillabel.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3C11F0E764B00678275 /* gaillabel.c */; };
+		AE47D4111F0E764B00678275 /* gaillist.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3C21F0E764B00678275 /* gaillist.c */; };
+		AE47D4121F0E764B00678275 /* gailmenu.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3C31F0E764B00678275 /* gailmenu.c */; };
+		AE47D4131F0E764B00678275 /* gailmenuitem.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3C41F0E764B00678275 /* gailmenuitem.c */; };
+		AE47D4141F0E764B00678275 /* gailmenushell.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3C51F0E764B00678275 /* gailmenushell.c */; };
+		AE47D4151F0E764B00678275 /* gailmisc.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3C61F0E764B00678275 /* gailmisc.c */; };
+		AE47D4161F0E764B00678275 /* gailnotebook.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3C71F0E764B00678275 /* gailnotebook.c */; };
+		AE47D4171F0E764B00678275 /* gailnotebookpage.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3C81F0E764B00678275 /* gailnotebookpage.c */; };
+		AE47D4181F0E764B00678275 /* gailobject.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3C91F0E764B00678275 /* gailobject.c */; };
+		AE47D4191F0E764B00678275 /* gailoptionmenu.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3CA1F0E764B00678275 /* gailoptionmenu.c */; };
+		AE47D41A1F0E764B00678275 /* gailpaned.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3CB1F0E764B00678275 /* gailpaned.c */; };
+		AE47D41B1F0E764B00678275 /* gailpixmap.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3CC1F0E764B00678275 /* gailpixmap.c */; };
+		AE47D41C1F0E764B00678275 /* gailprogressbar.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3CD1F0E764B00678275 /* gailprogressbar.c */; };
+		AE47D41D1F0E764B00678275 /* gailradiobutton.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3CE1F0E764B00678275 /* gailradiobutton.c */; };
+		AE47D41E1F0E764B00678275 /* gailradiomenuitem.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3CF1F0E764B00678275 /* gailradiomenuitem.c */; };
+		AE47D41F1F0E764B00678275 /* gailradiosubmenuitem.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3D01F0E764B00678275 /* gailradiosubmenuitem.c */; };
+		AE47D4201F0E764B00678275 /* gailrange.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3D11F0E764B00678275 /* gailrange.c */; };
+		AE47D4211F0E764B00678275 /* gailrenderercell.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3D21F0E764B00678275 /* gailrenderercell.c */; };
+		AE47D4221F0E764B00678275 /* gailscale.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3D31F0E764B00678275 /* gailscale.c */; };
+		AE47D4231F0E764B00678275 /* gailscalebutton.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3D41F0E764B00678275 /* gailscalebutton.c */; };
+		AE47D4241F0E764B00678275 /* gailscrollbar.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3D51F0E764B00678275 /* gailscrollbar.c */; };
+		AE47D4251F0E764B00678275 /* gailscrolledwindow.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3D61F0E764B00678275 /* gailscrolledwindow.c */; };
+		AE47D4261F0E764B00678275 /* gailseparator.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3D71F0E764B00678275 /* gailseparator.c */; };
+		AE47D4271F0E764B00678275 /* gailspinbutton.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3D81F0E764B00678275 /* gailspinbutton.c */; };
+		AE47D4281F0E764B00678275 /* gailstatusbar.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3D91F0E764B00678275 /* gailstatusbar.c */; };
+		AE47D4291F0E764B00678275 /* gailsubmenuitem.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3DA1F0E764B00678275 /* gailsubmenuitem.c */; };
+		AE47D42A1F0E764B00678275 /* gailtextcell.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3DB1F0E764B00678275 /* gailtextcell.c */; };
+		AE47D42B1F0E764B00678275 /* gailtextutil.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3DC1F0E764B00678275 /* gailtextutil.c */; };
+		AE47D42C1F0E764B00678275 /* gailtextview.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3DD1F0E764B00678275 /* gailtextview.c */; };
+		AE47D42D1F0E764B00678275 /* gailtogglebutton.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3DE1F0E764B00678275 /* gailtogglebutton.c */; };
+		AE47D42E1F0E764B00678275 /* gailtoplevel.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3DF1F0E764B00678275 /* gailtoplevel.c */; };
+		AE47D42F1F0E764B00678275 /* gailtreeview.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3E01F0E764B00678275 /* gailtreeview.c */; };
+		AE47D4301F0E764B00678275 /* gailutil.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3E11F0E764B00678275 /* gailutil.c */; };
+		AE47D4311F0E764B00678275 /* gailwidget.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3E21F0E764B00678275 /* gailwidget.c */; };
+		AE47D4321F0E764B00678275 /* gailwindow.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3E31F0E764B00678275 /* gailwindow.c */; };
+		AE47D4331F0E764B00678275 /* NSAccessibilityElement+AtkCocoa.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3E41F0E764B00678275 /* NSAccessibilityElement+AtkCocoa.c */; };
+		AE47D43F1F0E789100678275 /* libatk-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AE47D4361F0E789100678275 /* libatk-1.0.0.dylib */; };
+		AE47D4401F0E789100678275 /* libcairo.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AE47D4371F0E789100678275 /* libcairo.2.dylib */; };
+		AE47D4411F0E789100678275 /* libgdk_pixbuf-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AE47D4381F0E789100678275 /* libgdk_pixbuf-2.0.0.dylib */; };
+		AE47D4421F0E789100678275 /* libgdk-quartz-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AE47D4391F0E789100678275 /* libgdk-quartz-2.0.0.dylib */; };
+		AE47D4431F0E789100678275 /* libgio-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AE47D43A1F0E789100678275 /* libgio-2.0.0.dylib */; };
+		AE47D4441F0E789100678275 /* libglib-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AE47D43B1F0E789100678275 /* libglib-2.0.0.dylib */; };
+		AE47D4451F0E789100678275 /* libgtk-quartz-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AE47D43C1F0E789100678275 /* libgtk-quartz-2.0.0.dylib */; };
+		AE47D4461F0E789100678275 /* libintl.8.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AE47D43D1F0E789100678275 /* libintl.8.dylib */; };
+		AE47D4471F0E789100678275 /* libpango-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AE47D43E1F0E789100678275 /* libpango-1.0.0.dylib */; };
+		AE47D44A1F0E78D200678275 /* libgobject-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AE47D4481F0E78D200678275 /* libgobject-2.0.0.dylib */; };
+		AE47D44B1F0E78D200678275 /* libpangocairo-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AE47D4491F0E78D200678275 /* libpangocairo-1.0.0.dylib */; };
+		AE47D44D1F0E7E0800678275 /* libgmodule-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AE47D44C1F0E7E0800678275 /* libgmodule-2.0.0.dylib */; };
+		AE47D44F1F0E874F00678275 /* acmarshal.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D44E1F0E874F00678275 /* acmarshal.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AE47D2EC1F0E74B700678275 /* libAtkCocoa.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libAtkCocoa.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		AE47D3961F0E764B00678275 /* ACAccessibilityCellElement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = ACAccessibilityCellElement.c; sourceTree = "<group>"; };
+		AE47D3971F0E764B00678275 /* ACAccessibilityComboBoxElement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = ACAccessibilityComboBoxElement.c; sourceTree = "<group>"; };
+		AE47D3981F0E764B00678275 /* ACAccessibilityElement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = ACAccessibilityElement.c; sourceTree = "<group>"; };
+		AE47D3991F0E764B00678275 /* ACAccessibilityMenuItemElement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = ACAccessibilityMenuItemElement.c; sourceTree = "<group>"; };
+		AE47D39A1F0E764B00678275 /* ACAccessibilityNotebookElement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = ACAccessibilityNotebookElement.c; sourceTree = "<group>"; };
+		AE47D39B1F0E764B00678275 /* ACAccessibilityNotebookTabElement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = ACAccessibilityNotebookTabElement.c; sourceTree = "<group>"; };
+		AE47D39C1F0E764B00678275 /* ACAccessibilityOutlineElement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = ACAccessibilityOutlineElement.c; sourceTree = "<group>"; };
+		AE47D39D1F0E764B00678275 /* ACAccessibilitySpinnerElement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = ACAccessibilitySpinnerElement.c; sourceTree = "<group>"; };
+		AE47D39E1F0E764B00678275 /* ACAccessibilityTextFieldElement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = ACAccessibilityTextFieldElement.c; sourceTree = "<group>"; };
+		AE47D39F1F0E764B00678275 /* ACAccessibilityTextViewElement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = ACAccessibilityTextViewElement.c; sourceTree = "<group>"; };
+		AE47D3A01F0E764B00678275 /* ACAccessibilityTreeCellElement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = ACAccessibilityTreeCellElement.c; sourceTree = "<group>"; };
+		AE47D3A11F0E764B00678275 /* ACAccessibilityTreeColumnElement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = ACAccessibilityTreeColumnElement.c; sourceTree = "<group>"; };
+		AE47D3A21F0E764B00678275 /* ACAccessibilityTreeRowElement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = ACAccessibilityTreeRowElement.c; sourceTree = "<group>"; };
+		AE47D3A31F0E764B00678275 /* acelement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = acelement.c; sourceTree = "<group>"; };
+		AE47D3A41F0E764B00678275 /* acutils.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = acutils.c; sourceTree = "<group>"; };
+		AE47D3A51F0E764B00678275 /* config.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = config.h; sourceTree = "<group>"; };
+		AE47D3A61F0E764B00678275 /* gail.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gail.c; sourceTree = "<group>"; };
+		AE47D3A71F0E764B00678275 /* gailadjustment.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailadjustment.c; sourceTree = "<group>"; };
+		AE47D3A81F0E764B00678275 /* gailarrow.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailarrow.c; sourceTree = "<group>"; };
+		AE47D3A91F0E764B00678275 /* gailbooleancell.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailbooleancell.c; sourceTree = "<group>"; };
+		AE47D3AA1F0E764B00678275 /* gailbox.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailbox.c; sourceTree = "<group>"; };
+		AE47D3AB1F0E764B00678275 /* gailbutton.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailbutton.c; sourceTree = "<group>"; };
+		AE47D3AC1F0E764B00678275 /* gailcalendar.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailcalendar.c; sourceTree = "<group>"; };
+		AE47D3AD1F0E764B00678275 /* gailcell.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailcell.c; sourceTree = "<group>"; };
+		AE47D3AE1F0E764B00678275 /* gailcellparent.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailcellparent.c; sourceTree = "<group>"; };
+		AE47D3AF1F0E764B00678275 /* gailcheckmenuitem.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailcheckmenuitem.c; sourceTree = "<group>"; };
+		AE47D3B01F0E764B00678275 /* gailchecksubmenuitem.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailchecksubmenuitem.c; sourceTree = "<group>"; };
+		AE47D3B31F0E764B00678275 /* gailcombo.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailcombo.c; sourceTree = "<group>"; };
+		AE47D3B41F0E764B00678275 /* gailcombobox.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailcombobox.c; sourceTree = "<group>"; };
+		AE47D3B51F0E764B00678275 /* gailcontainer.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailcontainer.c; sourceTree = "<group>"; };
+		AE47D3B61F0E764B00678275 /* gailcontainercell.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailcontainercell.c; sourceTree = "<group>"; };
+		AE47D3B71F0E764B00678275 /* gailentry.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailentry.c; sourceTree = "<group>"; };
+		AE47D3B81F0E764B00678275 /* gailexpander.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailexpander.c; sourceTree = "<group>"; };
+		AE47D3B91F0E764B00678275 /* gailframe.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailframe.c; sourceTree = "<group>"; };
+		AE47D3BE1F0E764B00678275 /* gailimage.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailimage.c; sourceTree = "<group>"; };
+		AE47D3BF1F0E764B00678275 /* gailimagecell.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailimagecell.c; sourceTree = "<group>"; };
+		AE47D3C01F0E764B00678275 /* gailitem.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailitem.c; sourceTree = "<group>"; };
+		AE47D3C11F0E764B00678275 /* gaillabel.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gaillabel.c; sourceTree = "<group>"; };
+		AE47D3C21F0E764B00678275 /* gaillist.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gaillist.c; sourceTree = "<group>"; };
+		AE47D3C31F0E764B00678275 /* gailmenu.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailmenu.c; sourceTree = "<group>"; };
+		AE47D3C41F0E764B00678275 /* gailmenuitem.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailmenuitem.c; sourceTree = "<group>"; };
+		AE47D3C51F0E764B00678275 /* gailmenushell.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailmenushell.c; sourceTree = "<group>"; };
+		AE47D3C61F0E764B00678275 /* gailmisc.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailmisc.c; sourceTree = "<group>"; };
+		AE47D3C71F0E764B00678275 /* gailnotebook.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailnotebook.c; sourceTree = "<group>"; };
+		AE47D3C81F0E764B00678275 /* gailnotebookpage.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailnotebookpage.c; sourceTree = "<group>"; };
+		AE47D3C91F0E764B00678275 /* gailobject.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailobject.c; sourceTree = "<group>"; };
+		AE47D3CA1F0E764B00678275 /* gailoptionmenu.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailoptionmenu.c; sourceTree = "<group>"; };
+		AE47D3CB1F0E764B00678275 /* gailpaned.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailpaned.c; sourceTree = "<group>"; };
+		AE47D3CC1F0E764B00678275 /* gailpixmap.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailpixmap.c; sourceTree = "<group>"; };
+		AE47D3CD1F0E764B00678275 /* gailprogressbar.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailprogressbar.c; sourceTree = "<group>"; };
+		AE47D3CE1F0E764B00678275 /* gailradiobutton.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailradiobutton.c; sourceTree = "<group>"; };
+		AE47D3CF1F0E764B00678275 /* gailradiomenuitem.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailradiomenuitem.c; sourceTree = "<group>"; };
+		AE47D3D01F0E764B00678275 /* gailradiosubmenuitem.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailradiosubmenuitem.c; sourceTree = "<group>"; };
+		AE47D3D11F0E764B00678275 /* gailrange.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailrange.c; sourceTree = "<group>"; };
+		AE47D3D21F0E764B00678275 /* gailrenderercell.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailrenderercell.c; sourceTree = "<group>"; };
+		AE47D3D31F0E764B00678275 /* gailscale.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailscale.c; sourceTree = "<group>"; };
+		AE47D3D41F0E764B00678275 /* gailscalebutton.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailscalebutton.c; sourceTree = "<group>"; };
+		AE47D3D51F0E764B00678275 /* gailscrollbar.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailscrollbar.c; sourceTree = "<group>"; };
+		AE47D3D61F0E764B00678275 /* gailscrolledwindow.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailscrolledwindow.c; sourceTree = "<group>"; };
+		AE47D3D71F0E764B00678275 /* gailseparator.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailseparator.c; sourceTree = "<group>"; };
+		AE47D3D81F0E764B00678275 /* gailspinbutton.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailspinbutton.c; sourceTree = "<group>"; };
+		AE47D3D91F0E764B00678275 /* gailstatusbar.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailstatusbar.c; sourceTree = "<group>"; };
+		AE47D3DA1F0E764B00678275 /* gailsubmenuitem.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailsubmenuitem.c; sourceTree = "<group>"; };
+		AE47D3DB1F0E764B00678275 /* gailtextcell.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailtextcell.c; sourceTree = "<group>"; };
+		AE47D3DC1F0E764B00678275 /* gailtextutil.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailtextutil.c; sourceTree = "<group>"; };
+		AE47D3DD1F0E764B00678275 /* gailtextview.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailtextview.c; sourceTree = "<group>"; };
+		AE47D3DE1F0E764B00678275 /* gailtogglebutton.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailtogglebutton.c; sourceTree = "<group>"; };
+		AE47D3DF1F0E764B00678275 /* gailtoplevel.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailtoplevel.c; sourceTree = "<group>"; };
+		AE47D3E01F0E764B00678275 /* gailtreeview.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailtreeview.c; sourceTree = "<group>"; };
+		AE47D3E11F0E764B00678275 /* gailutil.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailutil.c; sourceTree = "<group>"; };
+		AE47D3E21F0E764B00678275 /* gailwidget.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailwidget.c; sourceTree = "<group>"; };
+		AE47D3E31F0E764B00678275 /* gailwindow.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailwindow.c; sourceTree = "<group>"; };
+		AE47D3E41F0E764B00678275 /* NSAccessibilityElement+AtkCocoa.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = "NSAccessibilityElement+AtkCocoa.c"; sourceTree = "<group>"; };
+		AE47D4341F0E781500678275 /* atk-cocoa */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "atk-cocoa"; sourceTree = "<group>"; };
+		AE47D4361F0E789100678275 /* libatk-1.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libatk-1.0.0.dylib"; path = "../../../../../../Library/Frameworks/Mono.framework/Versions/5.4.0/lib/libatk-1.0.0.dylib"; sourceTree = "<group>"; };
+		AE47D4371F0E789100678275 /* libcairo.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcairo.2.dylib; path = ../../../../../../Library/Frameworks/Mono.framework/Versions/5.4.0/lib/libcairo.2.dylib; sourceTree = "<group>"; };
+		AE47D4381F0E789100678275 /* libgdk_pixbuf-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libgdk_pixbuf-2.0.0.dylib"; path = "../../../../../../Library/Frameworks/Mono.framework/Versions/5.4.0/lib/libgdk_pixbuf-2.0.0.dylib"; sourceTree = "<group>"; };
+		AE47D4391F0E789100678275 /* libgdk-quartz-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libgdk-quartz-2.0.0.dylib"; path = "../../../../../../Library/Frameworks/Mono.framework/Versions/5.4.0/lib/libgdk-quartz-2.0.0.dylib"; sourceTree = "<group>"; };
+		AE47D43A1F0E789100678275 /* libgio-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libgio-2.0.0.dylib"; path = "../../../../../../Library/Frameworks/Mono.framework/Versions/5.4.0/lib/libgio-2.0.0.dylib"; sourceTree = "<group>"; };
+		AE47D43B1F0E789100678275 /* libglib-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libglib-2.0.0.dylib"; path = "../../../../../../Library/Frameworks/Mono.framework/Versions/5.4.0/lib/libglib-2.0.0.dylib"; sourceTree = "<group>"; };
+		AE47D43C1F0E789100678275 /* libgtk-quartz-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libgtk-quartz-2.0.0.dylib"; path = "../../../../../../Library/Frameworks/Mono.framework/Versions/5.4.0/lib/libgtk-quartz-2.0.0.dylib"; sourceTree = "<group>"; };
+		AE47D43D1F0E789100678275 /* libintl.8.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libintl.8.dylib; path = ../../../../../../Library/Frameworks/Mono.framework/Versions/5.4.0/lib/libintl.8.dylib; sourceTree = "<group>"; };
+		AE47D43E1F0E789100678275 /* libpango-1.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libpango-1.0.0.dylib"; path = "../../../../../../Library/Frameworks/Mono.framework/Versions/5.4.0/lib/libpango-1.0.0.dylib"; sourceTree = "<group>"; };
+		AE47D4481F0E78D200678275 /* libgobject-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libgobject-2.0.0.dylib"; path = "../../../../../../Library/Frameworks/Mono.framework/Versions/5.4.0/lib/libgobject-2.0.0.dylib"; sourceTree = "<group>"; };
+		AE47D4491F0E78D200678275 /* libpangocairo-1.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libpangocairo-1.0.0.dylib"; path = "../../../../../../Library/Frameworks/Mono.framework/Versions/5.4.0/lib/libpangocairo-1.0.0.dylib"; sourceTree = "<group>"; };
+		AE47D44C1F0E7E0800678275 /* libgmodule-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libgmodule-2.0.0.dylib"; path = "../../../../../../Library/Frameworks/Mono.framework/Versions/5.4.0/lib/libgmodule-2.0.0.dylib"; sourceTree = "<group>"; };
+		AE47D44E1F0E874F00678275 /* acmarshal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = acmarshal.c; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AE47D2E91F0E74B700678275 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AE47D44D1F0E7E0800678275 /* libgmodule-2.0.0.dylib in Frameworks */,
+				AE47D44A1F0E78D200678275 /* libgobject-2.0.0.dylib in Frameworks */,
+				AE47D44B1F0E78D200678275 /* libpangocairo-1.0.0.dylib in Frameworks */,
+				AE47D43F1F0E789100678275 /* libatk-1.0.0.dylib in Frameworks */,
+				AE47D4401F0E789100678275 /* libcairo.2.dylib in Frameworks */,
+				AE47D4411F0E789100678275 /* libgdk_pixbuf-2.0.0.dylib in Frameworks */,
+				AE47D4421F0E789100678275 /* libgdk-quartz-2.0.0.dylib in Frameworks */,
+				AE47D4431F0E789100678275 /* libgio-2.0.0.dylib in Frameworks */,
+				AE47D4441F0E789100678275 /* libglib-2.0.0.dylib in Frameworks */,
+				AE47D4451F0E789100678275 /* libgtk-quartz-2.0.0.dylib in Frameworks */,
+				AE47D4461F0E789100678275 /* libintl.8.dylib in Frameworks */,
+				AE47D4471F0E789100678275 /* libpango-1.0.0.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AE47D2E31F0E74B700678275 = {
+			isa = PBXGroup;
+			children = (
+				AE47D2EE1F0E74B700678275 /* AtkCocoa */,
+				AE47D2ED1F0E74B700678275 /* Products */,
+				AE47D4351F0E789000678275 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		AE47D2ED1F0E74B700678275 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AE47D2EC1F0E74B700678275 /* libAtkCocoa.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AE47D2EE1F0E74B700678275 /* AtkCocoa */ = {
+			isa = PBXGroup;
+			children = (
+				AE47D44E1F0E874F00678275 /* acmarshal.c */,
+				AE47D4341F0E781500678275 /* atk-cocoa */,
+				AE47D3961F0E764B00678275 /* ACAccessibilityCellElement.c */,
+				AE47D3971F0E764B00678275 /* ACAccessibilityComboBoxElement.c */,
+				AE47D3981F0E764B00678275 /* ACAccessibilityElement.c */,
+				AE47D3991F0E764B00678275 /* ACAccessibilityMenuItemElement.c */,
+				AE47D39A1F0E764B00678275 /* ACAccessibilityNotebookElement.c */,
+				AE47D39B1F0E764B00678275 /* ACAccessibilityNotebookTabElement.c */,
+				AE47D39C1F0E764B00678275 /* ACAccessibilityOutlineElement.c */,
+				AE47D39D1F0E764B00678275 /* ACAccessibilitySpinnerElement.c */,
+				AE47D39E1F0E764B00678275 /* ACAccessibilityTextFieldElement.c */,
+				AE47D39F1F0E764B00678275 /* ACAccessibilityTextViewElement.c */,
+				AE47D3A01F0E764B00678275 /* ACAccessibilityTreeCellElement.c */,
+				AE47D3A11F0E764B00678275 /* ACAccessibilityTreeColumnElement.c */,
+				AE47D3A21F0E764B00678275 /* ACAccessibilityTreeRowElement.c */,
+				AE47D3A31F0E764B00678275 /* acelement.c */,
+				AE47D3A41F0E764B00678275 /* acutils.c */,
+				AE47D3A51F0E764B00678275 /* config.h */,
+				AE47D3A61F0E764B00678275 /* gail.c */,
+				AE47D3A71F0E764B00678275 /* gailadjustment.c */,
+				AE47D3A81F0E764B00678275 /* gailarrow.c */,
+				AE47D3A91F0E764B00678275 /* gailbooleancell.c */,
+				AE47D3AA1F0E764B00678275 /* gailbox.c */,
+				AE47D3AB1F0E764B00678275 /* gailbutton.c */,
+				AE47D3AC1F0E764B00678275 /* gailcalendar.c */,
+				AE47D3AD1F0E764B00678275 /* gailcell.c */,
+				AE47D3AE1F0E764B00678275 /* gailcellparent.c */,
+				AE47D3AF1F0E764B00678275 /* gailcheckmenuitem.c */,
+				AE47D3B01F0E764B00678275 /* gailchecksubmenuitem.c */,
+				AE47D3B31F0E764B00678275 /* gailcombo.c */,
+				AE47D3B41F0E764B00678275 /* gailcombobox.c */,
+				AE47D3B51F0E764B00678275 /* gailcontainer.c */,
+				AE47D3B61F0E764B00678275 /* gailcontainercell.c */,
+				AE47D3B71F0E764B00678275 /* gailentry.c */,
+				AE47D3B81F0E764B00678275 /* gailexpander.c */,
+				AE47D3B91F0E764B00678275 /* gailframe.c */,
+				AE47D3BE1F0E764B00678275 /* gailimage.c */,
+				AE47D3BF1F0E764B00678275 /* gailimagecell.c */,
+				AE47D3C01F0E764B00678275 /* gailitem.c */,
+				AE47D3C11F0E764B00678275 /* gaillabel.c */,
+				AE47D3C21F0E764B00678275 /* gaillist.c */,
+				AE47D3C31F0E764B00678275 /* gailmenu.c */,
+				AE47D3C41F0E764B00678275 /* gailmenuitem.c */,
+				AE47D3C51F0E764B00678275 /* gailmenushell.c */,
+				AE47D3C61F0E764B00678275 /* gailmisc.c */,
+				AE47D3C71F0E764B00678275 /* gailnotebook.c */,
+				AE47D3C81F0E764B00678275 /* gailnotebookpage.c */,
+				AE47D3C91F0E764B00678275 /* gailobject.c */,
+				AE47D3CA1F0E764B00678275 /* gailoptionmenu.c */,
+				AE47D3CB1F0E764B00678275 /* gailpaned.c */,
+				AE47D3CC1F0E764B00678275 /* gailpixmap.c */,
+				AE47D3CD1F0E764B00678275 /* gailprogressbar.c */,
+				AE47D3CE1F0E764B00678275 /* gailradiobutton.c */,
+				AE47D3CF1F0E764B00678275 /* gailradiomenuitem.c */,
+				AE47D3D01F0E764B00678275 /* gailradiosubmenuitem.c */,
+				AE47D3D11F0E764B00678275 /* gailrange.c */,
+				AE47D3D21F0E764B00678275 /* gailrenderercell.c */,
+				AE47D3D31F0E764B00678275 /* gailscale.c */,
+				AE47D3D41F0E764B00678275 /* gailscalebutton.c */,
+				AE47D3D51F0E764B00678275 /* gailscrollbar.c */,
+				AE47D3D61F0E764B00678275 /* gailscrolledwindow.c */,
+				AE47D3D71F0E764B00678275 /* gailseparator.c */,
+				AE47D3D81F0E764B00678275 /* gailspinbutton.c */,
+				AE47D3D91F0E764B00678275 /* gailstatusbar.c */,
+				AE47D3DA1F0E764B00678275 /* gailsubmenuitem.c */,
+				AE47D3DB1F0E764B00678275 /* gailtextcell.c */,
+				AE47D3DC1F0E764B00678275 /* gailtextutil.c */,
+				AE47D3DD1F0E764B00678275 /* gailtextview.c */,
+				AE47D3DE1F0E764B00678275 /* gailtogglebutton.c */,
+				AE47D3DF1F0E764B00678275 /* gailtoplevel.c */,
+				AE47D3E01F0E764B00678275 /* gailtreeview.c */,
+				AE47D3E11F0E764B00678275 /* gailutil.c */,
+				AE47D3E21F0E764B00678275 /* gailwidget.c */,
+				AE47D3E31F0E764B00678275 /* gailwindow.c */,
+				AE47D3E41F0E764B00678275 /* NSAccessibilityElement+AtkCocoa.c */,
+			);
+			path = AtkCocoa;
+			sourceTree = "<group>";
+		};
+		AE47D4351F0E789000678275 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				AE47D44C1F0E7E0800678275 /* libgmodule-2.0.0.dylib */,
+				AE47D4481F0E78D200678275 /* libgobject-2.0.0.dylib */,
+				AE47D4491F0E78D200678275 /* libpangocairo-1.0.0.dylib */,
+				AE47D4361F0E789100678275 /* libatk-1.0.0.dylib */,
+				AE47D4371F0E789100678275 /* libcairo.2.dylib */,
+				AE47D4381F0E789100678275 /* libgdk_pixbuf-2.0.0.dylib */,
+				AE47D4391F0E789100678275 /* libgdk-quartz-2.0.0.dylib */,
+				AE47D43A1F0E789100678275 /* libgio-2.0.0.dylib */,
+				AE47D43B1F0E789100678275 /* libglib-2.0.0.dylib */,
+				AE47D43C1F0E789100678275 /* libgtk-quartz-2.0.0.dylib */,
+				AE47D43D1F0E789100678275 /* libintl.8.dylib */,
+				AE47D43E1F0E789100678275 /* libpango-1.0.0.dylib */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		AE47D2EA1F0E74B700678275 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AE47D3F41F0E764B00678275 /* config.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		AE47D2EB1F0E74B700678275 /* AtkCocoa */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AE47D2F51F0E74B700678275 /* Build configuration list for PBXNativeTarget "AtkCocoa" */;
+			buildPhases = (
+				AE47D2E81F0E74B700678275 /* Sources */,
+				AE47D2E91F0E74B700678275 /* Frameworks */,
+				AE47D2EA1F0E74B700678275 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AtkCocoa;
+			productName = AtkCocoa;
+			productReference = AE47D2EC1F0E74B700678275 /* libAtkCocoa.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AE47D2E41F0E74B700678275 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0830;
+				ORGANIZATIONNAME = Microsoft;
+				TargetAttributes = {
+					AE47D2EB1F0E74B700678275 = {
+						CreatedOnToolsVersion = 8.3.3;
+						DevelopmentTeam = X7666LWADW;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = AE47D2E71F0E74B700678275 /* Build configuration list for PBXProject "AtkCocoa" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = AE47D2E31F0E74B700678275;
+			productRefGroup = AE47D2ED1F0E74B700678275 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AE47D2EB1F0E74B700678275 /* AtkCocoa */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AE47D2E81F0E74B700678275 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AE47D4171F0E764B00678275 /* gailnotebookpage.c in Sources */,
+				AE47D42B1F0E764B00678275 /* gailtextutil.c in Sources */,
+				AE47D3FD1F0E764B00678275 /* gailcellparent.c in Sources */,
+				AE47D4301F0E764B00678275 /* gailutil.c in Sources */,
+				AE47D3E91F0E764B00678275 /* ACAccessibilityNotebookElement.c in Sources */,
+				AE47D3FE1F0E764B00678275 /* gailcheckmenuitem.c in Sources */,
+				AE47D4031F0E764B00678275 /* gailcombobox.c in Sources */,
+				AE47D4151F0E764B00678275 /* gailmisc.c in Sources */,
+				AE47D42E1F0E764B00678275 /* gailtoplevel.c in Sources */,
+				AE47D4051F0E764B00678275 /* gailcontainercell.c in Sources */,
+				AE47D3E61F0E764B00678275 /* ACAccessibilityComboBoxElement.c in Sources */,
+				AE47D4331F0E764B00678275 /* NSAccessibilityElement+AtkCocoa.c in Sources */,
+				AE47D3FA1F0E764B00678275 /* gailbutton.c in Sources */,
+				AE47D4291F0E764B00678275 /* gailsubmenuitem.c in Sources */,
+				AE47D42A1F0E764B00678275 /* gailtextcell.c in Sources */,
+				AE47D4081F0E764B00678275 /* gailframe.c in Sources */,
+				AE47D4021F0E764B00678275 /* gailcombo.c in Sources */,
+				AE47D41E1F0E764B00678275 /* gailradiomenuitem.c in Sources */,
+				AE47D4221F0E764B00678275 /* gailscale.c in Sources */,
+				AE47D3FC1F0E764B00678275 /* gailcell.c in Sources */,
+				AE47D3EE1F0E764B00678275 /* ACAccessibilityTextViewElement.c in Sources */,
+				AE47D4261F0E764B00678275 /* gailseparator.c in Sources */,
+				AE47D4111F0E764B00678275 /* gaillist.c in Sources */,
+				AE47D41A1F0E764B00678275 /* gailpaned.c in Sources */,
+				AE47D3EA1F0E764B00678275 /* ACAccessibilityNotebookTabElement.c in Sources */,
+				AE47D3F51F0E764B00678275 /* gail.c in Sources */,
+				AE47D3F11F0E764B00678275 /* ACAccessibilityTreeRowElement.c in Sources */,
+				AE47D3F31F0E764B00678275 /* acutils.c in Sources */,
+				AE47D42F1F0E764B00678275 /* gailtreeview.c in Sources */,
+				AE47D41F1F0E764B00678275 /* gailradiosubmenuitem.c in Sources */,
+				AE47D3FB1F0E764B00678275 /* gailcalendar.c in Sources */,
+				AE47D4121F0E764B00678275 /* gailmenu.c in Sources */,
+				AE47D3F61F0E764B00678275 /* gailadjustment.c in Sources */,
+				AE47D42D1F0E764B00678275 /* gailtogglebutton.c in Sources */,
+				AE47D4101F0E764B00678275 /* gaillabel.c in Sources */,
+				AE47D4211F0E764B00678275 /* gailrenderercell.c in Sources */,
+				AE47D4131F0E764B00678275 /* gailmenuitem.c in Sources */,
+				AE47D3F71F0E764B00678275 /* gailarrow.c in Sources */,
+				AE47D40E1F0E764B00678275 /* gailimagecell.c in Sources */,
+				AE47D3E51F0E764B00678275 /* ACAccessibilityCellElement.c in Sources */,
+				AE47D4071F0E764B00678275 /* gailexpander.c in Sources */,
+				AE47D3F81F0E764B00678275 /* gailbooleancell.c in Sources */,
+				AE47D40F1F0E764B00678275 /* gailitem.c in Sources */,
+				AE47D4281F0E764B00678275 /* gailstatusbar.c in Sources */,
+				AE47D4061F0E764B00678275 /* gailentry.c in Sources */,
+				AE47D41D1F0E764B00678275 /* gailradiobutton.c in Sources */,
+				AE47D4321F0E764B00678275 /* gailwindow.c in Sources */,
+				AE47D42C1F0E764B00678275 /* gailtextview.c in Sources */,
+				AE47D3E81F0E764B00678275 /* ACAccessibilityMenuItemElement.c in Sources */,
+				AE47D3F91F0E764B00678275 /* gailbox.c in Sources */,
+				AE47D40D1F0E764B00678275 /* gailimage.c in Sources */,
+				AE47D3FF1F0E764B00678275 /* gailchecksubmenuitem.c in Sources */,
+				AE47D4231F0E764B00678275 /* gailscalebutton.c in Sources */,
+				AE47D4141F0E764B00678275 /* gailmenushell.c in Sources */,
+				AE47D3EF1F0E764B00678275 /* ACAccessibilityTreeCellElement.c in Sources */,
+				AE47D3EC1F0E764B00678275 /* ACAccessibilitySpinnerElement.c in Sources */,
+				AE47D44F1F0E874F00678275 /* acmarshal.c in Sources */,
+				AE47D4251F0E764B00678275 /* gailscrolledwindow.c in Sources */,
+				AE47D3EB1F0E764B00678275 /* ACAccessibilityOutlineElement.c in Sources */,
+				AE47D41B1F0E764B00678275 /* gailpixmap.c in Sources */,
+				AE47D4191F0E764B00678275 /* gailoptionmenu.c in Sources */,
+				AE47D4241F0E764B00678275 /* gailscrollbar.c in Sources */,
+				AE47D4271F0E764B00678275 /* gailspinbutton.c in Sources */,
+				AE47D4311F0E764B00678275 /* gailwidget.c in Sources */,
+				AE47D4181F0E764B00678275 /* gailobject.c in Sources */,
+				AE47D4161F0E764B00678275 /* gailnotebook.c in Sources */,
+				AE47D3F21F0E764B00678275 /* acelement.c in Sources */,
+				AE47D3ED1F0E764B00678275 /* ACAccessibilityTextFieldElement.c in Sources */,
+				AE47D3E71F0E764B00678275 /* ACAccessibilityElement.c in Sources */,
+				AE47D4201F0E764B00678275 /* gailrange.c in Sources */,
+				AE47D3F01F0E764B00678275 /* ACAccessibilityTreeColumnElement.c in Sources */,
+				AE47D41C1F0E764B00678275 /* gailprogressbar.c in Sources */,
+				AE47D4041F0E764B00678275 /* gailcontainer.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		AE47D2F31F0E74B700678275 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		AE47D2F41F0E74B700678275 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		AE47D2F61F0E74B700678275 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
+				DEVELOPMENT_TEAM = X7666LWADW;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = lib;
+				GCC_WARN_UNUSED_FUNCTION = NO;
+				GCC_WARN_UNUSED_VARIABLE = NO;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LOCAL_LIBRARY_DIR)/Frameworks/Mono.framework/Versions/5.4.0/lib",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				OTHER_CFLAGS = (
+					"-D_REENTRANT",
+					"-I/Library/Frameworks/Mono.framework/Versions/Current/include/gtk-2.0",
+					"-I/Library/Frameworks/Mono.framework/Versions/Current/lib/gtk-2.0/include",
+					"-I/Library/Frameworks/Mono.framework/Versions/Current/include/atk-1.0",
+					"-I/Library/Frameworks/Mono.framework/Versions/Current/include/cairo",
+					"-I/Library/Frameworks/Mono.framework/Versions/Current/include/gdk-pixbuf-2.0",
+					"-I/Library/Frameworks/Mono.framework/Versions/Current/include/pango-1.0",
+					"-I/Library/Frameworks/Mono.framework/Versions/Current/include/glib-2.0",
+					"-I/Library/Frameworks/Mono.framework/Versions/Current/lib/glib-2.0/include",
+					"-I/Library/Frameworks/Mono.framework/Versions/Current/include",
+					"-I/Library/Frameworks/Mono.framework/Versions/Current/include/pixman-1",
+					"-I/Library/Frameworks/Mono.framework/Versions/Current/include/freetype2",
+					"-I/Library/Frameworks/Mono.framework/Versions/Current/include/libpng14",
+					"-I$(PROJECT_DIR)/atk-cocoa",
+					"-I$(PROJECT_DIR)",
+					"-arch",
+					x86_64,
+					"-g",
+					"-DGTK_DISABLE_DEPRECATED",
+					"-DGDK_DISABLE_DEPRECATED",
+					"-DGTK_VERSION=\\\"2.12.6\\\"",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		AE47D2F71F0E74B700678275 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
+				DEVELOPMENT_TEAM = X7666LWADW;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = lib;
+				GCC_WARN_UNUSED_FUNCTION = NO;
+				GCC_WARN_UNUSED_VARIABLE = NO;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LOCAL_LIBRARY_DIR)/Frameworks/Mono.framework/Versions/5.4.0/lib",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				OTHER_CFLAGS = (
+					"-D_REENTRANT",
+					"-I/Library/Frameworks/Mono.framework/Versions/Current/include/gtk-2.0",
+					"-I/Library/Frameworks/Mono.framework/Versions/Current/lib/gtk-2.0/include",
+					"-I/Library/Frameworks/Mono.framework/Versions/Current/include/atk-1.0",
+					"-I/Library/Frameworks/Mono.framework/Versions/Current/include/cairo",
+					"-I/Library/Frameworks/Mono.framework/Versions/Current/include/gdk-pixbuf-2.0",
+					"-I/Library/Frameworks/Mono.framework/Versions/Current/include/pango-1.0",
+					"-I/Library/Frameworks/Mono.framework/Versions/Current/include/glib-2.0",
+					"-I/Library/Frameworks/Mono.framework/Versions/Current/lib/glib-2.0/include",
+					"-I/Library/Frameworks/Mono.framework/Versions/Current/include",
+					"-I/Library/Frameworks/Mono.framework/Versions/Current/include/pixman-1",
+					"-I/Library/Frameworks/Mono.framework/Versions/Current/include/freetype2",
+					"-I/Library/Frameworks/Mono.framework/Versions/Current/include/libpng14",
+					"-I$(PROJECT_DIR)/atk-cocoa",
+					"-I$(PROJECT_DIR)",
+					"-arch",
+					x86_64,
+					"-g",
+					"-DGTK_DISABLE_DEPRECATED",
+					"-DGDK_DISABLE_DEPRECATED",
+					"-DGTK_VERSION=\\\"2.12.6\\\"",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AE47D2E71F0E74B700678275 /* Build configuration list for PBXProject "AtkCocoa" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AE47D2F31F0E74B700678275 /* Debug */,
+				AE47D2F41F0E74B700678275 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AE47D2F51F0E74B700678275 /* Build configuration list for PBXNativeTarget "AtkCocoa" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AE47D2F61F0E74B700678275 /* Debug */,
+				AE47D2F71F0E74B700678275 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = AE47D2E41F0E74B700678275 /* Project object */;
+}
