@@ -93,6 +93,8 @@
 		AE47D44B1F0E78D200678275 /* libpangocairo-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AE47D4491F0E78D200678275 /* libpangocairo-1.0.0.dylib */; };
 		AE47D44D1F0E7E0800678275 /* libgmodule-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AE47D44C1F0E7E0800678275 /* libgmodule-2.0.0.dylib */; };
 		AE47D44F1F0E874F00678275 /* acmarshal.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D44E1F0E874F00678275 /* acmarshal.c */; };
+		AE47D4521F0FA39100678275 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE47D4501F0FA39100678275 /* Cocoa.framework */; };
+		AE47D4531F0FA39100678275 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE47D4511F0FA39100678275 /* Foundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -184,6 +186,8 @@
 		AE47D4491F0E78D200678275 /* libpangocairo-1.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libpangocairo-1.0.0.dylib"; path = "../../../../../../Library/Frameworks/Mono.framework/Versions/5.4.0/lib/libpangocairo-1.0.0.dylib"; sourceTree = "<group>"; };
 		AE47D44C1F0E7E0800678275 /* libgmodule-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libgmodule-2.0.0.dylib"; path = "../../../../../../Library/Frameworks/Mono.framework/Versions/5.4.0/lib/libgmodule-2.0.0.dylib"; sourceTree = "<group>"; };
 		AE47D44E1F0E874F00678275 /* acmarshal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = acmarshal.c; sourceTree = "<group>"; };
+		AE47D4501F0FA39100678275 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		AE47D4511F0FA39100678275 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -191,6 +195,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AE47D4521F0FA39100678275 /* Cocoa.framework in Frameworks */,
+				AE47D4531F0FA39100678275 /* Foundation.framework in Frameworks */,
 				AE47D44D1F0E7E0800678275 /* libgmodule-2.0.0.dylib in Frameworks */,
 				AE47D44A1F0E78D200678275 /* libgobject-2.0.0.dylib in Frameworks */,
 				AE47D44B1F0E78D200678275 /* libpangocairo-1.0.0.dylib in Frameworks */,
@@ -311,6 +317,8 @@
 		AE47D4351F0E789000678275 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				AE47D4501F0FA39100678275 /* Cocoa.framework */,
+				AE47D4511F0FA39100678275 /* Foundation.framework */,
 				AE47D44C1F0E7E0800678275 /* libgmodule-2.0.0.dylib */,
 				AE47D4481F0E78D200678275 /* libgobject-2.0.0.dylib */,
 				AE47D4491F0E78D200678275 /* libpangocairo-1.0.0.dylib */,
@@ -567,6 +575,7 @@
 		AE47D2F61F0E74B700678275 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				DEVELOPMENT_TEAM = X7666LWADW;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -609,6 +618,7 @@
 		AE47D2F71F0E74B700678275 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				DEVELOPMENT_TEAM = X7666LWADW;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -667,6 +677,7 @@
 				AE47D2F71F0E74B700678275 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
