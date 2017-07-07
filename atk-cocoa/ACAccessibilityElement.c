@@ -225,7 +225,7 @@ get_coords_in_window (GtkWidget *widget, int *x, int *y)
 
 		ACAccessibilityElement *e = (ACAccessibilityElement *)nsa;
 		if (!AC_IS_ELEMENT (e->_delegate)) {
-			NSLog (@"Invalid delegate %p found for %@", e->_delegate, [super description]);
+			NSLog (@"Invalid delegate %p found for %@", e->_delegate, [self description]);
 			NSLog (@"If anyone finds this message, please attach the log file it is in to https://bugzilla.xamarin.com/show_bug.cgi?id=56649");
 			NSLog (@"And inform iain");
 			continue;
