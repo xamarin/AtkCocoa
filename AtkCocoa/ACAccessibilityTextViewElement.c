@@ -119,11 +119,13 @@
 // but we want accessibilityFrameInParentSpace to be called instead
 // and Cocoa will call accessibilityFrame over accessibilityFrameInParentSpace
 // so we just accept the warning
-/*
 - (NSRect)accessibilityFrame
 {
-    return NSZeroRect;
+    return [super accessibilityFrame];
 }
-*/
 
+- (id)accessibilityParent
+{
+    return [super accessibilityParent];
+}
 @end
