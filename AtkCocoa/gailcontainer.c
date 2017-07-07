@@ -230,13 +230,13 @@ gail_container_real_initialize (AtkObject *obj,
    * We store the handler ids for these signals in case some objects
    * need to remove these handlers.
    */
-  handler_id = g_signal_connect (data,
+  handler_id = (guint)g_signal_connect (data,
                                  "add",
                                  G_CALLBACK (gail_container_add_gtk),
                                  obj);
   g_object_set_data (G_OBJECT (obj), "gail-add-handler-id", 
                      GUINT_TO_POINTER (handler_id));
-  handler_id = g_signal_connect (data,
+  handler_id = (guint)g_signal_connect (data,
                                  "remove",
                                  G_CALLBACK (gail_container_remove_gtk),
                                  obj);

@@ -534,7 +534,7 @@ gail_entry_get_character_count (AtkText *text)
     return 0;
 
   entry = GTK_ENTRY (widget);
-  return g_utf8_strlen (gtk_entry_get_text (entry), -1);
+  return (int)g_utf8_strlen (gtk_entry_get_text (entry), -1);
 }
 
 static gint
@@ -649,8 +649,8 @@ gail_entry_get_character_extents (AtkText *text,
 
   gtk_entry_get_layout_offsets (entry, &x_layout, &y_layout);
   entry_text = gtk_entry_get_text (entry);
-  index = g_utf8_offset_to_pointer (entry_text, offset) - entry_text;
-  cursor_index = g_utf8_offset_to_pointer (entry_text, entry->current_pos) - entry_text;
+  index = (int)(g_utf8_offset_to_pointer (entry_text, offset) - entry_text);
+  cursor_index = (int)(g_utf8_offset_to_pointer (entry_text, entry->current_pos) - entry_text);
   if (index > cursor_index)
     index += entry->preedit_length;
   pango_layout_index_to_pos (gtk_entry_get_layout(entry), index, &char_rect);
@@ -685,13 +685,13 @@ gail_entry_get_offset_at_point (AtkText *text,
   if (index == -1)
     {
       if (coords == ATK_XY_SCREEN || coords == ATK_XY_WINDOW)
-        return g_utf8_strlen (entry_text, -1);
+        return (int)g_utf8_strlen (entry_text, -1);
 
       return index;  
     }
   else
     {
-      cursor_index = g_utf8_offset_to_pointer (entry_text, entry->current_pos) - entry_text;
+      cursor_index = (int)(g_utf8_offset_to_pointer (entry_text, entry->current_pos) - entry_text);
       if (index >= cursor_index && entry->preedit_length)
         {
           if (index >= cursor_index + entry->preedit_length)
@@ -699,7 +699,7 @@ gail_entry_get_offset_at_point (AtkText *text,
           else
             index = cursor_index;
         }
-      return g_utf8_pointer_to_offset (entry_text, entry_text + index);
+      return (int)(g_utf8_pointer_to_offset (entry_text, entry_text + index));
     }
 }
 
@@ -1071,7 +1071,7 @@ _gail_entry_insert_text_cb (GtkEntry *entry,
     {
       gail_entry->signal_name_insert = "text_changed::insert";
       gail_entry->position_insert = *position;
-      gail_entry->length_insert = g_utf8_strlen(arg1, arg2);
+      gail_entry->length_insert = (int)g_utf8_strlen(arg1, arg2);
     }
   /*
    * The signal will be emitted when the cursor position is updated.

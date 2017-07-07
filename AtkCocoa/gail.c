@@ -871,7 +871,7 @@ dump_call_tree (void)
   char **traceStrings;
 
   numberOfTraces = backtrace (traces, 30);
-  traceStrings = backtrace_symbols (traces, numberOfTraces);
+  traceStrings = backtrace_symbols (traces, (int)numberOfTraces);
 
   for (int i = 0; i < numberOfTraces; i++) {
     g_print ("%s\n", traceStrings[i]);

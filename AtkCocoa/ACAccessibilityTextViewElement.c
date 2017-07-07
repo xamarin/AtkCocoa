@@ -41,8 +41,8 @@
     GtkTextBuffer *buffer = gtk_text_view_get_buffer (textview);
     GtkTextIter startIter, endIter;
 
-    gtk_text_buffer_get_iter_at_offset (buffer, &startIter, range.location);
-    gtk_text_buffer_get_iter_at_offset (buffer, &endIter, range.location + range.length - 1);
+    gtk_text_buffer_get_iter_at_offset (buffer, &startIter, (int)range.location);
+    gtk_text_buffer_get_iter_at_offset (buffer, &endIter, (int)(range.location + range.length - 1));
 
     char *text = gtk_text_buffer_get_slice (buffer, &startIter, &endIter, FALSE);
     NSString *retString = nsstring_from_cstring (text);

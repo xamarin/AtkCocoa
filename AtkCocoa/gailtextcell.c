@@ -279,7 +279,7 @@ gail_text_cell_update_cache (GailRendererCell *cell,
       else
         {
           text_cell->cell_text = g_strdup (new_cache);
-          text_cell->cell_length = g_utf8_strlen (new_cache, -1);
+          text_cell->cell_length = (int)g_utf8_strlen (new_cache, -1);
         }
     }
 
@@ -602,8 +602,8 @@ gail_text_cell_get_character_extents (AtkText          *text,
     &rendered_rect, &x_offset, &y_offset, &cell_width, &cell_height);
   layout = create_pango_layout (gtk_renderer, widget);
 
-  index = g_utf8_offset_to_pointer (gtk_renderer->text,
-    offset) - gtk_renderer->text;
+  index = (int)(g_utf8_offset_to_pointer (gtk_renderer->text,
+    offset) - gtk_renderer->text);
   pango_layout_index_to_pos (layout, index, &char_rect); 
 
   gail_misc_get_extents_from_pango_rectangle (widget,
@@ -658,12 +658,12 @@ gail_text_cell_get_offset_at_point (AtkText          *text,
   if (index == -1)
     {
       if (coords == ATK_XY_WINDOW || coords == ATK_XY_SCREEN)
-        return g_utf8_strlen (gtk_renderer->text, -1);
+        return (int)g_utf8_strlen (gtk_renderer->text, -1);
     
       return index;  
     }
   else
-    return g_utf8_pointer_to_offset (gtk_renderer->text,
+    return (int)g_utf8_pointer_to_offset (gtk_renderer->text,
        gtk_renderer->text + index);  
 }
 

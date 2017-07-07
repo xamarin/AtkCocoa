@@ -937,8 +937,8 @@ row_column_index_sort (id objA,
   isBRow = [objB isKindOfClass:[ACAccessibilityTreeRowElement class]];
 
   if ((isARow && isBRow) || (!isARow && !isBRow)) {
-    int idxA = [a accessibilityIndex];
-    int idxB = [b accessibilityIndex];
+    NSInteger idxA = [a accessibilityIndex];
+    NSInteger idxB = [b accessibilityIndex];
 
     if (idxA < idxB) {
       return NSOrderedAscending;

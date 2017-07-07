@@ -211,7 +211,7 @@ gail_label_init_text_util (GailLabel *gail_label,
   if (label_text == NULL)
     gail_label->label_length = 0;
   else
-    gail_label->label_length = g_utf8_strlen (label_text, -1);
+    gail_label->label_length = (int)g_utf8_strlen (label_text, -1);
 }
 
 static void
@@ -713,7 +713,7 @@ gail_label_get_character_count (AtkText *text)
     return 0;
 
   label = GTK_LABEL (widget);
-  return g_utf8_strlen (gtk_label_get_text (label), -1);
+  return (int)g_utf8_strlen (gtk_label_get_text (label), -1);
 }
 
 static gint
@@ -919,7 +919,7 @@ gail_label_get_character_extents (AtkText      *text,
   label = GTK_LABEL (widget);
   
   gtk_label_get_layout_offsets (label, &x_layout, &y_layout);
-  index = g_utf8_offset_to_pointer (label->text, offset) - label->text;
+  index = (int)(g_utf8_offset_to_pointer (label->text, offset) - label->text);
   pango_layout_index_to_pos (gtk_label_get_layout (label), index, &char_rect);
   
   gail_misc_get_extents_from_pango_rectangle (widget, &char_rect, 
@@ -950,12 +950,12 @@ gail_label_get_offset_at_point (AtkText      *text,
   if (index == -1)
     {
       if (coords == ATK_XY_WINDOW || coords == ATK_XY_SCREEN)
-        return g_utf8_strlen (label->text, -1);
+        return (int)g_utf8_strlen (label->text, -1);
 
       return index;  
     }
   else
-    return g_utf8_pointer_to_offset (label->text, label->text + index);  
+    return (int)g_utf8_pointer_to_offset (label->text, label->text + index);
 }
 
 static AtkAttributeSet*

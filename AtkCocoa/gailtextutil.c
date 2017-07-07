@@ -680,7 +680,7 @@ get_pango_text_offsets (PangoLayout         *layout,
   gboolean found = FALSE;
 
   text = pango_layout_get_text (layout);
-  index = g_utf8_offset_to_pointer (text, offset) - text;
+  index = (int)(g_utf8_offset_to_pointer (text, offset) - text);
   iter = pango_layout_get_iter (layout);
   do
     {
@@ -778,8 +778,8 @@ get_pango_text_offsets (PangoLayout         *layout,
       end_index = start_index;
     }
   pango_layout_iter_free (iter);
-  *start_offset = g_utf8_pointer_to_offset (text, text + start_index);
-  *end_offset = g_utf8_pointer_to_offset (text, text + end_index);
+  *start_offset = (int)g_utf8_pointer_to_offset (text, text + start_index);
+  *end_offset = (int)g_utf8_pointer_to_offset (text, text + end_index);
  
   gtk_text_buffer_get_iter_at_offset (buffer, start_iter, *start_offset);
   gtk_text_buffer_get_iter_at_offset (buffer, end_iter, *end_offset);

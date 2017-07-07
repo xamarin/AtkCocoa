@@ -217,30 +217,30 @@ gail_misc_layout_get_run_attributes (AtkAttributeSet *attrib_set,
   if ((attr = pango_layout_get_attributes (layout)) == NULL)
     {
       *start_offset = 0;
-      *end_offset = len;
+      *end_offset = (int)len;
       return attrib_set;
     }
   iter = pango_attr_list_get_iterator (attr);
   /* Get invariant range offsets */
   /* If offset out of range, set offset in range */
   if (offset > len)
-    offset = len;
+    offset = (int)len;
   else if (offset < 0)
     offset = 0;
 
-  index = g_utf8_offset_to_pointer (text, offset) - text;
+  index = (int)(g_utf8_offset_to_pointer (text, offset) - text);
   pango_attr_iterator_range (iter, &start_index, &end_index);
   while (is_next)
     {
       if (index >= start_index && index < end_index)
         {
-          *start_offset = g_utf8_pointer_to_offset (text, 
+          *start_offset = (int)g_utf8_pointer_to_offset (text,
                                                     text + start_index);  
           if (end_index == G_MAXINT)
           /* Last iterator */
-            end_index = len;
+            end_index = (int)len;
       
-          *end_offset = g_utf8_pointer_to_offset (text, 
+          *end_offset = (int)g_utf8_pointer_to_offset (text,
                                                   text + end_index);  
           break;
         }  

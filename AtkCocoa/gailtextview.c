@@ -1410,7 +1410,7 @@ _gail_text_view_insert_text_cb (GtkTextBuffer *buffer,
 
   gail_text_view->signal_name = "text_changed::insert";
   position = gtk_text_iter_get_offset (arg1);
-  length = g_utf8_strlen(arg2, arg3);
+  length = (int)g_utf8_strlen(arg2, arg3);
   
   if (gail_text_view->length == 0)
     {

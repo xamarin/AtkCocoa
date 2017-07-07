@@ -350,7 +350,7 @@ gail_scale_get_character_extents (AtkText      *text,
   scale_text = pango_layout_get_text (layout);
   if (!scale_text)
     return;
-  index = g_utf8_offset_to_pointer (scale_text, offset) - scale_text;
+  index = (int)(g_utf8_offset_to_pointer (scale_text, offset) - scale_text);
   gtk_scale_get_layout_offsets (scale, &x_layout, &y_layout);
   pango_layout_index_to_pos (layout, index, &char_rect);
   gail_misc_get_extents_from_pango_rectangle (widget, &char_rect, 
@@ -389,10 +389,10 @@ gail_scale_get_offset_at_point (AtkText      *text,
   if (index == -1)
     {
       if (coords == ATK_XY_WINDOW || coords == ATK_XY_SCREEN)
-        index = g_utf8_strlen (scale_text, -1);
+        index = (int)g_utf8_strlen (scale_text, -1);
     }
   else
-    index = g_utf8_pointer_to_offset (scale_text, scale_text + index);  
+    index = (int)g_utf8_pointer_to_offset (scale_text, scale_text + index);
 
   return index;
 }
