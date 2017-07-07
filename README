@@ -1,0 +1,17 @@
+AtkCocoa
+
+AtkCocoa is a bridge between the Gtk accessibility toolkit: Atk and Cocoa's
+NSAccessibility framework. It enables Gtk applications to be accessible on
+macOS through technologies like VoiceOver
+
+Building
+
+AtkCocoa is set up as an Xcode project for macOS 10.10+. As such it can be built inside Xcode for development purposes but needs to be installed into
+Monodevelop for testing using the provided Makefile
+
+$ make install
+
+Bugs
+
+Bugs can be filed at the Xamarin bugzilla: https://bugzilla.xamarin.com under
+the Xamarin Studio component
