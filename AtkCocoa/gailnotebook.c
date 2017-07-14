@@ -157,29 +157,36 @@ sort_rows (id a, id b, void *data)
 }
 
 static void
-create_accessibility_arrays (GailNotebook *gailbook)
+create_accessibility_arrays (GtkNotebook *notebook,
+                             GailNotebook *gailbook)
 {
-  NSMutableArray *tabs, *content, *newChildren;
+  NSMutableArray *tabs = nil, *content, *newChildren;
   id<NSAccessibility> element;
+  gboolean showTabs = gtk_notebook_get_show_tabs(notebook);
 
-  tabs = [NSMutableArray array];
+  if (showTabs) {
+    tabs = [NSMutableArray array];
+  }
   content = [NSMutableArray array];
 
   element = ac_element_get_accessibility_element (AC_ELEMENT (gailbook));
   for (id c in [element accessibilityChildren]) {
-    if ([c isKindOfClass:[ACAccessibilityNotebookTabElement class]]) {
+    if (showTabs && [c isKindOfClass:[ACAccessibilityNotebookTabElement class]]) {
       [tabs addObject:c];
     } else {
       [content addObject:c];
     }
   }
 
-  [tabs sortUsingFunction:sort_rows context:NULL];
+  if (gtk_notebook_get_show_tabs(notebook)) {
+    [tabs sortUsingFunction:sort_rows context:NULL];
+    newChildren = [tabs mutableCopy];
+    [newChildren addObjectsFromArray:content];
+    [element setAccessibilityTabs:tabs];
+  } else {
+    newChildren = content;
+  }
 
-  newChildren = [tabs mutableCopy];
-  [newChildren addObjectsFromArray:content];
-
-  [element setAccessibilityTabs:tabs];
   [element setAccessibilityContents:content];
   [element setAccessibilityChildren:newChildren];
 }
@@ -199,11 +206,13 @@ gail_notebook_page_added (GtkNotebook *gtk_notebook,
   page = create_notebook_page_accessible (notebook, gtk_notebook, page_num, FALSE, NULL);
   notebook->page_count++;
 
-  id<NSAccessibility> tabElement = gail_notebook_page_get_element (page);
-  ACAccessibilityElement *element = ac_element_get_accessibility_element (AC_ELEMENT (atk_obj));
-  [element accessibilityAddChildElement:tabElement];
+  if (gtk_notebook_get_show_tabs(gtk_notebook)) {
+    id<NSAccessibility> tabElement = gail_notebook_page_get_element (page);
+    ACAccessibilityElement *element = ac_element_get_accessibility_element (AC_ELEMENT (atk_obj));
+    [element accessibilityAddChildElement:tabElement];
+  }
 
-  create_accessibility_arrays (notebook);
+  create_accessibility_arrays (gtk_notebook, notebook);
 }
 
 static void
@@ -303,7 +312,7 @@ gail_notebook_real_notify_gtk (GObject           *obj,
           ac_element_remove_child (element, oldPageElement);
           ac_element_add_child (element, newPageElement);
 
-          create_accessibility_arrays (gail_notebook);
+          create_accessibility_arrays (gtk_notebook, gail_notebook);
 
           if (old_page_num != -1)
             {
