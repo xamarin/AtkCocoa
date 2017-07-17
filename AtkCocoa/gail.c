@@ -30,6 +30,8 @@
 #include "atk-cocoa/gail.h"
 #include "atk-cocoa/gailfactory.h"
 
+#import <Cocoa/Cocoa.h>
+
 #define GNOME_ACCESSIBILITY_ENV "GNOME_ACCESSIBILITY"
 #define NO_GAIL_ENV "NO_GAIL"
 #define ATKCOCOA_DEBUG_OPTIONS_ENV "ATKCOCOA_DEBUG_OPTIONS"
@@ -578,6 +580,18 @@ gail_focus_notify (GtkWidget *widget)
             }
         }
       gail_focus_notify_when_idle (focus_widget);
+
+        if (focus_widget) {
+            AcElement *element = AC_ELEMENT(gtk_widget_get_accessible(focus_widget));
+            NSApplication *app = [NSApplication sharedApplication];
+
+            // FIXME: Seems to have some issues tracking focus when the new focus element is in a different parent group
+            // than the original?
+            [app setAccessibilityApplicationFocusedUIElement:ac_element_get_accessibility_element(element)];
+            NSAccessibilityPostNotificationWithUserInfo([NSApplication sharedApplication],
+                                                        NSAccessibilityFocusedUIElementChangedNotification,
+                                                        @{NSAccessibilityUIElementsKey: @[ac_element_get_accessibility_element(element)]});
+        }
     }
   else
     {

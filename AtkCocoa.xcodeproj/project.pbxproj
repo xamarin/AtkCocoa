@@ -130,7 +130,7 @@
 		AE47D3B41F0E764B00678275 /* gailcombobox.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailcombobox.c; sourceTree = "<group>"; };
 		AE47D3B51F0E764B00678275 /* gailcontainer.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailcontainer.c; sourceTree = "<group>"; };
 		AE47D3B61F0E764B00678275 /* gailcontainercell.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailcontainercell.c; sourceTree = "<group>"; };
-		AE47D3B71F0E764B00678275 /* gailentry.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailentry.c; sourceTree = "<group>"; };
+		AE47D3B71F0E764B00678275 /* gailentry.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; indentWidth = 2; path = gailentry.c; sourceTree = "<group>"; };
 		AE47D3B81F0E764B00678275 /* gailexpander.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailexpander.c; sourceTree = "<group>"; };
 		AE47D3B91F0E764B00678275 /* gailframe.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailframe.c; sourceTree = "<group>"; };
 		AE47D3BE1F0E764B00678275 /* gailimage.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailimage.c; sourceTree = "<group>"; };

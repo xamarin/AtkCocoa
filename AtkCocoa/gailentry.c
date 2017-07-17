@@ -1165,6 +1165,8 @@ _gail_entry_changed_cb (GtkEntry *entry)
   gail_entry = GAIL_ENTRY (accessible);
 
   text_setup (gail_entry, entry);
+
+  NSAccessibilityPostNotification(ac_element_get_accessibility_element(AC_ELEMENT (gail_entry)), NSAccessibilityValueChangedNotification);
 }
 
 static gboolean 
