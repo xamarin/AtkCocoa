@@ -153,6 +153,7 @@ ac_element_dispose (GObject *obj)
 
 	if (element->priv->real_element != NULL) {
 		AC_NOTE (DESTRUCTION, g_print ("Disposing element %s - %ld\n", G_OBJECT_TYPE_NAME (obj), CFGetRetainCount (element->priv->real_element)));
+        NSAccessibilityPostNotification(ac_element_get_accessibility_element(element), NSAccessibilityUIElementDestroyedNotification);
 		CFRelease (element->priv->real_element);
 		element->priv->real_element = NULL;
 	}
