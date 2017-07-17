@@ -578,6 +578,7 @@ gail_tree_view_expand_row_gtk (GtkTreeView       *tree_view,
 
   if (expandedElement == nil) {
     g_warning ("Expanding row without a11y element %s", gtk_tree_path_to_string (path));
+    return FALSE;
   } else {
     GtkTreeIter childIter;
     if (gtk_tree_model_iter_children (tree_model, &childIter, iter)) {
@@ -601,6 +602,8 @@ gail_tree_view_expand_row_gtk (GtkTreeView       *tree_view,
       [expandedElement setAccessibilityDisclosedRows:disclosedRows];
     }
   }
+
+  NSAccessibilityPostNotification(expandedElement, NSAccessibilityRowExpandedNotification);
 
   return FALSE;
 }
@@ -648,6 +651,7 @@ gail_tree_view_collapse_row_gtk (GtkTreeView       *tree_view,
   collapsedElement = find_row_element_for_path (gailview, path);
   remove_all_children (gailview, treeElement, collapsedElement);
 
+  NSAccessibilityPostNotification(collapsedElement, NSAccessibilityRowCollapsedNotification);
   return FALSE;
 }
 
@@ -701,9 +705,9 @@ gail_tree_view_changed_gtk (GtkTreeSelection *selection,
   GailTreeView *gailview;
   GtkTreeView *tree_view;
   GtkWidget *widget;
-  GList *l;
-  GtkTreeSelection *tree_selection;
-  GtkTreePath *path;
+  GList *selected;
+  GtkTreeModel *selectionModel;
+  NSAccessibilityElement *element;
 
   gailview = GAIL_TREE_VIEW (data);
   widget = GTK_ACCESSIBLE (gailview)->widget;
@@ -714,7 +718,25 @@ gail_tree_view_changed_gtk (GtkTreeSelection *selection,
     return;
   tree_view = GTK_TREE_VIEW (widget);
 
-  tree_selection = gtk_tree_view_get_selection (tree_view);
+  selected = gtk_tree_selection_get_selected_rows(selection, &selectionModel);
+
+  NSMutableArray *selRows = [NSMutableArray array];
+  for (GList *l = selected; l; l = l->next) {
+    GtkTreePath *p = l->data;
+    ACAccessibilityTreeRowElement *row = get_row_from_row_map(gailview, p);
+
+    if (row != nil) {
+      [selRows addObject:row];
+    }
+  }
+
+  element = ac_element_get_accessibility_element(AC_ELEMENT (gailview));
+  [element setAccessibilitySelectedRows:selRows];
+
+  NSAccessibilityPostNotification(element, NSAccessibilitySelectedRowsChangedNotification);
+
+  g_list_foreach(selected, (GFunc)gtk_tree_path_free, NULL);
+  g_list_free (selected);
 }
 
 static gboolean
@@ -972,9 +994,12 @@ gather_visible_rows_and_columns (GailTreeView *gailView)
   rows = [[NSMutableArray alloc] init];
   columns = [[NSMutableArray alloc] init];
 
+  NSInteger rowIdx = 0;
   for (id<NSAccessibility> e in children) {
     if ([e isKindOfClass:[ACAccessibilityTreeRowElement class]]) {
+      [e setAccessibilityIndex:rowIdx];
       [rows addObject:e];
+      rowIdx++;
     } else if ([e isKindOfClass:[ACAccessibilityTreeColumnElement class]]) {
       [columns addObject:e];
     } else {
@@ -1370,6 +1395,8 @@ model_row_inserted (GtkTreeModel *tree_model,
 
       gtk_tree_path_free (path_copy);
     }
+
+  NSAccessibilityPostNotification(ac_element_get_accessibility_element(AC_ELEMENT (atk_obj)), NSAccessibilityRowCountChangedNotification);
 }
 
 static void
@@ -1413,6 +1440,8 @@ model_row_deleted (GtkTreeModel *tree_model,
       gtk_tree_path_up (path_copy);
       gtk_tree_path_free (path_copy);
     }
+
+  NSAccessibilityPostNotification(ac_element_get_accessibility_element(AC_ELEMENT (atk_obj)), NSAccessibilityRowCountChangedNotification);
 }
 
 static void 

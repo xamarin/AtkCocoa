@@ -208,6 +208,19 @@
 	return nil;
 }
 
+- (NSInteger)accessibilityIndex
+{
+    if (_parent == nil) {
+        // If the parent is nil, then we are at the fake root node of the tree
+        // that we don't want to count, so return -1 here, so that it cancels out the +1
+        // in the caller function.
+        return -1;
+    }
+
+    NSInteger parentIndex = [_parent accessibilityIndex];
+    return parentIndex + [self indexInParent] + 1;
+}
+
 #pragma mark - Internal tree structure
 
 - (BOOL)childrenHaveDescendants
@@ -219,6 +232,16 @@
     // If the descendant count is not the same as the number of children
     // then there's some grandchildren out there
     return (_descendantCount != g_sequence_get_length (_children));
+}
+
+- (void)addVisibleRow:(ACAccessibilityTreeRowElement *)child
+{
+    NSMutableArray *visibleChildren = [[self accessibilityVisibleRows] mutableCopy];
+    if (visibleChildren == nil) {
+        visibleChildren = [NSMutableArray array];
+    }
+    [visibleChildren addObject:child];
+    [self setAccessibilityVisibleRows:visibleChildren];
 }
 
 - (void)insertChild:(ACAccessibilityTreeRowElement *)child atIndex:(int)idx
@@ -245,6 +268,7 @@
     child->_parent = self;
 
     [self adjustDescendantCountBy:1];
+    [self addVisibleRow:child];
 }
 
 - (void)appendChild:(ACAccessibilityTreeRowElement *)child
@@ -257,6 +281,14 @@
     child->_parent = self;
 
     [self adjustDescendantCountBy:1];
+    [self addVisibleRow:child];
+}
+
+- (void)removeVisibleRow:(ACAccessibilityTreeRowElement *)child
+{
+  NSMutableArray *visibleChildren = [[self accessibilityVisibleRows] mutableCopy];
+    [visibleChildren removeObject:child];
+    [self setAccessibilityVisibleRows:visibleChildren];
 }
 
 - (void)removeChildAtIndex:(int)idx
@@ -285,6 +317,7 @@
     }
 
     [self adjustDescendantCountBy:-1];
+    [self removeVisibleRow:child];
 }
 
 int
@@ -330,6 +363,7 @@ last_path_index (const char *path)
     }
 
     [self adjustDescendantCountBy:-1];
+    [self removeVisibleRow:child];
 }
 
 - (void)removeFromParent
@@ -355,6 +389,9 @@ last_path_index (const char *path)
     _children = NULL;
 
     [self adjustDescendantCountBy:-childCount];
+
+    // Remove all visible children
+    [self setAccessibilityVisibleRows:nil];
 }
 
 #define GET_DATA(iter) ((__bridge ACAccessibilityTreeRowElement *)g_sequence_get ((iter)))
@@ -449,11 +486,10 @@ last_path_index (const char *path)
 
 - (int)indexInParent
 {
-    int idx = 1;
+    int idx = 0;
     GSequenceIter *siblingsIter;
 
     if (_parent == nil) {
-        NSLog (@"Not in parent: %@", self);
         return 0;
     }
 
@@ -472,9 +508,18 @@ last_path_index (const char *path)
     }
 
     siblingsIter = _iterInParent;
-    while (!g_sequence_iter_is_begin (siblingsIter)) {
+    if (g_sequence_iter_is_begin (siblingsIter)) {
+        return 0;
+    }
+
+    while (siblingsIter = g_sequence_iter_prev(siblingsIter)) {
         idx++;
-        siblingsIter = g_sequence_iter_prev (siblingsIter);
+        ACAccessibilityTreeRowElement *e = GET_DATA (siblingsIter);
+        idx += e->_descendantCount;
+
+        if (g_sequence_iter_is_begin(siblingsIter)) {
+            break;
+        }
     }
 
     return idx;

@@ -167,4 +167,14 @@
 {
 	return nil;
 }
+
+- (NSRange)accessibilityRowIndexRange
+{
+    return NSMakeRange([_rowElement accessibilityIndex], 1);
+}
+
+- (NSRange)accessibilityColumnIndexRange
+{
+    return NSMakeRange([_columnElement accessibilityIndex], 1);
+}
 @end
