@@ -1,6 +1,6 @@
 /*
  * AtkCocoa
- * Copyright 2016 Microsoft Corporation
+ * Copyright 2017 Microsoft Corporation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,12 +17,12 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#import "atk-cocoa/ACAccessibilityTreeColumnElement.h"
+#import <Cocoa/Cocoa.h>
 #import "atk-cocoa/ACAccessibilityTreeColumnHeaderElement.h"
+#import "atk-cocoa/acutils.h"
 
-@implementation ACAccessibilityTreeColumnElement {
+@implementation ACAccessibilityTreeColumnHeaderElement {
     GtkTreeViewColumn *_column;
-    ACAccessibilityTreeColumnHeaderElement *_customHeaderElement;
 }
 
 - (instancetype)initWithDelegate:(AcElement *)delegate treeColumn:(GtkTreeViewColumn *)column
@@ -32,23 +32,18 @@
         return nil;
     }
 
-    // FIXME: Should we ref this?
     _column = column;
 
-    [self setAccessibilityRole:NSAccessibilityColumnRole];
-    return self;
-}
+    [self setAccessibilityRole:NSAccessibilityButtonRole];
 
-- (NSString *)accessibilityLabel
-{
-    return nsstring_from_cstring (gtk_tree_view_column_get_title (_column));
+    return self;
 }
 
 - (GdkRectangle)frameInGtkWindowSpace
 {
     GdkRectangle cellSpace;
     GtkWidget *treeView = gtk_tree_view_column_get_tree_view (_column);
-
+    int wx, wy;
     GtkTreePath *path = gtk_tree_path_new_first ();
 
     int x, y;
@@ -57,38 +52,41 @@
     gtk_tree_path_free (path);
 
     cellSpace.y = 0;
-    cellSpace.height = treeView->allocation.height;
+
+    /*
+    // convert 0,0 to widget coords to find out the offset of the bin_window for the header
+    gtk_tree_view_convert_bin_window_to_widget_coords (GTK_TREE_VIEW (treeView), 0, 0, &wx, &wy);
+    cellSpace.height = wy;
+     */
+    GdkWindow *bin_window = gtk_tree_view_get_bin_window(GTK_TREE_VIEW (treeView));
+    if (bin_window) {
+        gdk_window_get_position(bin_window, &wx, &wy);
+        cellSpace.height = wy;
+    } else {
+        cellSpace.height = 0;
+    }
 
     gtk_widget_translate_coordinates (treeView, gtk_widget_get_toplevel (treeView), 0, 0, &x, &y);
 
     cellSpace.x += x;
     cellSpace.y += y;
-
+    
     return cellSpace;
 }
 
-- (GtkTreeViewColumn *)column
+- (NSString *)accessibilityTitle
 {
-    return _column;
+    const char *title = gtk_tree_view_column_get_title(_column);
+    return nsstring_from_cstring(title);
 }
 
-// Clear any actions that the accessibility system might try to inherit from the parent TreeView
-- (NSArray *)accessibilityActionNames
+- (BOOL)accessibilityPerformPress
 {
-	return nil;
-}
-
-- (id<NSAccessibility>)columnHeaderElement
-{
-    GtkWidget *header = gtk_tree_view_column_get_widget(_column);
-    if (header == NULL) {
-        if (_customHeaderElement == nil) {
-            _customHeaderElement = [[ACAccessibilityTreeColumnHeaderElement alloc] initWithDelegate:[self delegate]
-                                                                                         treeColumn:_column];
-        }
-        return _customHeaderElement;
+    if (!gtk_tree_view_column_get_clickable(_column)) {
+        return NO;
     }
 
-    return ac_element_get_accessibility_element(AC_ELEMENT (gtk_widget_get_accessible(header)));
+    gtk_tree_view_column_clicked(_column);
+    return YES;
 }
 @end

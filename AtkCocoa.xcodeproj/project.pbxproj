@@ -95,6 +95,7 @@
 		AE47D44F1F0E874F00678275 /* acmarshal.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D44E1F0E874F00678275 /* acmarshal.c */; };
 		AE47D4521F0FA39100678275 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE47D4501F0FA39100678275 /* Cocoa.framework */; };
 		AE47D4531F0FA39100678275 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE47D4511F0FA39100678275 /* Foundation.framework */; };
+		AE77D1CC1F1E4DB000151C16 /* ACAccessibilityTreeColumnHeaderElement.c in Sources */ = {isa = PBXBuildFile; fileRef = AE77D1CA1F1E4DB000151C16 /* ACAccessibilityTreeColumnHeaderElement.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -188,6 +189,7 @@
 		AE47D44E1F0E874F00678275 /* acmarshal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = acmarshal.c; sourceTree = "<group>"; };
 		AE47D4501F0FA39100678275 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		AE47D4511F0FA39100678275 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		AE77D1CA1F1E4DB000151C16 /* ACAccessibilityTreeColumnHeaderElement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = ACAccessibilityTreeColumnHeaderElement.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -249,6 +251,7 @@
 				AE47D39F1F0E764B00678275 /* ACAccessibilityTextViewElement.c */,
 				AE47D3A01F0E764B00678275 /* ACAccessibilityTreeCellElement.c */,
 				AE47D3A11F0E764B00678275 /* ACAccessibilityTreeColumnElement.c */,
+				AE77D1CA1F1E4DB000151C16 /* ACAccessibilityTreeColumnHeaderElement.c */,
 				AE47D3A21F0E764B00678275 /* ACAccessibilityTreeRowElement.c */,
 				AE47D3A31F0E764B00678275 /* acelement.c */,
 				AE47D3A41F0E764B00678275 /* acutils.c */,
@@ -410,6 +413,7 @@
 				AE47D4301F0E764B00678275 /* gailutil.c in Sources */,
 				AE47D3E91F0E764B00678275 /* ACAccessibilityNotebookElement.c in Sources */,
 				AE47D3FE1F0E764B00678275 /* gailcheckmenuitem.c in Sources */,
+				AE77D1CC1F1E4DB000151C16 /* ACAccessibilityTreeColumnHeaderElement.c in Sources */,
 				AE47D4031F0E764B00678275 /* gailcombobox.c in Sources */,
 				AE47D4151F0E764B00678275 /* gailmisc.c in Sources */,
 				AE47D42E1F0E764B00678275 /* gailtoplevel.c in Sources */,

@@ -1,6 +1,6 @@
 /*
  * AtkCocoa
- * Copyright 2016 Microsoft Corporation
+ * Copyright 2017 Microsoft Corporation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,15 +17,10 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#import <Cocoa/Cocoa.h>
 #import "ACAccessibilityElement.h"
-#include "acelement.h"
-#include <gtk/gtk.h>
 
-@interface ACAccessibilityTreeColumnElement : ACAccessibilityElement
+@interface ACAccessibilityTreeColumnHeaderElement : ACAccessibilityElement
 
 - (instancetype)initWithDelegate:(AcElement *)delegate treeColumn:(GtkTreeViewColumn *)column;
-- (GtkTreeViewColumn *)column;
-- (id<NSAccessibility>)columnHeaderElement;
 
 @end
