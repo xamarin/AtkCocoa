@@ -795,6 +795,8 @@ update_column_headers (GtkTreeView *tree_view)
       if (headerElement) {
         [headers addObject:headerElement];
         [element accessibilityAddChildElement:headerElement];
+        [headerElement setAccessibilityWindow:[element accessibilityWindow]];
+        [headerElement setAccessibilityTopLevelUIElement:[element accessibilityWindow]];
       }
     }
 
@@ -838,6 +840,8 @@ columns_changed (GtkTreeView *tree_view)
     /* create a column for NSAccessibility */
     tc = [[ACAccessibilityTreeColumnElement alloc] initWithDelegate:AC_ELEMENT (atk_obj) treeColumn:tmp_list->data];
     [tc setAccessibilityIndex:idx];
+    [tc setAccessibilityWindow:[parentElement accessibilityWindow]];
+    [tc setAccessibilityTopLevelUIElement:[parentElement accessibilityWindow]];
     g_hash_table_insert (gailview->columnMap, tmp_list->data, (__bridge void *)tc);
 
     /* Add the column as an accessibillty child */
@@ -1170,6 +1174,7 @@ make_renderer_cells_for_column (GailTreeView *gailView,
 
     id<NSAccessibility> realElement = renderer_element ?: gail_cell_get_real_cell (gailCell);
     [realElement setAccessibilityWindow:[parentElement accessibilityWindow]];
+    [realElement setAccessibilityTopLevelUIElement:[parentElement accessibilityWindow]];
     [treeCellElement accessibilityAddChildElement:renderer_element ?: (NSAccessibilityElement *) gail_cell_get_real_cell (gailCell)];
 
     // Attach the NSAccessibility element for the cell to the cell renderer, so that a custom data function
@@ -1239,6 +1244,7 @@ make_accessibility_cell_for_column (GtkTreeModel *treeModel,
 
   cell = [[ACAccessibilityTreeCellElement alloc] initWithDelegate:AC_ELEMENT (gailView) withDisclosureButton:needs_disclosure];
   [cell setAccessibilityParent:[parentElement accessibilityWindow]];
+  [cell setAccessibilityTopLevelUIElement:[parentElement accessibilityWindow]];
   [cell addToRow:rowElement column:columnElement];
 
   if (isExpanderColumn) {
@@ -1318,6 +1324,7 @@ make_accessibility_element_for_row (GtkTreeModel *treeModel,
   rowElement = [[ACAccessibilityTreeRowElement alloc] initWithDelegate:AC_ELEMENT (gailView) treeRow:rowRef treeView:treeView];
 // g_print("made row for %s\n", gtk_tree_path_to_string (rowPath));
   [rowElement setAccessibilityWindow:[parentElement accessibilityWindow]];
+  [rowElement setAccessibilityTopLevelUIElement:[parentElement accessibilityWindow]];
   gtk_tree_path_free (rowPath);
 
   columns = gtk_tree_view_get_columns (treeView);
