@@ -318,7 +318,8 @@ ac_element_get_accessibility_element (AcElement *element)
 		klass = AC_ELEMENT_GET_CLASS (element);
 		if (klass->get_accessibility_element) {
 			element->priv->real_element = (__bridge_retained void *) klass->get_accessibility_element (element);
-            ac_element_notify(element, NSAccessibilityCreatedNotification, nil);
+			if (element->priv->real_element)
+				ac_element_notify(element, NSAccessibilityCreatedNotification, nil);
 		} else {
 			g_warning ("No accessibility element method for %s", G_OBJECT_TYPE_NAME (element));
 		}
@@ -819,9 +820,11 @@ ac_element_notify (AcElement *element,
 				   NSDictionary *userInfo)
 {
 	id realElement = ac_element_get_accessibility_element (element);
-	if (userInfo) {
-		NSAccessibilityPostNotificationWithUserInfo (realElement, notificationName, userInfo);
-	} else {
-		NSAccessibilityPostNotification (realElement, notificationName);
+	if (realElement) {
+		if (userInfo) {
+			NSAccessibilityPostNotificationWithUserInfo (realElement, notificationName, userInfo);
+		} else {
+			NSAccessibilityPostNotification (realElement, notificationName);
+		}
 	}
 }
