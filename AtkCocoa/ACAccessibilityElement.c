@@ -45,6 +45,7 @@
 	}
 
 	_delegate = delegate;
+    g_object_add_weak_pointer(G_OBJECT (delegate), (void **)&_delegate);
 
 	_isCreated = YES;
 
