@@ -32,6 +32,7 @@
 - (void)removeChildRowElement:(ACAccessibilityTreeRowElement *)child;
 
 // Treat Row element like a tree
+- (ACAccessibilityTreeRowElement *)parent;
 - (void)insertChild:(ACAccessibilityTreeRowElement *)child atIndex:(int)idx;
 - (void)appendChild:(ACAccessibilityTreeRowElement *)child;
 - (void)removeChild:(ACAccessibilityTreeRowElement *)child;

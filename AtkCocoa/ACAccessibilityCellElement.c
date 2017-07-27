@@ -32,7 +32,7 @@
 	GtkTreeRowReference *_row_ref;
 	GtkTreeViewColumn *_column;
 	int _indexInColumn;
-	ACAccessibilityTreeRowElement *_rowElement;
+	__weak ACAccessibilityTreeRowElement *_rowElement;
 }
 
 - (instancetype)initWithDelegate:(GailCell *)delegate
@@ -49,11 +49,21 @@
 	_rowElement = rowElement;
 	_row_ref = [rowElement rowReference];
 	_column = column;
+    if (column) {
+        g_object_add_weak_pointer(G_OBJECT (column), (void**)&_column);
+    }
 	_indexInColumn = indexInColumn;
 
 	return self;
 }
 
+- (void)dealloc
+{
+    if (_column) {
+        g_object_remove_weak_pointer(G_OBJECT (_column), (void **)&_column);
+        _column = NULL;
+    }
+}
 - (GailCell *)delegate
 {
 	return _delegate;

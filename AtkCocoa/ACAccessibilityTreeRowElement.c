@@ -27,7 +27,7 @@
 
     int _descendantCount; // The total of all children, grandchildren, underneath this node
     GSequence *_children;
-    ACAccessibilityTreeRowElement *_parent;
+    __weak ACAccessibilityTreeRowElement *_parent;
     GSequenceIter *_iterInParent;
     BOOL _rowIsDirty;
 }
@@ -37,17 +37,26 @@
     self = [super initWithDelegate:delegate];
 
     _row = row;
-    _view = g_object_ref (G_OBJECT (treeView));
-    
+    _view = GTK_WIDGET (treeView);
+    if (treeView) {
+        g_object_add_weak_pointer(G_OBJECT (treeView), (void **)&_view);
+    }
     _descendantCount = 0;
     _children = NULL;
     _parent = nil;
     _rowIsDirty = YES;
 
-    [self setAccessibilityRole:NSAccessibilityRowRole];
-    [self setAccessibilitySubrole:NSAccessibilityOutlineRowSubrole];
-
     return self;
+}
+
+- (NSString *)accessibilityRole
+{
+    return NSAccessibilityRowRole;
+}
+
+- (NSString *)accessibilitySubrole
+{
+    return NSAccessibilityOutlineRowSubrole;
 }
 
 - (void)dealloc
@@ -57,12 +66,11 @@
     }
 
     if (_view) {
-        g_object_unref (_view);
+        g_object_remove_weak_pointer(G_OBJECT (_view), (void **)&_view);
     }
 
-    if (_children != NULL) {
-        g_sequence_free (_children);
-    }
+    [self removeAllChildren];
+    _parent = nil;
 }
 
 - (GtkTreeRowReference *)rowReference
@@ -202,6 +210,11 @@
     [child setAccessibilityDisclosedByRow:nil];
 }
 
+- (ACAccessibilityTreeRowElement *)parent
+{
+    return _parent;
+}
+
 // Clear any actions that the accessibility system might try to inherit from the parent TreeView
 - (NSArray *)accessibilityActionNames
 {
@@ -244,6 +257,15 @@
     [self setAccessibilityVisibleRows:visibleChildren];
 }
 
+static void
+remove_child (gpointer data)
+{
+    ACAccessibilityTreeRowElement *e = (__bridge ACAccessibilityTreeRowElement *)data;
+    e->_parent = nil;
+
+    CFRelease(data);
+}
+
 - (void)insertChild:(ACAccessibilityTreeRowElement *)child atIndex:(int)idx
 {
     GSequenceIter *iter;
@@ -259,11 +281,11 @@
     // g_print ("   Children count: %d\n", _children ? g_sequence_get_length (_children) + 1 : -1);
 
     if (_children == NULL) {
-        _children = g_sequence_new (NULL);
+        _children = g_sequence_new(remove_child);
     }
 
     iter = g_sequence_get_iter_at_pos (_children, idx);
-    child->_iterInParent = g_sequence_insert_before (iter, (__bridge void *) child);
+    child->_iterInParent = g_sequence_insert_before (iter, (void *)CFBridgingRetain (child));
 
     child->_parent = self;
 
@@ -274,10 +296,10 @@
 - (void)appendChild:(ACAccessibilityTreeRowElement *)child
 {
     if (_children == NULL) {
-        _children = g_sequence_new (NULL);
+        _children = g_sequence_new (remove_child);
     }
 
-    child->_iterInParent = g_sequence_append (_children, (__bridge void *) child);
+    child->_iterInParent = g_sequence_append (_children, (void *)CFBridgingRetain (child));
     child->_parent = self;
 
     [self adjustDescendantCountBy:1];
@@ -498,6 +520,10 @@ last_path_index (const char *path)
     // so we don't need to iterate over all the children
     if (![_parent childrenHaveDescendants]) {
         GtkTreePath *path = gtk_tree_row_reference_get_path ([self rowReference]);
+        if (path == NULL) {
+            // Row reference is now invalid. Probably during destruction
+            return 0;
+        }
         char *pathString = gtk_tree_path_to_string (path);
         gtk_tree_path_free (path);
 
@@ -512,7 +538,7 @@ last_path_index (const char *path)
         return 0;
     }
 
-    while (siblingsIter = g_sequence_iter_prev(siblingsIter)) {
+    while ((siblingsIter = g_sequence_iter_prev(siblingsIter))) {
         idx++;
         ACAccessibilityTreeRowElement *e = GET_DATA (siblingsIter);
         idx += e->_descendantCount;
@@ -540,7 +566,7 @@ last_path_index (const char *path)
         return;
     }
 
-    childrenCopy = g_sequence_new (NULL);
+    childrenCopy = g_sequence_new (remove_child);
     for (int i = 0; i < g_sequence_get_length (_children); i++) {
         GSequenceIter *idx = g_sequence_get_iter_at_pos (_children, indicies[i]);
 
@@ -553,7 +579,7 @@ last_path_index (const char *path)
         if (e == NULL) {
             continue;
         }
-        e->_iterInParent = g_sequence_append (childrenCopy, g_sequence_get (idx));
+        e->_iterInParent = g_sequence_append (childrenCopy, (void *) CFBridgingRetain (e));
     }
 
     g_sequence_free (_children);

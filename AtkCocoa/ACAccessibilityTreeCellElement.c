@@ -54,8 +54,8 @@
 @end
 
 @implementation ACAccessibilityTreeCellElement {
-    ACAccessibilityTreeRowElement *_rowElement;
-    ACAccessibilityTreeColumnElement *_columnElement;
+    __weak ACAccessibilityTreeRowElement *_rowElement;
+    __weak ACAccessibilityTreeColumnElement *_columnElement;
     ACAccessibilityDisclosureButton *_disclosureElement;
 }
 

@@ -45,11 +45,11 @@
 	}
 
 	_delegate = delegate;
-    g_object_add_weak_pointer(G_OBJECT (delegate), (void **)&_delegate);
-
 	_isCreated = YES;
 
 	if (delegate != NULL) {
+        g_object_add_weak_pointer(G_OBJECT (delegate), (void **)&_delegate);
+
 		_delegate_type = nsstring_from_cstring (g_strdup (G_OBJECT_TYPE_NAME (delegate)));
 		_owner_type = nsstring_from_cstring (g_strdup (G_OBJECT_TYPE_NAME (ac_element_get_owner (delegate))));
 	}
@@ -65,6 +65,10 @@
 - (void)dealloc
 {
 	AC_NOTE (DESTRUCTION, (NSLog (@"Deallocing: %@", [super description])));
+
+    if (_delegate != NULL) {
+        g_object_remove_weak_pointer(G_OBJECT (_delegate), (void **)&_delegate);
+    }
 }
 
 - (void)setAccessibilityElement:(BOOL)isElement
@@ -103,7 +107,7 @@
 
 - (NSString *)description
 {
-	return [NSString stringWithFormat:@"%@ (%@ (%p)- %@ (%p) - %@)", [super description], _delegate_type, _delegate, _owner_type, ac_element_get_owner (_delegate), _identifier ?: @"None set"];
+    return [NSString stringWithFormat:@"%@ (%@ (%p)- %@ (%p) - %@)", [super description], _delegate_type, _delegate, _owner_type, _delegate ? ac_element_get_owner (_delegate) : NULL, _identifier ?: @"None set"];
 }
 
 static char *get_full_object_path (GtkWidget *object)

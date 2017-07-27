@@ -32,11 +32,24 @@
         return nil;
     }
 
-    // FIXME: Should we ref this?
     _column = column;
+    if (_column) {
+        g_object_add_weak_pointer(G_OBJECT (column), (void **)&_column);
+    }
 
-    [self setAccessibilityRole:NSAccessibilityColumnRole];
     return self;
+}
+
+- (void)dealloc
+{
+    if (_column) {
+        g_object_remove_weak_pointer(G_OBJECT (_column), (void **)&_column);
+    }
+}
+
+- (NSString *)accessibilityRole
+{
+    return NSAccessibilityColumnRole;
 }
 
 - (NSString *)accessibilityLabel
@@ -80,6 +93,10 @@
 
 - (id<NSAccessibility>)columnHeaderElement
 {
+    if (_column == NULL) {
+        return nil;
+    }
+
     GtkWidget *header = gtk_tree_view_column_get_widget(_column);
     if (header == NULL) {
         if (_customHeaderElement == nil) {

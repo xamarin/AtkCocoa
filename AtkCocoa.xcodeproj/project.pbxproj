@@ -95,6 +95,7 @@
 		AE47D44F1F0E874F00678275 /* acmarshal.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D44E1F0E874F00678275 /* acmarshal.c */; };
 		AE47D4521F0FA39100678275 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE47D4501F0FA39100678275 /* Cocoa.framework */; };
 		AE47D4531F0FA39100678275 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE47D4511F0FA39100678275 /* Foundation.framework */; };
+		AE519EFA1F29079F0039BBD4 /* NSArray+AtkCocoa.m in Sources */ = {isa = PBXBuildFile; fileRef = AE519EF91F2902090039BBD4 /* NSArray+AtkCocoa.m */; };
 		AE77D1CC1F1E4DB000151C16 /* ACAccessibilityTreeColumnHeaderElement.c in Sources */ = {isa = PBXBuildFile; fileRef = AE77D1CA1F1E4DB000151C16 /* ACAccessibilityTreeColumnHeaderElement.c */; };
 /* End PBXBuildFile section */
 
@@ -189,6 +190,7 @@
 		AE47D44E1F0E874F00678275 /* acmarshal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = acmarshal.c; sourceTree = "<group>"; };
 		AE47D4501F0FA39100678275 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		AE47D4511F0FA39100678275 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		AE519EF91F2902090039BBD4 /* NSArray+AtkCocoa.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSArray+AtkCocoa.m"; sourceTree = "<group>"; };
 		AE77D1CA1F1E4DB000151C16 /* ACAccessibilityTreeColumnHeaderElement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = ACAccessibilityTreeColumnHeaderElement.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -312,6 +314,7 @@
 				AE47D3E11F0E764B00678275 /* gailutil.c */,
 				AE47D3E21F0E764B00678275 /* gailwidget.c */,
 				AE47D3E31F0E764B00678275 /* gailwindow.c */,
+				AE519EF91F2902090039BBD4 /* NSArray+AtkCocoa.m */,
 				AE47D3E41F0E764B00678275 /* NSAccessibilityElement+AtkCocoa.c */,
 			);
 			path = AtkCocoa;
@@ -422,6 +425,7 @@
 				AE47D4331F0E764B00678275 /* NSAccessibilityElement+AtkCocoa.c in Sources */,
 				AE47D3FA1F0E764B00678275 /* gailbutton.c in Sources */,
 				AE47D4291F0E764B00678275 /* gailsubmenuitem.c in Sources */,
+				AE519EFA1F29079F0039BBD4 /* NSArray+AtkCocoa.m in Sources */,
 				AE47D42A1F0E764B00678275 /* gailtextcell.c in Sources */,
 				AE47D4081F0E764B00678275 /* gailframe.c in Sources */,
 				AE47D4021F0E764B00678275 /* gailcombo.c in Sources */,
@@ -587,6 +591,7 @@
 				EXECUTABLE_PREFIX = lib;
 				GCC_WARN_UNUSED_FUNCTION = NO;
 				GCC_WARN_UNUSED_VARIABLE = NO;
+				HEADER_SEARCH_PATHS = "atk-cocoa/";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks/Mono.framework/Versions/5.4.0/lib",
@@ -630,6 +635,7 @@
 				EXECUTABLE_PREFIX = lib;
 				GCC_WARN_UNUSED_FUNCTION = NO;
 				GCC_WARN_UNUSED_VARIABLE = NO;
+				HEADER_SEARCH_PATHS = "atk-cocoa/";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks/Mono.framework/Versions/5.4.0/lib",
