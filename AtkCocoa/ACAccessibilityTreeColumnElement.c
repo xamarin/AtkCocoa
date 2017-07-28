@@ -54,18 +54,21 @@
 
 - (NSString *)accessibilityLabel
 {
+    if (_column == NULL) {
+        return nil;
+    }
     return nsstring_from_cstring (gtk_tree_view_column_get_title (_column));
 }
 
 - (GdkRectangle)frameInGtkWindowSpace
 {
     GdkRectangle cellSpace;
-    GtkWidget *treeView = gtk_tree_view_column_get_tree_view (_column);
-
-    GtkTreePath *path = gtk_tree_path_new_first ();
-
+    GtkWidget *treeView;
+    GtkTreePath *path;
     int x, y;
 
+    treeView = gtk_tree_view_column_get_tree_view (_column);
+    path = gtk_tree_path_new_first ();
     gtk_tree_view_get_cell_area (GTK_TREE_VIEW (treeView), path, _column, &cellSpace);
     gtk_tree_path_free (path);
 

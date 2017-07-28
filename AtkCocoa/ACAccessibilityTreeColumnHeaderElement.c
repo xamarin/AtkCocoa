@@ -33,20 +33,44 @@
     }
 
     _column = column;
+    if (column) {
+        g_object_add_weak_pointer(G_OBJECT (column), (void **)&_column);
+    }
 
     [self setAccessibilityRole:NSAccessibilityButtonRole];
 
     return self;
 }
 
+- (void)dealloc
+{
+    if (_column) {
+        g_object_remove_weak_pointer(G_OBJECT (_column), (void **)&_column);
+    }
+}
+
 - (GdkRectangle)frameInGtkWindowSpace
 {
     GdkRectangle cellSpace;
-    GtkWidget *treeView = gtk_tree_view_column_get_tree_view (_column);
+    GtkWidget *treeView;
     int wx, wy;
-    GtkTreePath *path = gtk_tree_path_new_first ();
-
+    GtkTreePath *path;
     int x, y;
+
+    // Column is defunct
+    if (_column == NULL) {
+        GdkRectangle rect;
+
+        rect.x = 0;
+        rect.y = 0;
+        rect.width = 0;
+        rect.height = 0;
+
+        return rect;
+    }
+
+    treeView = gtk_tree_view_column_get_tree_view (_column);
+    path = gtk_tree_path_new_first ();
 
     gtk_tree_view_get_cell_area (GTK_TREE_VIEW (treeView), path, _column, &cellSpace);
     gtk_tree_path_free (path);
@@ -76,12 +100,24 @@
 
 - (NSString *)accessibilityTitle
 {
-    const char *title = gtk_tree_view_column_get_title(_column);
+    const char *title;
+
+    if (_column == NULL) {
+        // Defunct
+        return nil;
+    }
+
+    title = gtk_tree_view_column_get_title(_column);
     return nsstring_from_cstring(title);
 }
 
 - (BOOL)accessibilityPerformPress
 {
+    if (_column == NULL) {
+        // Defunct
+        return NO;
+    }
+
     if (!gtk_tree_view_column_get_clickable(_column)) {
         return NO;
     }

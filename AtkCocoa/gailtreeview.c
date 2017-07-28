@@ -831,18 +831,15 @@ remove_column_from_parent (gpointer key,
   [parent ac_accessibilityRemoveColumnElement:element];
   [parent setAccessibilityVisibleColumns:[parent accessibilityChildren]];
 
-  /*
   id<NSAccessibility> headerElement = [columnElement columnHeaderElement];
   if (headerElement != nil) {
     NSArray *headers = [parent accessibilityColumnHeaderUIElements];
 
     if (headers != nil) {
-      NSMutableArray *headersCopy = [headers mutableCopy];
-      [headersCopy removeObject:headerElement];
-      [parent setAccessibilityColumnHeaderUIElements:headersCopy];
+      [parent setAccessibilityColumnHeaderUIElements:[headers ac_removeObject:headerElement]];
     }
   }
-*/
+
   // Remove this from the hashtable
 
   CFRelease(value);
@@ -880,8 +877,7 @@ update_column_headers (GtkTreeView *tree_view)
 
     g_list_free (tv_cols);
   } else {
-    headers = [[element accessibilityColumnHeaderUIElements] mutableCopy];
-    for (ACAccessibilityElement *headerElement in headers) {
+    for (ACAccessibilityElement *headerElement in [element accessibilityColumnHeaderUIElements]) {
       [element ac_accessibilityRemoveChildElement:headerElement];
     }
 
@@ -911,10 +907,6 @@ columns_changed (GtkTreeView *tree_view)
 
   g_hash_table_foreach_remove (gailview->columnMap, remove_column_from_parent, (__bridge void *)parentElement);
 
-  // Update the column headers before the columns so the headers are in accessibilityChildren
-  // before the columns
-//  update_column_headers(tree_view);
-
   idx = 0;
   for (tmp_list = tv_cols; tmp_list; tmp_list = tmp_list->next) {
     ACAccessibilityTreeColumnElement *tc;
@@ -935,6 +927,7 @@ columns_changed (GtkTreeView *tree_view)
     idx++;
   }
   sort_child_elements (gailview);
+  update_column_headers(tree_view);
 
   g_list_free (tv_cols);
 }
