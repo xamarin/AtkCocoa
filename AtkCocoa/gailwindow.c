@@ -192,6 +192,7 @@ gail_window_class_init (GailWindowClass *klass)
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   AtkObjectClass  *class = ATK_OBJECT_CLASS (klass);
   AcElementClass *element_class = AC_ELEMENT_CLASS (klass);
+  GtkAccessibleClass *accessible_class = GTK_ACCESSIBLE_CLASS(klass);
 
   gobject_class->finalize = gail_window_finalize;
 
@@ -205,6 +206,10 @@ gail_window_class_init (GailWindowClass *klass)
   class->ref_relation_set = gail_window_ref_relation_set;
   class->ref_state_set = gail_window_ref_state_set;
   class->initialize = gail_window_real_initialize;
+
+  // FIXME: If this isn't set, then destroying a window will crash when accessible->widget is set to NULL
+  // Need to track down where accessible->widget is then being accessed.
+  accessible_class->connect_widget_destroyed = NULL;
 
   element_class->get_accessibility_element = gail_window_real_get_accessibility_element;
 

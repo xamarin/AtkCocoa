@@ -172,7 +172,7 @@
 		AE47D3E01F0E764B00678275 /* gailtreeview.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; indentWidth = 2; path = gailtreeview.c; sourceTree = "<group>"; };
 		AE47D3E11F0E764B00678275 /* gailutil.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailutil.c; sourceTree = "<group>"; };
 		AE47D3E21F0E764B00678275 /* gailwidget.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailwidget.c; sourceTree = "<group>"; };
-		AE47D3E31F0E764B00678275 /* gailwindow.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailwindow.c; sourceTree = "<group>"; };
+		AE47D3E31F0E764B00678275 /* gailwindow.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; indentWidth = 2; path = gailwindow.c; sourceTree = "<group>"; };
 		AE47D3E41F0E764B00678275 /* NSAccessibilityElement+AtkCocoa.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = "NSAccessibilityElement+AtkCocoa.c"; sourceTree = "<group>"; };
 		AE47D4341F0E781500678275 /* atk-cocoa */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "atk-cocoa"; sourceTree = "<group>"; };
 		AE47D4361F0E789100678275 /* libatk-1.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libatk-1.0.0.dylib"; path = "../../../../../../Library/Frameworks/Mono.framework/Versions/5.4.0/lib/libatk-1.0.0.dylib"; sourceTree = "<group>"; };
