@@ -274,12 +274,16 @@ gail_tree_view_real_initialize (AtkObject *obj,
 
   view->columnMap = g_hash_table_new (NULL, NULL);
 
+  widget = GTK_WIDGET (data);
+  tree_view = GTK_TREE_VIEW (widget);
+
   // We make a tree from the ACAccessibilityTreeRowElements that matches the GtkTreeModel
   // so we can quickly access the appropriate element given a row path. Using an array is too slow
   // with large tables, and a hashtable isn't feasible due to how GtkTreeModel works
-  view->rowRootNode = (__bridge_retained void *)[[ACAccessibilityTreeRowElement alloc] initWithDelegate:NULL];
+  view->rowRootNode = (__bridge_retained void *)[[ACAccessibilityTreeRowElement alloc] initWithDelegate:NULL
+                                                                                                treeRow:NULL
+                                                                                               treeView:tree_view];
 
-  widget = GTK_WIDGET (data);
   g_signal_connect_after (widget,
                           "row-collapsed",
                           G_CALLBACK (gail_tree_view_collapse_row_gtk),
@@ -293,7 +297,6 @@ gail_tree_view_real_initialize (AtkObject *obj,
                     G_CALLBACK (gail_tree_view_size_allocate_gtk),
                     NULL);
 
-  tree_view = GTK_TREE_VIEW (widget);
   tree_model = gtk_tree_view_get_model (tree_view);
 
   /* Set up signal handling */
@@ -369,6 +372,16 @@ clear_column_elements (gpointer key,
 }
 
 static void
+destroy_root(GailTreeView *gailview)
+{
+  if (gailview->rowRootNode) {
+    remove_all_children(gailview, ac_element_get_accessibility_element(AC_ELEMENT (gailview)), ROOT_NODE(gailview));
+    CFBridgingRelease(gailview->rowRootNode);
+    gailview->rowRootNode = nil;
+  }
+}
+
+static void
 gail_tree_view_real_notify_gtk (GObject             *obj,
                                 GParamSpec          *pspec)
 {
@@ -401,8 +414,7 @@ gail_tree_view_real_notify_gtk (GObject             *obj,
           disconnect_model_signals (gailview);
         }
 
-      CFBridgingRelease (gailview->rowRootNode);
-      gailview->rowRootNode = nil;
+      destroy_root(gailview);
 
       // The columns are part of the tree view, but the child elements are part of the model
       if (gailview->columnMap) {
@@ -429,7 +441,9 @@ gail_tree_view_real_notify_gtk (GObject             *obj,
           // We make a tree from the ACAccessibilityTreeRowElements that matches the GtkTreeModel
           // so we can quickly access the appropriate element given a row path. Using an array is too slow
           // with large tables, and a hashtable isn't feasible due to how GtkTreeModel works
-          gailview->rowRootNode = (__bridge_retained void *)[[ACAccessibilityTreeRowElement alloc] initWithDelegate:NULL];
+          gailview->rowRootNode = (__bridge_retained void *)[[ACAccessibilityTreeRowElement alloc] initWithDelegate:NULL
+                                                                                                            treeRow:NULL
+                                                                                                           treeView:NULL];
 
           // When a model is set build the row cache
           if (gtk_tree_model_get_iter_first (tree_model, &iter)) {
@@ -484,11 +498,7 @@ gail_tree_view_real_notify_gtk (GObject             *obj,
 static void
 cleanup_caches (GailTreeView *gailview)
 {
-  if (gailview->rowRootNode) {
-    remove_all_children(gailview, ac_element_get_accessibility_element(AC_ELEMENT (gailview)), ROOT_NODE(gailview));
-    CFRelease (gailview->rowRootNode);
-    gailview->rowRootNode = nil;
-  }
+  destroy_root(gailview);
 
   if (gailview->columnMap) {
     g_hash_table_destroy (gailview->columnMap);

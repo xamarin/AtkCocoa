@@ -337,7 +337,7 @@ ac_element_invalidate_accessibility_element (AcElement *element)
 	g_return_if_fail (AC_IS_ELEMENT (element));
 
 	if (element->priv->real_element != NULL) {
-		CFRelease (element->priv->real_element);
+        CFBridgingRelease(element->priv->real_element);
 		element->priv->real_element = NULL;
 	}
 }

@@ -23,6 +23,7 @@
 
 @implementation ACAccessibilityTreeRowElement {
     GtkTreeRowReference *_row;
+    BOOL _isRoot;
     GtkWidget *_view;
 
     int _descendantCount; // The total of all children, grandchildren, underneath this node
@@ -37,9 +38,13 @@
     self = [super initWithDelegate:delegate];
 
     _row = row;
-    _view = GTK_WIDGET (treeView);
+    _isRoot = row == NULL && delegate == NULL;
+
     if (treeView) {
+        _view = GTK_WIDGET (treeView);
         g_object_add_weak_pointer(G_OBJECT (treeView), (void **)&_view);
+    } else {
+        _view = NULL;
     }
     _descendantCount = 0;
     _children = NULL;
@@ -47,6 +52,27 @@
     _rowIsDirty = YES;
 
     return self;
+}
+
+- (NSString *)description
+{
+    char *rowPath;
+    if (_row) {
+        GtkTreePath *path = gtk_tree_row_reference_get_path(_row);
+        if (path) {
+            rowPath = gtk_tree_path_to_string(path);
+        } else {
+            rowPath = g_strdup ("No path");
+        }
+    } else {
+        rowPath = g_strdup ("No row");
+    }
+
+    NSString *ret = [NSString stringWithFormat:@"Row %p %s - %s (%p)", self, rowPath,
+                     _view ? atk_object_get_name (ATK_OBJECT (gtk_widget_get_accessible(_view))) : "No view", _view];
+
+    g_free (rowPath);
+    return ret;
 }
 
 - (NSString *)accessibilityRole
@@ -63,10 +89,12 @@
 {
     if (_row) {
         gtk_tree_row_reference_free (_row);
+        _row = NULL;
     }
 
     if (_view) {
         g_object_remove_weak_pointer(G_OBJECT (_view), (void **)&_view);
+        _view = NULL;
     }
 
     [self removeAllChildren];
@@ -263,7 +291,7 @@ remove_child (gpointer data)
     ACAccessibilityTreeRowElement *e = (__bridge ACAccessibilityTreeRowElement *)data;
     e->_parent = nil;
 
-    CFRelease(data);
+    CFBridgingRelease(data);
 }
 
 - (void)insertChild:(ACAccessibilityTreeRowElement *)child atIndex:(int)idx
