@@ -38,7 +38,7 @@
         return nil;
 	}
 
-    return nsstring_from_cstring (ac_element_get_text ([self delegate]));
+    return nsstring_from_cstring (get_entry_text([self delegate]));
 }
 
 - (void)setAccessibilityValue:(id)newValue
@@ -70,4 +70,80 @@
 {
     return [super accessibilityParent];
 }
+
+- (NSInteger)accessibilityNumberOfCharacters
+{
+    return strlen (get_entry_text([self delegate]));
+}
+
+- (NSInteger)accessibilityLineForIndex:(NSInteger)index
+{
+    return 0;
+}
+
+const char *
+get_entry_text (AcElement *element)
+{
+    GtkWidget *widget = gtk_accessible_get_widget(GTK_ACCESSIBLE (element));
+    if (GTK_IS_ENTRY(widget)) {
+        return gtk_entry_get_text(GTK_ENTRY (widget));
+    }
+
+    return "";
+}
+
+- (NSRange)accessibilityRangeForLine:(NSInteger)line
+{
+    return NSMakeRange(0, strlen (get_entry_text(AC_ELEMENT ([self delegate]))));
+}
+
+- (NSString *)accessibilityStringForRange:(NSRange)range
+{
+    NSString *ret = nsstring_from_cstring(get_entry_text([self delegate]));
+
+    return [ret substringWithRange:range];
+}
+
+- (NSAttributedString *)accessibilityAttributedStringForRange:(NSRange)range
+{
+    NSString *ret = nsstring_from_cstring(get_entry_text([self delegate]));
+
+    return [[NSAttributedString alloc] initWithString:[ret substringWithRange:range]];
+}
+
+#define PADDING 2
+- (NSRect)accessibilityFrameForRange:(NSRange)range
+{
+    GtkWidget *widget = gtk_accessible_get_widget(GTK_ACCESSIBLE([self delegate]));
+    PangoLayout *layout = gtk_entry_get_layout(GTK_ENTRY (widget));
+    PangoRectangle first_rect, last_rect;
+
+    pango_layout_index_to_pos (layout, (int)range.location, &first_rect);
+    pango_layout_index_to_pos (layout, (int)(range.location + range.length - 1), &last_rect);
+
+    const char *text = get_entry_text([self delegate]);
+    NSString *t = nsstring_from_cstring(text);
+
+    NSRect first = NSMakeRect(first_rect.x / PANGO_SCALE, first_rect.y / PANGO_SCALE,
+                              first_rect.width / PANGO_SCALE, first_rect.height / PANGO_SCALE);
+    NSRect last = NSMakeRect(last_rect.x / PANGO_SCALE, last_rect.y / PANGO_SCALE,
+                             last_rect.width / PANGO_SCALE, last_rect.height / PANGO_SCALE);
+
+    NSRect fullRect = NSUnionRect(first, last);
+    NSRect frame = [self accessibilityFrame];
+
+    int x_layout, y_layout;
+    gtk_entry_get_layout_offsets (GTK_ENTRY (widget), &x_layout, &y_layout);
+
+    int halfFrameHeight = frame.size.height / 2;
+    int dy = halfFrameHeight - y_layout;
+    int cocoaY = halfFrameHeight + dy;
+
+    NSRect ret = NSMakeRect(frame.origin.x + fullRect.origin.x + x_layout - PADDING,
+                            frame.origin.y + fullRect.origin.y + dy - PADDING,
+                            fullRect.size.width + (PADDING * 2), fullRect.size.height + (PADDING * 2));
+
+    return ret;
+}
+
 @end

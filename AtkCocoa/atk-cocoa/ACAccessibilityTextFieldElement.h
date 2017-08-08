@@ -20,7 +20,7 @@
 #import <Cocoa/Cocoa.h>
 #include "ACAccessibilityElement.h"
 
-@interface ACAccessibilityTextFieldElement : ACAccessibilityElement <NSAccessibilityStaticText>
+@interface ACAccessibilityTextFieldElement : ACAccessibilityElement <NSAccessibilityNavigableStaticText>
 
 - (instancetype)initWithDelegate:(AcElement *)delegate;
 

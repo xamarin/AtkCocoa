@@ -23,7 +23,7 @@
 NSString *
 nsstring_from_cstring (const char *cstring)
 {
-	if (cstring == NULL) {
+	if (cstring == NULL || *cstring == 0) {
 		return nil;
 	}
 	return [[NSString alloc] initWithCString:cstring encoding:NSUTF8StringEncoding];
