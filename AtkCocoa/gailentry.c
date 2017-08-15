@@ -1074,11 +1074,14 @@ _gail_entry_insert_text_cb (GtkEntry *entry,
       gail_entry->length_insert = (int)g_utf8_strlen(arg1, arg2);
     }
 
-  NSAccessibilityPostNotificationWithUserInfo(ac_element_get_accessibility_element(AC_ELEMENT(accessible)),
-                                              NSAccessibilityAnnouncementRequestedNotification,
-                                              @{ NSAccessibilityAnnouncementKey : nsstring_from_cstring(arg1),
-                                                 NSAccessibilityPriorityKey: @(NSAccessibilityPriorityHigh)
-                                                 });
+  if (arg1 != NULL && *arg1 != 0) {
+    NSAccessibilityPostNotificationWithUserInfo(ac_element_get_accessibility_element(AC_ELEMENT(accessible)),
+                                                NSAccessibilityAnnouncementRequestedNotification,
+                                                @{ NSAccessibilityAnnouncementKey : nsstring_from_cstring(arg1),
+                                                   NSAccessibilityPriorityKey: @(NSAccessibilityPriorityHigh)
+                                                   });
+  }
+
   /*
    * The signal will be emitted when the cursor position is updated.
    * or in an idle handler if it not updated.
