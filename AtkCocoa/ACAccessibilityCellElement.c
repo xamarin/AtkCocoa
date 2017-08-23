@@ -29,7 +29,6 @@
 // FIXME: Rename to ACAccessibilityCellRendererElement?
 @implementation ACAccessibilityCellElement {
 	GailCell *_delegate;
-	GtkTreeRowReference *_row_ref;
 	GtkTreeViewColumn *_column;
 	int _indexInColumn;
 	__weak ACAccessibilityTreeRowElement *_rowElement;
@@ -47,7 +46,6 @@
 
 	_delegate = delegate;
 	_rowElement = rowElement;
-	_row_ref = [rowElement rowReference];
 	_column = column;
     if (column) {
         g_object_add_weak_pointer(G_OBJECT (column), (void**)&_column);
@@ -71,7 +69,11 @@
 
 - (NSString *)description
 {
-	GtkTreePath *path = gtk_tree_row_reference_get_path (_row_ref);
+    if (_rowElement == nil) {
+        return @"";
+    }
+
+	GtkTreePath *path = gtk_tree_row_reference_get_path ([_rowElement rowReference]);
 	char *pathStr = gtk_tree_path_to_string (path);
 	char *description;
 	NSString *desc;
@@ -173,9 +175,16 @@ static char *value_property_names[] = {
 	GList *renderers;
 	GtkCellRenderer *cell_renderer;
 	GdkRectangle cellSpace;
-	GtkWidget *treeView = gtk_tree_view_column_get_tree_view (_column);
-	GtkTreePath *path = gtk_tree_row_reference_get_path (_row_ref);
+    GtkWidget *treeView;
+    GtkTreePath *path;
 	int x, width;
+
+    if (_rowElement == nil) {
+        return CGRectZero;
+    }
+
+    treeView = gtk_tree_view_column_get_tree_view (_column);
+    path = gtk_tree_row_reference_get_path ([_rowElement rowReference]);
 
 	// column_cell_get_position needs the exact renderer from the column, so can't use the one stored in GailCellRenderer 
 	renderers = gtk_cell_layout_get_cells (GTK_CELL_LAYOUT (_column));
