@@ -35,6 +35,26 @@
 	return [super initWithDelegate:delegate];
 }
 
+- (NSInteger)accessibilityNumberOfCharacters
+{
+    GtkTextView *textview = GTK_TEXT_VIEW (ac_element_get_owner ([self delegate]));
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer (textview);
+
+    return gtk_text_buffer_get_char_count(buffer);
+}
+
+- (NSInteger)accessibilityInsertionPointLineNumber
+{
+    GtkTextView *textview = GTK_TEXT_VIEW (ac_element_get_owner ([self delegate]));
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer (textview);
+
+    GtkTextMark *insertMark = gtk_text_buffer_get_insert (buffer);
+    GtkTextIter iter;
+
+    gtk_text_buffer_get_iter_at_mark(buffer, &iter, insertMark);
+    return gtk_text_iter_get_line(&iter);
+}
+
 - (NSString *)accessibilityStringForRange:(NSRange)range
 {
     GtkTextView *textview = GTK_TEXT_VIEW (ac_element_get_owner ([self delegate]));

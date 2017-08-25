@@ -176,13 +176,13 @@
 		AE47D3E41F0E764B00678275 /* NSAccessibilityElement+AtkCocoa.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = "NSAccessibilityElement+AtkCocoa.c"; sourceTree = "<group>"; };
 		AE47D4341F0E781500678275 /* atk-cocoa */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "atk-cocoa"; sourceTree = "<group>"; };
 		AE47D4361F0E789100678275 /* libatk-1.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libatk-1.0.0.dylib"; path = "/Library/Frameworks/Mono.framework/Versions/Current/lib/libatk-1.0.0.dylib"; sourceTree = "<absolute>"; };
-		AE47D4371F0E789100678275 /* libcairo.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcairo.2.dylib; path = "/Library/Frameworks/Mono.framework/Versions/Current/lib/libcairo.2.dylib"; sourceTree = "<absolute>"; };
+		AE47D4371F0E789100678275 /* libcairo.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcairo.2.dylib; path = /Library/Frameworks/Mono.framework/Versions/Current/lib/libcairo.2.dylib; sourceTree = "<absolute>"; };
 		AE47D4381F0E789100678275 /* libgdk_pixbuf-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libgdk_pixbuf-2.0.0.dylib"; path = "/Library/Frameworks/Mono.framework/Versions/Current/lib/libgdk_pixbuf-2.0.0.dylib"; sourceTree = "<absolute>"; };
 		AE47D4391F0E789100678275 /* libgdk-quartz-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libgdk-quartz-2.0.0.dylib"; path = "/Library/Frameworks/Mono.framework/Versions/Current/lib/libgdk-quartz-2.0.0.dylib"; sourceTree = "<absolute>"; };
 		AE47D43A1F0E789100678275 /* libgio-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libgio-2.0.0.dylib"; path = "/Library/Frameworks/Mono.framework/Versions/Current/lib/libgio-2.0.0.dylib"; sourceTree = "<absolute>"; };
 		AE47D43B1F0E789100678275 /* libglib-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libglib-2.0.0.dylib"; path = "/Library/Frameworks/Mono.framework/Versions/Current/lib/libglib-2.0.0.dylib"; sourceTree = "<absolute>"; };
 		AE47D43C1F0E789100678275 /* libgtk-quartz-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libgtk-quartz-2.0.0.dylib"; path = "/Library/Frameworks/Mono.framework/Versions/Current/lib/libgtk-quartz-2.0.0.dylib"; sourceTree = "<absolute>"; };
-		AE47D43D1F0E789100678275 /* libintl.8.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libintl.8.dylib; path = "/Library/Frameworks/Mono.framework/Versions/Current/lib/libintl.8.dylib"; sourceTree = "<absolute>"; };
+		AE47D43D1F0E789100678275 /* libintl.8.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libintl.8.dylib; path = /Library/Frameworks/Mono.framework/Versions/Current/lib/libintl.8.dylib; sourceTree = "<absolute>"; };
 		AE47D43E1F0E789100678275 /* libpango-1.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libpango-1.0.0.dylib"; path = "/Library/Frameworks/Mono.framework/Versions/Current/lib/libpango-1.0.0.dylib"; sourceTree = "<absolute>"; };
 		AE47D4481F0E78D200678275 /* libgobject-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libgobject-2.0.0.dylib"; path = "/Library/Frameworks/Mono.framework/Versions/Current/lib/libgobject-2.0.0.dylib"; sourceTree = "<absolute>"; };
 		AE47D4491F0E78D200678275 /* libpangocairo-1.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libpangocairo-1.0.0.dylib"; path = "/Library/Frameworks/Mono.framework/Versions/Current/lib/libpangocairo-1.0.0.dylib"; sourceTree = "<absolute>"; };
@@ -362,6 +362,7 @@
 				AE47D2E81F0E74B700678275 /* Sources */,
 				AE47D2E91F0E74B700678275 /* Frameworks */,
 				AE47D2EA1F0E74B700678275 /* Headers */,
+				AE5F10E61F4DC51800011D4E /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -404,6 +405,22 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		AE5F10E61F4DC51800011D4E /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script is used to make AtkCocoa point to the Current symlink instead of\n# hardcoding it\n\nLIBPATH=build/Release/libAtkCocoa.dylib\nVERSION=`otool -L $LIBPATH | grep -m 1 Mono.framework | cut -f 6 -d /`\necho \"Correcting version:\" $VERSION\n\nfor i in `otool -L $LIBPATH | grep Mono.framework | cut -f 1 -d \" \"`; do\nj=`echo $i | sed s/$VERSION/Current/`\ninstall_name_tool -change \"$i\" \"$j\" $LIBPATH\ndone\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		AE47D2E81F0E74B700678275 /* Sources */ = {
