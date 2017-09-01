@@ -23,6 +23,7 @@
 #include "gailmenushell.h"
 #include "gailmenuitem.h"
 #include "gailnotebook.h"
+#include "gailnsview.h"
 #include "gailobject.h"
 #include "gailoptionmenu.h"
 #include "gailpaned.h"

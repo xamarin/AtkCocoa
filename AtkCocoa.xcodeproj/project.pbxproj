@@ -97,6 +97,7 @@
 		AE47D4531F0FA39100678275 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE47D4511F0FA39100678275 /* Foundation.framework */; };
 		AE519EFA1F29079F0039BBD4 /* NSArray+AtkCocoa.m in Sources */ = {isa = PBXBuildFile; fileRef = AE519EF91F2902090039BBD4 /* NSArray+AtkCocoa.m */; };
 		AE77D1CC1F1E4DB000151C16 /* ACAccessibilityTreeColumnHeaderElement.c in Sources */ = {isa = PBXBuildFile; fileRef = AE77D1CA1F1E4DB000151C16 /* ACAccessibilityTreeColumnHeaderElement.c */; };
+		AE9AADF31F58455300C37B28 /* gailnsview.c in Sources */ = {isa = PBXBuildFile; fileRef = AE9AADF11F58455300C37B28 /* gailnsview.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -114,10 +115,10 @@
 		AE47D3A01F0E764B00678275 /* ACAccessibilityTreeCellElement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = ACAccessibilityTreeCellElement.c; sourceTree = "<group>"; };
 		AE47D3A11F0E764B00678275 /* ACAccessibilityTreeColumnElement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = ACAccessibilityTreeColumnElement.c; sourceTree = "<group>"; };
 		AE47D3A21F0E764B00678275 /* ACAccessibilityTreeRowElement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = ACAccessibilityTreeRowElement.c; sourceTree = "<group>"; };
-		AE47D3A31F0E764B00678275 /* acelement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = acelement.c; sourceTree = "<group>"; };
+		AE47D3A31F0E764B00678275 /* acelement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; indentWidth = 2; path = acelement.c; sourceTree = "<group>"; };
 		AE47D3A41F0E764B00678275 /* acutils.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = acutils.c; sourceTree = "<group>"; };
 		AE47D3A51F0E764B00678275 /* config.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = config.h; sourceTree = "<group>"; };
-		AE47D3A61F0E764B00678275 /* gail.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gail.c; sourceTree = "<group>"; };
+		AE47D3A61F0E764B00678275 /* gail.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; indentWidth = 2; path = gail.c; sourceTree = "<group>"; };
 		AE47D3A71F0E764B00678275 /* gailadjustment.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailadjustment.c; sourceTree = "<group>"; };
 		AE47D3A81F0E764B00678275 /* gailarrow.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailarrow.c; sourceTree = "<group>"; };
 		AE47D3A91F0E764B00678275 /* gailbooleancell.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailbooleancell.c; sourceTree = "<group>"; };
@@ -192,6 +193,7 @@
 		AE47D4511F0FA39100678275 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		AE519EF91F2902090039BBD4 /* NSArray+AtkCocoa.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSArray+AtkCocoa.m"; sourceTree = "<group>"; };
 		AE77D1CA1F1E4DB000151C16 /* ACAccessibilityTreeColumnHeaderElement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = ACAccessibilityTreeColumnHeaderElement.c; sourceTree = "<group>"; };
+		AE9AADF11F58455300C37B28 /* gailnsview.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; path = gailnsview.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -287,6 +289,7 @@
 				AE47D3C61F0E764B00678275 /* gailmisc.c */,
 				AE47D3C71F0E764B00678275 /* gailnotebook.c */,
 				AE47D3C81F0E764B00678275 /* gailnotebookpage.c */,
+				AE9AADF11F58455300C37B28 /* gailnsview.c */,
 				AE47D3C91F0E764B00678275 /* gailobject.c */,
 				AE47D3CA1F0E764B00678275 /* gailoptionmenu.c */,
 				AE47D3CB1F0E764B00678275 /* gailpaned.c */,
@@ -441,6 +444,7 @@
 				AE47D3E61F0E764B00678275 /* ACAccessibilityComboBoxElement.c in Sources */,
 				AE47D4331F0E764B00678275 /* NSAccessibilityElement+AtkCocoa.c in Sources */,
 				AE47D3FA1F0E764B00678275 /* gailbutton.c in Sources */,
+				AE9AADF31F58455300C37B28 /* gailnsview.c in Sources */,
 				AE47D4291F0E764B00678275 /* gailsubmenuitem.c in Sources */,
 				AE519EFA1F29079F0039BBD4 /* NSArray+AtkCocoa.m in Sources */,
 				AE47D42A1F0E764B00678275 /* gailtextcell.c in Sources */,

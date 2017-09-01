@@ -381,10 +381,18 @@ update_window_and_toplevel (NSArray *children, id window)
 
   for (i = 0; i < [children count]; i++) {
     id<NSAccessibility> child = (id<NSAccessibility>)[children objectAtIndex:i];
-    [child setAccessibilityTopLevelUIElement:window];
-    [child setAccessibilityWindow:window];
 
-    update_window_and_toplevel ([child accessibilityChildren], window);
+    if ([child respondsToSelector:@selector(setAccessibilityTopLevelUIElement:)]) {
+      [child setAccessibilityTopLevelUIElement:window];
+    }
+
+    if ([child respondsToSelector:@selector(setAccessibilityWindow:)]) {
+      [child setAccessibilityWindow:window];
+    }
+
+    if ([child respondsToSelector:@selector(accessibilityChildren)]) {
+      update_window_and_toplevel ([child accessibilityChildren], window);
+    }
   }
 }
 
