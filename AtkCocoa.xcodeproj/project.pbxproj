@@ -130,7 +130,7 @@
 		AE47D3AF1F0E764B00678275 /* gailcheckmenuitem.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailcheckmenuitem.c; sourceTree = "<group>"; };
 		AE47D3B01F0E764B00678275 /* gailchecksubmenuitem.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailchecksubmenuitem.c; sourceTree = "<group>"; };
 		AE47D3B31F0E764B00678275 /* gailcombo.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailcombo.c; sourceTree = "<group>"; };
-		AE47D3B41F0E764B00678275 /* gailcombobox.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailcombobox.c; sourceTree = "<group>"; };
+		AE47D3B41F0E764B00678275 /* gailcombobox.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; indentWidth = 2; path = gailcombobox.c; sourceTree = "<group>"; };
 		AE47D3B51F0E764B00678275 /* gailcontainer.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailcontainer.c; sourceTree = "<group>"; };
 		AE47D3B61F0E764B00678275 /* gailcontainercell.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailcontainercell.c; sourceTree = "<group>"; };
 		AE47D3B71F0E764B00678275 /* gailentry.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; indentWidth = 2; path = gailentry.c; sourceTree = "<group>"; };
@@ -142,7 +142,7 @@
 		AE47D3C11F0E764B00678275 /* gaillabel.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gaillabel.c; sourceTree = "<group>"; };
 		AE47D3C21F0E764B00678275 /* gaillist.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gaillist.c; sourceTree = "<group>"; };
 		AE47D3C31F0E764B00678275 /* gailmenu.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailmenu.c; sourceTree = "<group>"; };
-		AE47D3C41F0E764B00678275 /* gailmenuitem.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailmenuitem.c; sourceTree = "<group>"; };
+		AE47D3C41F0E764B00678275 /* gailmenuitem.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; indentWidth = 2; path = gailmenuitem.c; sourceTree = "<group>"; };
 		AE47D3C51F0E764B00678275 /* gailmenushell.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailmenushell.c; sourceTree = "<group>"; };
 		AE47D3C61F0E764B00678275 /* gailmisc.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailmisc.c; sourceTree = "<group>"; };
 		AE47D3C71F0E764B00678275 /* gailnotebook.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; indentWidth = 2; path = gailnotebook.c; sourceTree = "<group>"; };

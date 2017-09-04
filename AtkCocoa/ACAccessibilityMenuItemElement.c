@@ -20,12 +20,26 @@
 #import "atk-cocoa/ACAccessibilityMenuItemElement.h"
 #include "atk-cocoa/acelement.h"
 #include "atk-cocoa/acdebug.h"
+#include "atk-cocoa/acutils.h"
 
 @implementation ACAccessibilityMenuItemElement
 
 - (instancetype)initWithDelegate:(AcElement *)delegate
 {
 	return [super initWithDelegate:delegate];
+}
+
+- (NSString *)accessibilityLabel
+{
+    GtkMenuItem *item;
+
+    if ([self delegate] == nil) {
+        return @"";
+    }
+
+    // For some reason get_label returns NULL, but atk_object_get_name contains the correct thing
+    const char *name = atk_object_get_name (ATK_OBJECT ([self delegate]));
+    return nsstring_from_cstring (name);
 }
 
 - (BOOL)accessibilityPerformPress

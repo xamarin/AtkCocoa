@@ -123,9 +123,13 @@ gail_menu_item_real_initialize (AtkObject *obj,
 
   if (GTK_IS_TEAROFF_MENU_ITEM (data))
     obj->role = ATK_ROLE_TEAR_OFF_MENU_ITEM;
-  else if (GTK_IS_SEPARATOR_MENU_ITEM (data))
+  else if (GTK_IS_SEPARATOR_MENU_ITEM (data)) {
     obj->role = ATK_ROLE_SEPARATOR;
-  else
+
+    // Separators should just be hidden from NSAccessibility
+    id<NSAccessibility> element = ac_element_get_accessibility_element(AC_ELEMENT (obj));
+    [element setAccessibilityElement:NO];
+  } else
     obj->role = ATK_ROLE_MENU_ITEM;
 }
 

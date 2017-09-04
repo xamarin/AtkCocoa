@@ -343,10 +343,19 @@ maybe_show_popup (GailComboBox *gail_combo_box)
 
   popup = gtk_combo_box_get_popup_accessible (combo_box);
   do_popup = !gtk_widget_get_mapped (GTK_ACCESSIBLE (popup)->widget);
-  if (do_popup)
-      gtk_combo_box_popup (combo_box);
-  else
-      gtk_combo_box_popdown (combo_box);
+  if (do_popup) {
+    gtk_combo_box_popup (combo_box);
+
+    id<NSAccessibility> comboElement = ac_element_get_accessibility_element(AC_ELEMENT (gail_combo_box));
+    id<NSAccessibility> menuElement = ac_element_get_accessibility_element(AC_ELEMENT (popup));
+
+    [comboElement setAccessibilityLinkedUIElements:@[menuElement]];
+    NSAccessibilityPostNotification(menuElement, NSAccessibilityCreatedNotification);
+  } else {
+    gtk_combo_box_popdown (combo_box);
+    id<NSAccessibility> menuElement = ac_element_get_accessibility_element(AC_ELEMENT (popup));
+    NSAccessibilityPostNotification(menuElement, NSAccessibilityUIElementDestroyedNotification);
+  }
 
   return TRUE;
 }
