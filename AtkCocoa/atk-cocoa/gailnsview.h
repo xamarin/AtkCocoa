@@ -25,14 +25,14 @@ typedef struct _GailNsViewClass         GailNsViewClass;
 
 struct _GailNsView
 {
-    GailContainer parent;
+    GailWidget parent;
 };
 
 GType gail_nsview_get_type (void);
 
 struct _GailNsViewClass
 {
-    GailContainerClass parent_class;
+    GailWidgetClass parent_class;
 };
 
 G_END_DECLS

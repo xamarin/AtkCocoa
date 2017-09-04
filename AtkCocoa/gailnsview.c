@@ -23,7 +23,7 @@ static void                  gail_nsview_init             (GailNsView       *vie
 static void                  gail_nsview_initialize       (AtkObject       *accessible,
                                                           gpointer         data);
 
-G_DEFINE_TYPE (GailNsView, gail_nsview, GAIL_TYPE_CONTAINER)
+G_DEFINE_TYPE (GailNsView, gail_nsview, GAIL_TYPE_WIDGET)
 
 static void
 gail_nsview_class_init (GailNsViewClass *klass)
