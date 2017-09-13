@@ -171,7 +171,6 @@ gail_container_real_add_gtk (GtkContainer *container,
                          index, atk_child, NULL);
 
   AC_NOTE (TREE, g_print ("Adding %s to %s\n", G_OBJECT_TYPE_NAME (widget), G_OBJECT_TYPE_NAME (container)));
-  ac_element_add_child (AC_ELEMENT (atk_parent), AC_ELEMENT (atk_child));
 
   return 1;
 }
@@ -209,8 +208,6 @@ gail_container_real_remove_gtk (GtkContainer       *container,
   if (index >= 0 && index <= g_list_length (gail_container->children))
     g_signal_emit_by_name (atk_parent, "children_changed::remove", 
 			   index, atk_child, NULL);
-
-  ac_element_remove_child (AC_ELEMENT (atk_parent), AC_ELEMENT (atk_child));
 
   return 1;
 }

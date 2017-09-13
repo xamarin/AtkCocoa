@@ -35,6 +35,7 @@
 #include "atk-cocoa/acdebug.h"
 
 #import <Cocoa/Cocoa.h>
+#import "atk-cocoa/ACAccessibilityElement.h"
 
 extern GtkWidget *focus_widget;
 
@@ -93,6 +94,7 @@ static gboolean gail_widget_set_size       (AtkComponent    *component,
                                             gint            height);
 
 static gint       gail_widget_map_gtk            (GtkWidget     *widget);
+static gint       gail_widget_unmap_gtk            (GtkWidget     *widget);
 static void       gail_widget_real_notify_gtk    (GObject       *obj,
                                                   GParamSpec    *pspec);
 static void       gail_widget_notify_gtk         (GObject       *obj,
@@ -187,8 +189,16 @@ gail_widget_real_initialize (AtkObject *obj,
                     NULL);
   g_signal_connect (widget,
                     "unmap",
-                    G_CALLBACK (gail_widget_map_gtk),
+                    G_CALLBACK (gail_widget_unmap_gtk),
                     NULL);
+
+  // the unmap signal is emitted when the widget is removed from screen, unless
+  // the widget is removed from the UI tree with gtk_container_remove, in which case
+  // the unrealize signal is emitted instead
+  // We have to do the same stuff when the widget is unrealized as unmap, so just
+  // use the same function.
+  g_signal_connect (widget, "unrealize", G_CALLBACK (gail_widget_unmap_gtk), NULL);
+
   g_object_set_data (G_OBJECT (obj), "atk-component-layer",
 		     GINT_TO_POINTER (ATK_LAYER_WIDGET));
 
@@ -945,11 +955,61 @@ gail_widget_size_allocate_gtk (GtkWidget     *widget,
 static gint
 gail_widget_map_gtk (GtkWidget     *widget)
 {
-  AtkObject* accessible;
+  GtkWidget *parent;
+  AtkObject* accessible, *parentAccessible;
+  gboolean mapped = gtk_widget_get_mapped(widget);
 
   accessible = gtk_widget_get_accessible (widget);
-  atk_object_notify_state_change (accessible, ATK_STATE_SHOWING,
-                                  gtk_widget_get_mapped (widget));
+
+  parent = gtk_widget_get_parent(widget);
+
+  atk_object_notify_state_change (accessible, ATK_STATE_SHOWING, mapped);
+
+  if (parent == NULL) {
+    return 1;
+  }
+
+  // GtkNSView doesn't actually get mapped when the mapped signal is emitted
+  // so we just accept that it will be mapped
+  parentAccessible = gtk_widget_get_accessible(parent);
+  ac_element_add_child(AC_ELEMENT (parentAccessible), AC_ELEMENT(accessible));
+
+  return 1;
+}
+
+static gint
+gail_widget_unmap_gtk (GtkWidget     *widget)
+{
+  GtkWidget *parent;
+  AtkObject* accessible, *parentAccessible;
+  gboolean mapped = gtk_widget_get_mapped(widget);
+
+  accessible = gtk_widget_get_accessible (widget);
+
+  parent = gtk_widget_get_parent(widget);
+
+  atk_object_notify_state_change (accessible, ATK_STATE_SHOWING, mapped);
+
+  if (parent == NULL) {
+    // parent might be NULL if the widget was unmapped due to a gtk_container_remove call
+    // therefore we need to try to work out the parent accessible from the Cocoa objects
+    id<NSAccessibility> element = ac_element_get_accessibility_element(AC_ELEMENT(accessible));
+    id<NSAccessibility> parentElement = [element accessibilityParent];
+
+    if (parentElement == nil || ![parentElement isKindOfClass:[ACAccessibilityElement class]]) {
+      return 1;
+    }
+
+    parentAccessible = (AtkObject *)[(ACAccessibilityElement *) parentElement delegate];
+    if (!ATK_IS_OBJECT(parentAccessible)) {
+      return 1;
+    }
+  } else {
+    parentAccessible = gtk_widget_get_accessible(parent);
+  }
+
+  ac_element_remove_child(AC_ELEMENT(parentAccessible), AC_ELEMENT(accessible));
+
   return 1;
 }
 

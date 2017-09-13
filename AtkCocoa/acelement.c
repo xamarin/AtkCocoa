@@ -102,14 +102,6 @@ ac_element_class_init (AcElementClass *klass)
   object_class->dispose = ac_element_dispose;
   object_class->finalize = ac_element_finalize;
   g_type_class_add_private (G_OBJECT_CLASS (klass), sizeof (AcElementPrivate));
-/*
-  class->get_description = gail_widget_get_description;
-  class->get_parent = gail_widget_get_parent;
-  class->ref_relation_set = gail_widget_ref_relation_set;
-  class->ref_state_set = gail_widget_ref_state_set;
-  class->get_index_in_parent = gail_widget_get_index_in_parent;
-  class->initialize = gail_widget_real_initialize;
-  */
 
   signals[GET_ACTIONS] = g_signal_new ("request-actions", G_TYPE_FROM_CLASS (klass),
   									   G_SIGNAL_RUN_LAST, 0, 
@@ -382,6 +374,14 @@ update_window_and_toplevel (NSArray *children, id window)
   for (i = 0; i < [children count]; i++) {
     id<NSAccessibility> child = (id<NSAccessibility>)[children objectAtIndex:i];
 
+    // Check objects are still valid
+    if ([child isKindOfClass:[ACAccessibilityElement class]]) {
+      ACAccessibilityElement *e = (ACAccessibilityElement *)child;
+      if (!ATK_IS_OBJECT ([e delegate])) {
+        continue;
+      }
+    }
+
     if ([child respondsToSelector:@selector(setAccessibilityTopLevelUIElement:)]) {
       [child setAccessibilityTopLevelUIElement:window];
     }
@@ -404,7 +404,7 @@ ac_element_add_child (AcElement *parent,
 	AcElementClass *parent_class;
 	NSArray *accessibilityChildren;
 	NSMutableArray *newChildren;
-	GtkWidget *parentOwnerWidget;
+	GtkWidget *parentOwnerWidget, *childWidget;
 	GtkWidget *toplevelWindow;
 	NSWindow *nsWindow = nil;
 
@@ -420,6 +420,12 @@ ac_element_add_child (AcElement *parent,
 	AC_NOTE (TREE, g_print ("Adding parent: %s\n", atk_object_get_name (ATK_OBJECT (parent))));
 	AC_NOTE (TREE, g_print ("ATKCocoa: Adding child %s(%s) to %s(%s)\n", G_OBJECT_TYPE_NAME (child), G_OBJECT_TYPE_NAME (child_priv->owner), G_OBJECT_TYPE_NAME (parent), G_OBJECT_TYPE_NAME (parent_priv->owner)));
 
+    childWidget = (GtkWidget*)ac_element_get_owner(child);
+    // GtkNSView emits its mapped signal 50ms before it is actually mapped
+    // so we need to ignore it here and just accept it will be mapped very shortly
+    if (!GTK_IS_NS_VIEW(childWidget) && !gtk_widget_get_mapped(childWidget)) {
+      return;
+    }
 	parent_element = get_real_accessibility_parent (parent, &parentOwnerWidget);
 	child_element = ac_element_get_accessibility_element (child);
 	realChildAdded = child_element;
@@ -556,6 +562,7 @@ ac_element_remove_child (AcElement *parent,
 						 AcElement *child)
 {
 	AcElementPrivate *parent_priv, *child_priv;
+    GtkWidget *childWidget;
 	id<NSAccessibility> parent_element, child_element;
 
 	g_return_if_fail (AC_IS_ELEMENT (parent));

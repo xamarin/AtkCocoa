@@ -172,7 +172,7 @@
 		AE47D3DF1F0E764B00678275 /* gailtoplevel.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailtoplevel.c; sourceTree = "<group>"; };
 		AE47D3E01F0E764B00678275 /* gailtreeview.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; indentWidth = 2; path = gailtreeview.c; sourceTree = "<group>"; };
 		AE47D3E11F0E764B00678275 /* gailutil.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailutil.c; sourceTree = "<group>"; };
-		AE47D3E21F0E764B00678275 /* gailwidget.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailwidget.c; sourceTree = "<group>"; };
+		AE47D3E21F0E764B00678275 /* gailwidget.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; indentWidth = 2; path = gailwidget.c; sourceTree = "<group>"; };
 		AE47D3E31F0E764B00678275 /* gailwindow.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; indentWidth = 2; path = gailwindow.c; sourceTree = "<group>"; };
 		AE47D3E41F0E764B00678275 /* NSAccessibilityElement+AtkCocoa.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = "NSAccessibilityElement+AtkCocoa.c"; sourceTree = "<group>"; };
 		AE47D4341F0E781500678275 /* atk-cocoa */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "atk-cocoa"; sourceTree = "<group>"; };

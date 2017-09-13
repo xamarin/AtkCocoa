@@ -851,6 +851,24 @@ ns_role_from_atk (AtkRole atk_role, NSString **ns_role, NSString **ns_subrole)
 	return gtk_widget_has_focus (ownerWidget);
 }
 
+- (BOOL)isAccessibilityHidden
+{
+    GObject *owner;
+    GtkWidget *ownerWidget;
+
+    owner = ac_element_get_owner (_delegate);
+    if (!GTK_IS_WIDGET (owner)) {
+        return NO;
+    }
+
+    ownerWidget = GTK_WIDGET (owner);
+
+    // mapped is the true test of whether the widget is visible.
+    // FIXME: Need to check if this actually refers to whether the widget
+    // is physically on-screen, or if it has been eg, scrolled offscreen
+    return !gtk_widget_get_mapped(ownerWidget);
+}
+
 #pragma mark - Actions
 
 - (NSArray *)accessibilityActionNames
