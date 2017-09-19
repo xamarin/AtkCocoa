@@ -104,7 +104,17 @@
 
     column = [_columnElement column];
     treeView = gtk_tree_view_column_get_tree_view (column);
-    path = gtk_tree_row_reference_get_path ([_rowElement rowReference]);
+    path = [_rowElement rowPath];
+
+    if (path == NULL) {
+        GdkRectangle rect;
+        rect.x = 0;
+        rect.y = 0;
+        rect.width = 0;
+        rect.height = 0;
+
+        return rect;
+    }
 
 	gtk_tree_view_get_cell_area (GTK_TREE_VIEW (treeView), path, column, &cellSpace);
 	gtk_tree_path_free (path);
@@ -151,7 +161,10 @@
 
     column = [_columnElement column];
     treeView = gtk_tree_view_column_get_tree_view (column);
-    path = gtk_tree_row_reference_get_path ([_rowElement rowReference]);
+    path = [_rowElement rowPath];
+    if (path == NULL) {
+        return;
+    }
 
     if (gtk_tree_view_row_expanded (GTK_TREE_VIEW (treeView), path)) {
         gtk_tree_view_collapse_row (GTK_TREE_VIEW (treeView), path);

@@ -28,6 +28,7 @@
 
 - (instancetype)initWithDelegate:(AcElement *)delegate treeRow:(GtkTreeRowReference *)row treeView:(GtkTreeView *)treeView;
 - (GtkTreeRowReference *)rowReference;
+- (GtkTreePath *)rowPath;
 - (void)addChildRowElement:(ACAccessibilityTreeRowElement *)child;
 - (void)removeChildRowElement:(ACAccessibilityTreeRowElement *)child;
 

@@ -205,7 +205,12 @@ add_row_to_row_map (GailTreeView *view,
                     ACAccessibilityTreeRowElement *row_element)
 {
   ACAccessibilityTreeRowElement *parent;
-  GtkTreePath *path = gtk_tree_row_reference_get_path ([row_element rowReference]);
+  GtkTreePath *path = [row_element rowPath];
+
+  if (path == NULL) {
+    return nil;
+  }
+
   char *pathString = gtk_tree_path_to_string (path);
   char *parentPathString;
   int idx;
@@ -975,7 +980,11 @@ gail_tree_view_update_row_cells (GailTreeView *gailview,
     return;
   }
 
-  row_path = gtk_tree_row_reference_get_path ([rowElement rowReference]);
+  row_path = [rowElement rowPath];
+  if (row_path == NULL) {
+    return;
+  }
+
   for (ACAccessibilityTreeCellElement *tree_cell in children) {
     ACAccessibilityTreeColumnElement *columnElement = [tree_cell columnElement];
     GtkTreeViewColumn *column = [columnElement column];

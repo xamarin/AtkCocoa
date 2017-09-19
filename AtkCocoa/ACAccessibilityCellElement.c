@@ -73,8 +73,8 @@
         return @"";
     }
 
-	GtkTreePath *path = gtk_tree_row_reference_get_path ([_rowElement rowReference]);
-	char *pathStr = gtk_tree_path_to_string (path);
+	GtkTreePath *path = [_rowElement rowPath];
+    char *pathStr = path ? gtk_tree_path_to_string (path) : "<no path>";
 	char *description;
 	NSString *desc;
 
@@ -184,7 +184,11 @@ static char *value_property_names[] = {
     }
 
     treeView = gtk_tree_view_column_get_tree_view (_column);
-    path = gtk_tree_row_reference_get_path ([_rowElement rowReference]);
+    path = [_rowElement rowPath];
+
+    if (path == NULL) {
+        return CGRectZero;
+    }
 
 	// column_cell_get_position needs the exact renderer from the column, so can't use the one stored in GailCellRenderer 
 	renderers = gtk_cell_layout_get_cells (GTK_CELL_LAYOUT (_column));

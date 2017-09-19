@@ -33,6 +33,27 @@
     BOOL _rowIsDirty;
 }
 
+- (BOOL)respondsToSelector:(SEL)aSelector
+{
+    if (aSelector == @selector(isAccessibilityDisclosed) ||
+        aSelector == @selector(setAccessibilityDisclosed:)) {
+        GtkTreeIter iter;
+
+        GtkTreePath *path = [self rowPath];
+        if (path == NULL) {
+            return NO;
+        }
+
+        GtkTreeModel *model = gtk_tree_row_reference_get_model(_row);
+        gtk_tree_model_get_iter(model, &iter, path);
+        gtk_tree_path_free(path);
+
+        return gtk_tree_model_iter_has_child(model, &iter);
+    }
+
+    return [super respondsToSelector:aSelector];
+}
+
 - (instancetype)initWithDelegate:(AcElement *)delegate treeRow:(GtkTreeRowReference *)row treeView:(GtkTreeView *)treeView
 {
     self = [super initWithDelegate:delegate];
@@ -106,6 +127,15 @@
     return _row;
 }
 
+- (GtkTreePath *)rowPath
+{
+    if (_row == NULL) {
+        return NULL;
+    }
+
+    return gtk_tree_row_reference_get_path(_row);
+}
+
 - (BOOL)rowIsDirty
 {
     return _rowIsDirty;
@@ -119,9 +149,19 @@
 - (GdkRectangle)frameInGtkWindowSpace
 {
     GdkRectangle cellSpace;
-    GtkTreePath *path = gtk_tree_row_reference_get_path (_row);
+    GtkTreePath *path = [self rowPath];
     int wx, wy;
     int x, y;
+
+    if (path == NULL) {
+        GdkRectangle rect;
+        rect.x = 0;
+        rect.y = 0;
+        rect.width = 0;
+        rect.height = 0;
+
+        return rect;
+    }
 
     gtk_tree_view_get_cell_area (GTK_TREE_VIEW (_view), path, NULL, &cellSpace);
 
@@ -142,7 +182,11 @@
 
 - (NSString *)accessibilityIdentifier
 {
-    GtkTreePath *path = gtk_tree_row_reference_get_path (_row);
+    GtkTreePath *path = [self rowPath];
+    if (path == NULL) {
+        return @"";
+    }
+
     char *str = gtk_tree_path_to_string (path);
     gtk_tree_path_free (path);
 
@@ -156,8 +200,12 @@
 {
     GtkTreeView *treeView = GTK_TREE_VIEW (ac_element_get_owner (AC_ELEMENT ([self delegate])));
     GtkTreeSelection *selection = gtk_tree_view_get_selection (treeView);
-    GtkTreePath *path = gtk_tree_row_reference_get_path (_row);
+    GtkTreePath *path = [self rowPath];
     gboolean selected;
+
+    if (path == NULL) {
+        return NO;
+    }
 
     selected = gtk_tree_selection_path_is_selected (selection, path);
     gtk_tree_path_free (path);
@@ -169,7 +217,11 @@
 {
     GtkTreeView *treeView = GTK_TREE_VIEW (ac_element_get_owner (AC_ELEMENT ([self delegate])));
     GtkTreeSelection *selection = gtk_tree_view_get_selection (treeView);
-    GtkTreePath *path = gtk_tree_row_reference_get_path (_row);
+    GtkTreePath *path = [self rowPath];
+
+    if (path == NULL) {
+        return;
+    }
 
     char *str = gtk_tree_path_to_string (path);
     g_free (str);
@@ -187,8 +239,12 @@
 - (BOOL)isAccessibilityDisclosed
 {
     GtkTreeView *treeView = GTK_TREE_VIEW (ac_element_get_owner (AC_ELEMENT ([self delegate])));
-    GtkTreePath *path = gtk_tree_row_reference_get_path (_row);
+    GtkTreePath *path = [self rowPath];
     gboolean expanded;
+
+    if (path == NULL) {
+        return NO;
+    }
 
     expanded = gtk_tree_view_row_expanded (treeView, path);
     gtk_tree_path_free (path);
@@ -199,7 +255,11 @@
 - (void)setAccessibilityDisclosed:(BOOL)expanded
 {
     GtkTreeView *treeView = GTK_TREE_VIEW (ac_element_get_owner (AC_ELEMENT ([self delegate])));
-    GtkTreePath *path = gtk_tree_row_reference_get_path (_row);
+    GtkTreePath *path = [self rowPath];
+
+    if (path == NULL) {
+        return;
+    }
 
     if (expanded) {
         gtk_tree_view_expand_row (treeView, path, FALSE);
@@ -212,7 +272,11 @@
 
 - (NSInteger)accessibilityDisclosureLevel
 {
-    GtkTreePath *path = gtk_tree_row_reference_get_path (_row);
+    GtkTreePath *path = [self rowPath];
+    if (path == NULL) {
+        return 0;
+    }
+
     int depth = gtk_tree_path_get_depth (path) - 1;
 
     gtk_tree_path_free (path);
@@ -336,7 +400,7 @@ remove_child (gpointer data)
 
 - (void)removeVisibleRow:(ACAccessibilityTreeRowElement *)child
 {
-  NSMutableArray *visibleChildren = [[self accessibilityVisibleRows] mutableCopy];
+    NSMutableArray *visibleChildren = [[self accessibilityVisibleRows] mutableCopy];
     [visibleChildren removeObject:child];
     [self setAccessibilityVisibleRows:visibleChildren];
 }
@@ -547,7 +611,7 @@ last_path_index (const char *path)
     // then the index in the parent is simply the last digit of the child's path
     // so we don't need to iterate over all the children
     if (![_parent childrenHaveDescendants]) {
-        GtkTreePath *path = gtk_tree_row_reference_get_path ([self rowReference]);
+        GtkTreePath *path = [self rowPath];
         if (path == NULL) {
             // Row reference is now invalid. Probably during destruction
             return 0;
@@ -616,7 +680,7 @@ last_path_index (const char *path)
 
 - (void)dumpChildrenRecursive:(BOOL)recurse
 {
-    GtkTreePath *path = [self rowReference] ? gtk_tree_row_reference_get_path ([self rowReference]): NULL;
+    GtkTreePath *path = [self rowPath];
     g_print ("%s (%d)\n", path ? gtk_tree_path_to_string (path) : "<null>", _children ? g_sequence_get_length (_children): 0 );
 
     if (_children == NULL) {
