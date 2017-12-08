@@ -23,5 +23,4 @@
 @interface ACAccessibilityOutlineElement : ACAccessibilityElement <NSAccessibilityOutline>
 
 - (instancetype)initWithDelegate:(AcElement *)delegate;
-
 @end

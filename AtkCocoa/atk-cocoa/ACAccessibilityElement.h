@@ -24,6 +24,7 @@
 
 - (instancetype)initWithDelegate:(AcElement *)delegate;
 - (AcElement *)delegate;
+- (BOOL)hasDynamicChildren;
 
 NSString *nsstring_from_cstring (const char *cstring);
 

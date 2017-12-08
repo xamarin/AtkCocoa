@@ -26,6 +26,7 @@
 #include "gailcell.h"
 
 @class NSMutableArray;
+@class ACAccessibilityTreeColumnElement;
 
 G_BEGIN_DECLS
 
@@ -50,8 +51,10 @@ struct _GailTreeView
   GHashTable *columnMap; /* Maps GtkTreeViewColumn to ACAccessibilityTreeColumnElement */
   /* These are void * because ARC doesn't like ObjC object types in C structs */
   void *rowRootNode; /* The root ACAccessibilityTreeRowElement * */
-
+  void *rowCache; /* NSArray * containing the most recent dump of the row cache. */
   guint32 rowUpdateId;
+  gboolean treeIsDirty;
+  GList *oldSelection;
 };
 
 GType gail_tree_view_get_type (void);
@@ -65,6 +68,31 @@ AtkObject* gail_tree_view_ref_focus_cell (GtkTreeView *treeview);
 void gail_tree_view_update_row_cells (GailTreeView *gailview,
                                       GtkTreeView *treeview,
                                       ACAccessibilityTreeRowElement *rowElement);
+
+void gail_treeview_add_rows (GailTreeView *gailview,
+                             NSMutableArray *a);
+void gail_treeview_add_columns (GailTreeView *gailview,
+                                NSMutableArray *a);
+void gail_treeview_add_headers (GailTreeView *gailview,
+                                NSMutableArray *a);
+void gail_treeview_add_column_elements (GailTreeView *gailview,
+                                        ACAccessibilityTreeColumnElement *columnElement,
+                                        NSMutableArray *a);
+void gail_treeview_add_row_elements (GailTreeView *gailview,
+                                     ACAccessibilityTreeRowElement *rowElement,
+                                     NSMutableArray *a);
+void gail_treeview_add_renderer_elements (GailTreeView *gailview,
+                                          ACAccessibilityTreeRowElement *rowElement,
+                                          ACAccessibilityTreeColumnElement *columnElement,
+                                          NSMutableArray *a);
+void gail_treeview_add_selected_rows (GailTreeView *gailview,
+                                      NSMutableArray *a);
+ACAccessibilityTreeRowElement *gail_treeview_row_for_path (GailTreeView *gailview,
+                                                           GtkTreePath *path);
+ACAccessibilityTreeColumnElement *gail_treeview_get_column_element (GailTreeView *gailview,
+                                                                    GtkTreeViewColumn *column);
+
+
 G_END_DECLS
 
 #endif /* __GAIL_TREE_VIEW_H__ */

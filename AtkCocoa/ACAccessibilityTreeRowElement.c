@@ -18,6 +18,7 @@
  */
 
 #import "atk-cocoa/ACAccessibilityTreeRowElement.h"
+#include "atk-cocoa/gailtreeview.h"
 
 #include <gtk/gtk.h>
 
@@ -31,6 +32,8 @@
     __weak ACAccessibilityTreeRowElement *_parent;
     GSequenceIter *_iterInParent;
     BOOL _rowIsDirty;
+
+    NSArray *_childCells;
 }
 
 - (BOOL)respondsToSelector:(SEL)aSelector
@@ -104,6 +107,31 @@
 - (NSString *)accessibilitySubrole
 {
     return NSAccessibilityOutlineRowSubrole;
+}
+
+- (NSArray *)childCells
+{
+    return _childCells;
+}
+
+- (NSArray *)accessibilityChildren
+{
+    GailTreeView *gailview = GAIL_TREE_VIEW([self delegate]);
+
+    // Need to invalidate this cache when a column is added or removed
+    if (_childCells) {
+        return _childCells;
+    }
+    NSMutableArray *children = [NSMutableArray array];
+
+    gail_treeview_add_row_elements(gailview, self, children);
+
+    _childCells = children;
+    return children;
+}
+
+- (void)setAccessibilityChildren:(NSArray *)accessibilityChildren
+{
 }
 
 - (void)dealloc
@@ -286,20 +314,24 @@
 
 - (void)addChildRowElement:(ACAccessibilityTreeRowElement *)child
 {
+    /*
     NSMutableArray *disclosedChildren = [[self accessibilityDisclosedRows] mutableCopy];
     [disclosedChildren addObject:child];
     [self setAccessibilityDisclosedRows:disclosedChildren];
 
     [child setAccessibilityDisclosedByRow:self];
+     */
 }
 
 - (void)removeChildRowElement:(ACAccessibilityTreeRowElement *)child
 {
+    /*
     NSMutableArray *disclosedChildren = [[self accessibilityDisclosedRows] mutableCopy];
     [disclosedChildren removeObject:child];
     [self setAccessibilityDisclosedRows:disclosedChildren];
 
     [child setAccessibilityDisclosedByRow:nil];
+     */
 }
 
 - (ACAccessibilityTreeRowElement *)parent
@@ -696,10 +728,13 @@ last_path_index (const char *path)
     }
 }
 
-- (void)recursiveFlattenTreeIntoArray:(NSMutableArray *)arr addingSelf:(BOOL)addSelf
+- (void)recursiveFlattenTreeIntoArray:(NSMutableArray *)arr addingSelf:(BOOL)addSelf currentIndex:(int *)index
 {
     if (addSelf) {
+        [self setAccessibilityIndex:*index];
         [arr addObject:self];
+
+        (*index)++;
     }
 
     if (_children == NULL || g_sequence_get_length (_children) == 0) {
@@ -711,9 +746,16 @@ last_path_index (const char *path)
     while (!g_sequence_iter_is_end (iter)) {
         ACAccessibilityTreeRowElement *r = GET_DATA (iter);
 
-        [r recursiveFlattenTreeIntoArray:arr addingSelf:YES];
+        [r recursiveFlattenTreeIntoArray:arr addingSelf:YES currentIndex:index];
         iter = g_sequence_iter_next (iter);
     }
+}
+
+- (void)flattenTreeInto:(NSMutableArray *)arr
+{
+    int index = 1;
+    // Don't want to add the fake root node to the tree.
+    [self recursiveFlattenTreeIntoArray:arr addingSelf:NO currentIndex:&index];
 }
 
 - (NSArray *)flattenTree
@@ -724,8 +766,9 @@ last_path_index (const char *path)
 
     NSMutableArray *flat = [NSMutableArray array];
 
+    int index = 1;
     // Don't want to add the fake root node to the tree.
-    [self recursiveFlattenTreeIntoArray:flat addingSelf:NO];
+    [self recursiveFlattenTreeIntoArray:flat addingSelf:NO currentIndex:&index];
 
     return flat;
 }

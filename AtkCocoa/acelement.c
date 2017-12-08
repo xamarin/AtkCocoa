@@ -373,10 +373,11 @@ update_window_and_toplevel (NSArray *children, id window)
 
   for (i = 0; i < [children count]; i++) {
     id<NSAccessibility> child = (id<NSAccessibility>)[children objectAtIndex:i];
+    ACAccessibilityElement *e = nil;
 
     // Check objects are still valid
     if ([child isKindOfClass:[ACAccessibilityElement class]]) {
-      ACAccessibilityElement *e = (ACAccessibilityElement *)child;
+      e = (ACAccessibilityElement *)child;
       if (!ATK_IS_OBJECT ([e delegate])) {
         continue;
       }
@@ -390,7 +391,7 @@ update_window_and_toplevel (NSArray *children, id window)
       [child setAccessibilityWindow:window];
     }
 
-    if ([child respondsToSelector:@selector(accessibilityChildren)]) {
+    if (![e hasDynamicChildren] && [child respondsToSelector:@selector(accessibilityChildren)]) {
       update_window_and_toplevel ([child accessibilityChildren], window);
     }
   }
@@ -446,7 +447,13 @@ ac_element_add_child (AcElement *parent,
 				[child_element setAccessibilityWindow:nsWindow];
 				[child_element setAccessibilityTopLevelUIElement:nsWindow];
 
-				update_window_and_toplevel ([child_element accessibilityChildren], nsWindow);
+              gboolean update = TRUE;
+              if ([child_element isKindOfClass:[ACAccessibilityElement class]]) {
+                update = ![((ACAccessibilityElement *)child_element) hasDynamicChildren];
+              }
+              if (update) {
+                update_window_and_toplevel ([child_element accessibilityChildren], nsWindow);
+              }
 			}
 		} else {
 			NSMutableArray *new_children = [[parent_element accessibilityChildren] mutableCopy];
@@ -458,7 +465,13 @@ ac_element_add_child (AcElement *parent,
 				[child_element setAccessibilityWindow:nsWindow];
 				[child_element setAccessibilityTopLevelUIElement:nsWindow];
 
+              gboolean update = TRUE;
+              if ([child_element isKindOfClass:[ACAccessibilityElement class]]) {
+                update = ![((ACAccessibilityElement *)child_element) hasDynamicChildren];
+              }
+              if (update) {
 				update_window_and_toplevel ([child_element accessibilityChildren], nsWindow);
+              }
 			}
 		}
 	} else {

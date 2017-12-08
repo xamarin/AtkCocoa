@@ -23,6 +23,8 @@
 #import "atk-cocoa/ACAccessibilityTreeColumnElement.h"
 #import "atk-cocoa/ACAccessibilityTreeRowElement.h"
 
+#include "atk-cocoa/gailtreeview.h"
+
 @protocol ACAccessibilityDisclosureButtonDelegate
 
 - (void)performDisclosurePress;
@@ -57,6 +59,8 @@
     __weak ACAccessibilityTreeRowElement *_rowElement;
     __weak ACAccessibilityTreeColumnElement *_columnElement;
     ACAccessibilityDisclosureButton *_disclosureElement;
+    NSArray *_children;
+    BOOL _updateChildren;
 }
 
 - (instancetype)initWithDelegate:(AcElement *)delegate withDisclosureButton:(BOOL)canDisclose
@@ -83,9 +87,6 @@
 {
     _rowElement = rowElement;
     _columnElement = columnElement;
-
-    [columnElement accessibilityAddChildElement:self];
-    [rowElement accessibilityAddChildElement:self];
 }
 
 - (ACAccessibilityTreeColumnElement *)columnElement
@@ -140,7 +141,7 @@
     _disclosureElement = [[ACAccessibilityDisclosureButton alloc] init];
     [_disclosureElement setDelegate:self];
 
-    [self accessibilityAddChildElement:_disclosureElement];
+    _updateChildren = YES;
 }
 
 - (void)removeDisclosureButton
@@ -151,6 +152,28 @@
     
     [_disclosureElement setDelegate:nil];
     _disclosureElement = nil;
+
+    _updateChildren = YES;
+}
+
+- (NSArray *)accessibilityChildren
+{
+    GailTreeView *gailview = GAIL_TREE_VIEW([self delegate]);
+
+    if (_children && !_updateChildren) {
+        return _children;
+    }
+
+    NSMutableArray *children = [NSMutableArray array];
+    if (_disclosureElement) {
+        [children addObject:_disclosureElement];
+    }
+
+    gail_treeview_add_renderer_elements (gailview, _rowElement, _columnElement, children);
+
+    _children = children;
+    _updateChildren = NO;
+    return children;
 }
 
 - (void)performDisclosurePress

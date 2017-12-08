@@ -57,6 +57,11 @@
 	return self;
 }
 
+- (BOOL)hasDynamicChildren
+{
+    return NO;
+}
+
 - (AcElement *)delegate
 {
 	return _delegate;

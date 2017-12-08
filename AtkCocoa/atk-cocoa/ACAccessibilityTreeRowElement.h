@@ -32,6 +32,8 @@
 - (void)addChildRowElement:(ACAccessibilityTreeRowElement *)child;
 - (void)removeChildRowElement:(ACAccessibilityTreeRowElement *)child;
 
+- (NSArray *)childCells;
+
 // Treat Row element like a tree
 - (ACAccessibilityTreeRowElement *)parent;
 - (void)insertChild:(ACAccessibilityTreeRowElement *)child atIndex:(int)idx;
@@ -52,6 +54,7 @@
 int last_path_index (const char *path);
 - (void)dumpChildrenRecursive:(BOOL)recurse;
 
+- (void)flattenTreeInto:(NSMutableArray *)arr;
 - (NSArray *)flattenTree;
 
 @end

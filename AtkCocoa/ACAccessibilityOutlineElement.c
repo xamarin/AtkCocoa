@@ -18,8 +18,11 @@
  */
 
 #import "atk-cocoa/ACAccessibilityOutlineElement.h"
+#import "atk-cocoa/ACAccessibilityTreeRowElement.h"
+#import "atk-cocoa/ACAccessibilityTreeColumnElement.h"
 #include "atk-cocoa/acelement.h"
 #include "atk-cocoa/acdebug.h"
+#include "atk-cocoa/gailtreeview.h"
 
 @implementation ACAccessibilityOutlineElement {
 }
@@ -27,6 +30,11 @@
 - (instancetype)initWithDelegate:(AcElement *)delegate
 {
 	return [super initWithDelegate:delegate];
+}
+
+- (BOOL)hasDynamicChildren
+{
+    return YES;
 }
 
 - (NSRect)accessibilityFrame
@@ -44,64 +52,107 @@
 	return [super accessibilityParent];
 }
 
+- (void)setAccessibilityChildren:(NSArray *)accessibilityChildren
+{
+    // Do nothing
+}
+
+- (id)accessibilityHitTest:(NSPoint) point
+{
+    GailTreeView *gailview = GAIL_TREE_VIEW([self delegate]);
+    GtkTreeView *treeview = GTK_TREE_VIEW(ac_element_get_owner(AC_ELEMENT (gailview)));
+
+    NSWindow *parentWindow = [self accessibilityWindow];
+    CGRect screenRect = CGRectMake (point.x, point.y, 1, 1);
+
+    CGRect windowRect = [parentWindow convertRectFromScreen:screenRect];
+    CGPoint pointInWindow = CGPointMake (windowRect.origin.x, windowRect.origin.y);
+
+    // Flip the y coords to Gtk origin
+    CGPoint pointInGtkWindow;
+    float halfWindowHeight = [[parentWindow contentView] frame].size.height / 2;
+    int dy = pointInWindow.y - halfWindowHeight;
+
+    pointInGtkWindow = CGPointMake (pointInWindow.x, halfWindowHeight - dy);
+
+    // Convert from window coordinate space to widget.
+    int wx, wy;
+    gtk_widget_translate_coordinates(gtk_widget_get_toplevel(GTK_WIDGET (treeview)), GTK_WIDGET (treeview),
+                                     pointInGtkWindow.x, pointInGtkWindow.y, &wx, &wy);
+
+    // Convert from widget coordinate space to bin_window
+    int bx, by;
+    gtk_tree_view_convert_widget_to_bin_window_coords(treeview, wx, wy, &bx, &by);
+
+    GtkTreePath *path;
+    GtkTreeViewColumn *column;
+    int cx, cy;
+
+    if (gtk_tree_view_get_path_at_pos(treeview, bx, by, &path, &column, &cx, &cy)) {
+        ACAccessibilityTreeRowElement *rowElement = gail_treeview_row_for_path(gailview, path);
+        ACAccessibilityTreeColumnElement *columnElement = gail_treeview_get_column_element(gailview, column);
+        NSInteger colIndex = [columnElement accessibilityIndex];
+        gtk_tree_path_free (path);
+
+        NSArray *rowChildren = [rowElement accessibilityChildren];
+        if (colIndex >= [rowChildren count]) {
+            return self;
+        }
+
+        return [rowChildren[colIndex] accessibilityHitTest:point];
+    }
+
+    // Work out which column the point is in
+    return self;
+}
+
+- (NSArray *)accessibilityChildren
+{
+    GailTreeView *gailview = GAIL_TREE_VIEW([self delegate]);
+
+    NSMutableArray *children = [NSMutableArray array];
+
+    [children addObjectsFromArray:[self accessibilityRows]];
+    gail_treeview_add_columns(gailview, children);
+    gail_treeview_add_headers(gailview, children);
+
+    return children;
+}
+
 - (NSArray *)accessibilityColumns
 {
-	return nil;
-}
+    GailTreeView *gailview = GAIL_TREE_VIEW([self delegate]);
+    NSMutableArray *columns = [NSMutableArray array];
 
-- (NSArray *)accessibilitySelectedColumns
-{
-	return nil;
-}
-
-- (NSArray *)accessibilityVisibleColumns
-{
-	return nil;
+    gail_treeview_add_columns(gailview, columns);
+    return columns;
 }
 
 - (NSArray *)accessibilityColumnHeaderUIElements
 {
-	return nil;
+    NSMutableArray *children = [NSMutableArray array];
+    GailTreeView *gailview = GAIL_TREE_VIEW([self delegate]);
+
+    gail_treeview_add_headers(gailview, children);
+
+    return children;
 }
 
 - (NSArray *)accessibilityRows
 {
-	return nil;
+    GailTreeView *gailview = GAIL_TREE_VIEW([self delegate]);
+    NSMutableArray *children = [NSMutableArray array];
+
+    gail_treeview_add_rows(gailview, children);
+
+    return children;
 }
 
 - (NSArray *)accessibilitySelectedRows
 {
-	return nil;
-}
-
-// NSArray contains id<NSAccessibilityRow> elements
-- (void)setAccessibilitySelectedRows:(NSArray *)selectedRows
-{
-}
-
-- (NSArray *)accessibilityVisibleRows
-{
-	return nil;
-}
-
-- (NSArray *)accessibilityRowHeaderUIElements
-{
-	return nil;
-}
-
-- (NSString *)accessibilityHeaderGroup
-{
-	return @"";
-}
-
-- (NSArray *)accessibilitySelectedCells
-{
-	return nil;
-}
-
-- (NSArray *)accessibilityVisibleCells
-{
-	return nil;
+    // Need to generate the rows before the selection works
+    [self accessibilityRows];
+    return [super accessibilitySelectedRows];
 }
 
 @end

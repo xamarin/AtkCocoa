@@ -20,6 +20,8 @@
 #import "atk-cocoa/ACAccessibilityTreeColumnElement.h"
 #import "atk-cocoa/ACAccessibilityTreeColumnHeaderElement.h"
 
+#include "atk-cocoa/gailtreeview.h"
+
 @implementation ACAccessibilityTreeColumnElement {
     GtkTreeViewColumn *_column;
     ACAccessibilityTreeColumnHeaderElement *_customHeaderElement;
@@ -45,6 +47,17 @@
     if (_column) {
         g_object_remove_weak_pointer(G_OBJECT (_column), (void **)&_column);
     }
+}
+
+- (NSArray *)accessibilityChildren
+{
+    GailTreeView *gailview = GAIL_TREE_VIEW([self delegate]);
+
+    NSMutableArray *children = [NSMutableArray array];
+
+    gail_treeview_add_column_elements(gailview, self, children);
+
+    return children;
 }
 
 - (NSString *)accessibilityRole
