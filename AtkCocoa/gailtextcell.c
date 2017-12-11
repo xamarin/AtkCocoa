@@ -429,7 +429,7 @@ gail_text_cell_get_run_attributes (AtkText *text,
     parent = atk_object_get_parent (parent);
   g_return_val_if_fail (GAIL_IS_CELL_PARENT (parent), NULL);
   widget = GTK_ACCESSIBLE (parent)->widget;
-  layout = create_pango_layout (gtk_renderer, widget),
+  layout = create_pango_layout (gtk_renderer, widget);
   attrib_set = gail_misc_layout_get_run_attributes (attrib_set, 
                                                     layout,
                                                     gtk_renderer->text,
@@ -459,7 +459,7 @@ gail_text_cell_get_default_attributes (AtkText	*text)
     parent = atk_object_get_parent (parent);
   g_return_val_if_fail (GAIL_IS_CELL_PARENT (parent), NULL);
   widget = GTK_ACCESSIBLE (parent)->widget;
-  layout = create_pango_layout (gtk_renderer, widget),
+  layout = create_pango_layout (gtk_renderer, widget);
 
   attrib_set = gail_misc_get_default_attributes (attrib_set, 
                                                  layout,
