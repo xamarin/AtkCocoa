@@ -91,6 +91,8 @@ ACAccessibilityTreeRowElement *gail_treeview_row_for_path (GailTreeView *gailvie
                                                            GtkTreePath *path);
 ACAccessibilityTreeColumnElement *gail_treeview_get_column_element (GailTreeView *gailview,
                                                                     GtkTreeViewColumn *column);
+void gail_treeview_add_visible_rows (GailTreeView *gailview,
+                                     NSMutableArray *rows);
 
 
 G_END_DECLS

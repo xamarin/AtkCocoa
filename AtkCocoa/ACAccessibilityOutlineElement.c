@@ -52,10 +52,31 @@
 	return [super accessibilityParent];
 }
 
-- (void)setAccessibilityChildren:(NSArray *)accessibilityChildren
+- (NSArray *)accessibilityChildren
 {
-    // Do nothing
+    NSArray *children = [super accessibilityChildren];
+
+    return children;
 }
+
+- (NSArray *)accessibilityVisibleChildren
+{
+    return [super accessibilityVisibleChildren];
+}
+
+// Implementing accessibilityVisibleCells breaks the outline
+/*
+- (NSArray *)accessibilityVisibleCells
+{
+    NSArray *rows = [self accessibilityVisibleRows];
+    NSMutableArray *cells = [NSMutableArray array];
+
+    for (id<NSAccessibility> row in rows) {
+        [cells addObjectsFromArray:[row accessibilityVisibleCells]];
+    }
+    return cells;
+}
+*/
 
 - (id)accessibilityHitTest:(NSPoint) point
 {
@@ -106,19 +127,6 @@
     return self;
 }
 
-- (NSArray *)accessibilityChildren
-{
-    GailTreeView *gailview = GAIL_TREE_VIEW([self delegate]);
-
-    NSMutableArray *children = [NSMutableArray array];
-
-    [children addObjectsFromArray:[self accessibilityRows]];
-    gail_treeview_add_columns(gailview, children);
-    gail_treeview_add_headers(gailview, children);
-
-    return children;
-}
-
 - (NSArray *)accessibilityColumns
 {
     GailTreeView *gailview = GAIL_TREE_VIEW([self delegate]);
@@ -138,6 +146,11 @@
     return children;
 }
 
+- (NSArray *)accessibilityVisibleColumns
+{
+    return [self accessibilityColumns];
+}
+
 - (NSArray *)accessibilityRows
 {
     GailTreeView *gailview = GAIL_TREE_VIEW([self delegate]);
@@ -148,11 +161,45 @@
     return children;
 }
 
+- (NSArray *)accessibilitySelectedChildren
+{
+    return [self accessibilitySelectedRows];
+}
+
 - (NSArray *)accessibilitySelectedRows
 {
+    GailTreeView *gailview = GAIL_TREE_VIEW([self delegate]);
     // Need to generate the rows before the selection works
     [self accessibilityRows];
-    return [super accessibilitySelectedRows];
+
+    NSMutableArray *rows = [NSMutableArray array];
+    gail_treeview_add_selected_rows(gailview, rows);
+
+    return rows;
+}
+
+- (NSArray *)accessibilitySelectedColumns
+{
+    return @[];
+}
+
+- (NSArray *)accessibilitySelectedCells
+{
+    NSArray *rows = [self accessibilitySelectedRows];
+
+    return [rows[0] accessibilityChildren];
+}
+
+- (NSArray *)accessibilityVisibleRows
+{
+    /*
+    NSMutableArray *rows = [NSMutableArray array];
+
+    gail_treeview_add_visible_rows(GAIL_TREE_VIEW ([self delegate]), rows);
+
+    return rows;
+     */
+    return [self accessibilityRows];
 }
 
 @end

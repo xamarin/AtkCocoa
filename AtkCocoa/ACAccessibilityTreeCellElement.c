@@ -173,6 +173,7 @@
 
     _children = children;
     _updateChildren = NO;
+
     return children;
 }
 
@@ -196,6 +197,11 @@
     }
 
     gtk_tree_path_free (path);
+}
+
+- (BOOL)isAccessibilitySelected
+{
+    return [_rowElement isAccessibilitySelected];
 }
 
 // Clear any actions that the accessibility system might try to inherit from the parent TreeView

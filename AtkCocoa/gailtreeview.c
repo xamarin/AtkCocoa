@@ -1785,7 +1785,6 @@ gail_treeview_add_selected_rows (GailTreeView *gailview,
   }
   tree_view = GTK_TREE_VIEW (widget);
 
-  NSLog (@"Getting selected rows");
   selection = gtk_tree_view_get_selection(tree_view);
   selected = gtk_tree_selection_get_selected_rows(selection, &selectionModel);
 
@@ -1800,8 +1799,6 @@ gail_treeview_add_selected_rows (GailTreeView *gailview,
 
   g_list_foreach(selected, (GFunc)gtk_tree_path_free, NULL);
   g_list_free (selected);
-
-  NSLog (@"%@", a);
 }
 
 ACAccessibilityTreeRowElement *
@@ -1825,4 +1822,65 @@ gail_treeview_get_column_element (GailTreeView *gailview,
   }
 
   return (__bridge ACAccessibilityTreeColumnElement *) g_hash_table_lookup(gailview->columnMap, column);
+}
+
+void
+iterate_rows_until (GailTreeView *gailview,
+                    GtkTreeView *treeview,
+                    GtkTreeIter *iter,
+                    GtkTreePath *endPath,
+                    NSMutableArray *a)
+{
+  do {
+    ACAccessibilityTreeRowElement *rowElement;
+    GtkTreePath *path;
+    gboolean expanded;
+    int compare;
+
+    path = gtk_tree_model_get_path (gailview->tree_model, iter);
+
+    if (gtk_tree_path_compare(path, endPath) != 1) {
+      break;
+    }
+
+    rowElement = (ACAccessibilityTreeRowElement *) make_accessibility_element_for_row(gailview->tree_model, treeview, gailview, iter);
+
+    // Need to do this before add_row_to_row_map_with_path as it alters path.
+    expanded = gtk_tree_view_row_expanded (treeview, path);
+
+    [a addObject:rowElement];
+    add_row_to_row_map_with_path(gailview, path, rowElement);
+
+    gtk_tree_path_free (path);
+
+    if (gtk_tree_model_iter_has_child(gailview->tree_model, iter)) {
+      if (expanded) {
+        GtkTreeIter childIter;
+
+        if (gtk_tree_model_iter_children(gailview->tree_model, &childIter, iter)) {
+          iterate_rows_until(gailview, treeview, &childIter, endPath, a);
+        }
+      }
+    }
+  } while (gtk_tree_model_iter_next(gailview->tree_model, iter));
+}
+
+void
+gail_treeview_add_visible_rows (GailTreeView *gailview,
+                                NSMutableArray *rows)
+{
+  GtkTreeView *treeview = GTK_TREE_VIEW (ac_element_get_owner(AC_ELEMENT (gailview)));
+  GtkTreePath *startPath, *endPath;
+  GtkTreeIter startIter;
+
+  gtk_tree_view_get_visible_range(treeview, &startPath, &endPath);
+
+  if (!gtk_tree_model_get_iter(gailview->tree_model, &startIter, startPath)) {
+    return;
+  }
+
+  iterate_rows_until (gailview, treeview, &startIter, endPath, rows);
+
+  gtk_tree_path_free (startPath);
+  gtk_tree_path_free (endPath);
 }

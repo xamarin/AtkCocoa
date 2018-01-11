@@ -127,6 +127,7 @@
     gail_treeview_add_row_elements(gailview, self, children);
 
     _childCells = children;
+
     return children;
 }
 
