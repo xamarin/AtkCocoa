@@ -28,6 +28,7 @@
 #include <gdk/gdkquartz.h>
 
 #import <objc/runtime.h>
+#import <Cocoa/Cocoa.h>
 
 #include "atk-cocoa/gailwindow.h"
 #include "atk-cocoa/gailtoplevel.h"
@@ -36,6 +37,44 @@
 #include "atk-cocoa/acdebug.h"
 
 #import "atk-cocoa/ACAccessibilityElement.h"
+
+@implementation NSApplication (AtkCocoa)
+
++ (void)load
+{
+  static dispatch_once_t onceToken;
+  dispatch_once (&onceToken, ^{
+    Class klass = [self class];
+
+    SEL originalSelector = @selector (accessibilitySetValue:forAttribute:);
+    SEL swizzledSelector = @selector (atkcocoa_accessibilitySetValue:forAttribute:);
+
+    Method originalMethod = class_getInstanceMethod (klass, originalSelector);
+    Method swizzledMethod = class_getInstanceMethod (klass, swizzledSelector);
+
+    BOOL success = class_addMethod (klass, originalSelector, method_getImplementation (swizzledMethod), method_getTypeEncoding (swizzledMethod));
+    if (success) {
+      class_replaceMethod (klass, swizzledSelector, method_getImplementation (originalMethod), method_getTypeEncoding (originalMethod));
+    } else {
+      method_exchangeImplementations (originalMethod, swizzledMethod);
+    }
+  });
+}
+
+- (void)atkcocoa_accessibilitySetValue:(id)value
+                          forAttribute:(NSAccessibilityAttributeName)attribute
+{
+  [self atkcocoa_accessibilitySetValue:value forAttribute:attribute];
+
+  if ([attribute isEqualToString:@"AXEnhancedUserInterface"]) {
+    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+
+    NSString *name = [value boolValue] ? @"AtkCocoaAccessibilityEnabled" : @"AtkCocoaAccessibilityDisabled";
+    [nc postNotificationName:name object:self];
+  }
+}
+
+@end
 
 /* Swizzle an accessibilityHitTest: into NSWindow that understands our accessibility element */
 
