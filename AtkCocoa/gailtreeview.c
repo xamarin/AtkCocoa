@@ -143,6 +143,8 @@ static void update_column_headers (GtkTreeView *tree_view);
 static void remove_all_children (GailTreeView *gailview,
                                  NSAccessibilityElement *treeElement,
                                  ACAccessibilityTreeRowElement *parentElement);
+static void update_columns (GailTreeView *gailview,
+                            GtkTreeView *tree_view);
 
 static id<NSAccessibility> get_real_accessibility_element (AcElement *element);
 
@@ -438,10 +440,7 @@ gail_tree_view_real_notify_gtk (GObject             *obj,
 
       destroy_root(gailview);
 
-      // The columns are part of the tree view, but the child elements are part of the model
-      if (gailview->columnMap) {
-        g_hash_table_remove_all(gailview->columnMap);
-      }
+      update_columns(gailview, tree_view);
 
       gailview->tree_model = tree_model;
       /*
@@ -906,6 +905,14 @@ columns_changed (GtkTreeView *tree_view)
 {
   AtkObject *atk_obj = gtk_widget_get_accessible (GTK_WIDGET(tree_view));
   GailTreeView *gailview = GAIL_TREE_VIEW (atk_obj);
+
+  update_columns(gailview, tree_view);
+}
+
+static void
+update_columns (GailTreeView *gailview,
+                GtkTreeView *tree_view)
+{
   GList *tv_cols, *tmp_list;
 
   // If columnMap is NULL then we're probably being destroyed
@@ -916,7 +923,7 @@ columns_changed (GtkTreeView *tree_view)
   tv_cols = gtk_tree_view_get_columns (tree_view);
 
   int idx;
-  NSAccessibilityElement *parentElement = ac_element_get_accessibility_element (AC_ELEMENT (atk_obj));
+  NSAccessibilityElement *parentElement = ac_element_get_accessibility_element (AC_ELEMENT (gailview));
 
   g_hash_table_foreach_remove (gailview->columnMap, remove_column_from_parent, (__bridge void *)parentElement);
 
@@ -924,14 +931,7 @@ columns_changed (GtkTreeView *tree_view)
   for (tmp_list = tv_cols; tmp_list; tmp_list = tmp_list->next) {
     ACAccessibilityTreeColumnElement *tc;
 
-    // If there are no renderers for the column, then we skip it
-    GList *renderers = gtk_cell_layout_get_cells(GTK_CELL_LAYOUT(tmp_list->data));
-    if (renderers == NULL) {
-      continue;
-    }
-
-    g_list_free (renderers);
-    tc = [[ACAccessibilityTreeColumnElement alloc] initWithDelegate:AC_ELEMENT (atk_obj) treeColumn:tmp_list->data];
+    tc = [[ACAccessibilityTreeColumnElement alloc] initWithDelegate:AC_ELEMENT (gailview) treeColumn:tmp_list->data];
 
     [tc setAccessibilityIndex:idx];
     [tc setAccessibilityWindow:[parentElement accessibilityWindow]];
@@ -1604,6 +1604,12 @@ gail_treeview_add_row_elements (GailTreeView *gailview,
   for (c = columns; c; c = c->next) {
     ACAccessibilityTreeColumnElement *columnElement = find_column_element_for_column (gailview, c->data);
 
+    GList *renderers = gtk_cell_layout_get_cells(GTK_CELL_LAYOUT(c->data));
+    if (renderers == NULL) {
+      continue;
+    }
+    g_list_free (renderers);
+
     if (columnElement == nil) {
       g_warning ("No column element found for column %s", gtk_tree_view_column_get_title (c->data));
       continue;
@@ -1748,6 +1754,14 @@ add_columns_foreach (gpointer key,
 {
   NSMutableArray *a = (__bridge NSMutableArray *)data;
   id<NSAccessibility> element = (__bridge id<NSAccessibility>)value;
+  ACAccessibilityTreeColumnElement *column;
+
+  // If there are no renderers for the column, then we skip it
+  GList *renderers = gtk_cell_layout_get_cells(GTK_CELL_LAYOUT([column column]));
+  if (renderers == NULL) {
+    return;
+  }
+  g_list_free (renderers);
 
   [a addObject:element];
 }
