@@ -1754,7 +1754,7 @@ add_columns_foreach (gpointer key,
 {
   NSMutableArray *a = (__bridge NSMutableArray *)data;
   id<NSAccessibility> element = (__bridge id<NSAccessibility>)value;
-  ACAccessibilityTreeColumnElement *column;
+  ACAccessibilityTreeColumnElement *column = (ACAccessibilityTreeColumnElement *)element;
 
   // If there are no renderers for the column, then we skip it
   GList *renderers = gtk_cell_layout_get_cells(GTK_CELL_LAYOUT([column column]));
