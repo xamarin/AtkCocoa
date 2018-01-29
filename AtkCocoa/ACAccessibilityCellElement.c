@@ -62,6 +62,7 @@
         _column = NULL;
     }
 }
+
 - (GailCell *)delegate
 {
 	return _delegate;
@@ -101,63 +102,90 @@ static char *value_property_names[] = {
 	NULL
 };
 
+- (id)getValueInternal
+{
+    GailRendererCell *rendererCell = GAIL_RENDERER_CELL (_delegate);
+    GtkCellRenderer *renderer = rendererCell->renderer;
+    id retObject = nil;
+
+    for (int i = 0; value_property_names[i]; i++) {
+        GValue value = G_VALUE_INIT;
+
+        GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (renderer), value_property_names[i]);
+        if (pspec == NULL) {
+            continue;
+        }
+
+        g_value_init (&value, pspec->value_type);
+        g_object_get_property (G_OBJECT (renderer), value_property_names[i], &value);
+        if (G_VALUE_HOLDS_STRING (&value)) {
+            retObject = nsstring_from_cstring (g_value_get_string (&value));
+        } else if (G_VALUE_HOLDS_BOOLEAN (&value)) {
+            retObject = @(g_value_get_boolean (&value));
+        } else if (G_VALUE_HOLDS_INT (&value)) {
+            retObject = @(g_value_get_int (&value));
+        } else if (G_VALUE_HOLDS_CHAR (&value)) {
+            retObject = @(g_value_get_schar (&value));
+        } else if (G_VALUE_HOLDS_UCHAR (&value)) {
+            retObject = @(g_value_get_uchar (&value));
+        } else if (G_VALUE_HOLDS_UINT (&value)) {
+            retObject = @(g_value_get_uint (&value));
+        } else if (G_VALUE_HOLDS_INT64 (&value)) {
+            retObject = @(g_value_get_int64 (&value));
+        } else if (G_VALUE_HOLDS_UINT64 (&value)) {
+            retObject = @(g_value_get_uint64 (&value));
+        } else if (G_VALUE_HOLDS_LONG (&value)) {
+            retObject = @(g_value_get_long (&value));
+        } else if (G_VALUE_HOLDS_ULONG (&value)) {
+            retObject = @(g_value_get_ulong (&value));
+        } else if (G_VALUE_HOLDS_FLOAT (&value)) {
+            retObject = @(g_value_get_float (&value));
+        } else if (G_VALUE_HOLDS_DOUBLE (&value)) {
+            retObject = @(g_value_get_double (&value));
+        }
+
+        g_value_unset(&value);
+        if (retObject) {
+            break;
+        }
+    }
+
+    return retObject;
+}
+
 - (id)accessibilityValue
 {
-	if ([_rowElement rowIsDirty]) {
-		GtkTreeView *treeview = GTK_TREE_VIEW (_delegate->widget);
-		GailTreeView *gailview = GAIL_TREE_VIEW (gtk_widget_get_accessible (_delegate->widget));
+    if ([_rowElement rowIsDirty]) {
+        GtkTreeView *treeview = GTK_TREE_VIEW (_delegate->widget);
+        GailTreeView *gailview = GAIL_TREE_VIEW (gtk_widget_get_accessible (_delegate->widget));
 
-		gail_tree_view_update_row_cells (gailview, treeview, _rowElement);
-	}
+        gail_tree_view_update_row_cells (gailview, treeview, _rowElement);
+    }
 
-	GailRendererCell *rendererCell = GAIL_RENDERER_CELL (_delegate);
-	GtkCellRenderer *renderer = rendererCell->renderer;
+    return [self getValueInternal];
+}
 
-	id retObject = nil;
+- (void)setAccessibilityValue:(id)accessibilityValue
+{
+    [super setAccessibilityValue:accessibilityValue];
 
-	for (int i = 0; value_property_names[i]; i++) {
-		GValue value = G_VALUE_INIT;
+    GtkTreeView *treeview = GTK_TREE_VIEW (_delegate->widget);
+    GailTreeView *gailview = GAIL_TREE_VIEW (gtk_widget_get_accessible (_delegate->widget));
+    GtkTreeModel *model = gtk_tree_view_get_model(treeview);
+    GtkTreePath *path = [_rowElement rowPath];
+    char *pathStr = gtk_tree_path_to_string(path);
 
-		GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (renderer), value_property_names[i]);
-		if (pspec == NULL) {
-			continue;
-		}
+    gtk_tree_path_free(path);
 
-		g_value_init (&value, pspec->value_type);
-		g_object_get_property (G_OBJECT (renderer), value_property_names[i], &value);
-		if (G_VALUE_HOLDS_STRING (&value)) {
-			retObject = nsstring_from_cstring (g_value_get_string (&value));
-		} else if (G_VALUE_HOLDS_BOOLEAN (&value)) {
-			retObject = @(g_value_get_boolean (&value));
-		} else if (G_VALUE_HOLDS_INT (&value)) {
-			retObject = @(g_value_get_int (&value));
-		} else if (G_VALUE_HOLDS_CHAR (&value)) {
-			retObject = @(g_value_get_schar (&value));
-		} else if (G_VALUE_HOLDS_UCHAR (&value)) {
-			retObject = @(g_value_get_uchar (&value));
-		} else if (G_VALUE_HOLDS_UINT (&value)) {
-			retObject = @(g_value_get_uint (&value));
-		} else if (G_VALUE_HOLDS_INT64 (&value)) {
-			retObject = @(g_value_get_int64 (&value));
-		} else if (G_VALUE_HOLDS_UINT64 (&value)) {
-			retObject = @(g_value_get_uint64 (&value));
-		} else if (G_VALUE_HOLDS_LONG (&value)) {
-			retObject = @(g_value_get_long (&value));
-		} else if (G_VALUE_HOLDS_ULONG (&value)) {
-			retObject = @(g_value_get_ulong (&value));
-		} else if (G_VALUE_HOLDS_FLOAT (&value)) {
-			retObject = @(g_value_get_float (&value));
-		} else if (G_VALUE_HOLDS_DOUBLE (&value)) {
-			retObject = @(g_value_get_double (&value));
-		}
+    GList *renderers = gtk_cell_layout_get_cells(GTK_CELL_LAYOUT(_column));
+    GtkCellRenderer *realRenderer = g_list_nth_data(renderers, _indexInColumn);
+    g_list_free (renderers);
 
-		g_value_unset(&value);
-		if (retObject) {
-			break;
-		}
-	}
+    if (GTK_CELL_RENDERER_TOGGLE(realRenderer)) {
+        g_signal_emit_by_name (realRenderer, "toggled", pathStr);
+    }
 
-	return retObject;
+    g_free (pathStr);
 }
 
 - (NSString *)accessibilityTitle

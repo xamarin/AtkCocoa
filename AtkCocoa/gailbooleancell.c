@@ -22,8 +22,12 @@
 #include <gtk/gtk.h>
 #include "atk-cocoa/gailbooleancell.h"
 
+#import <Cocoa/Cocoa.h>
+
 static void      gail_boolean_cell_class_init          (GailBooleanCellClass *klass);
 static void      gail_boolean_cell_init                (GailBooleanCell *cell);
+static void      gail_boolean_cell_initialize (GailCell *cell);
+
 /* Misc */
 
 static gboolean gail_boolean_cell_update_cache         (GailRendererCell     *cell,
@@ -42,14 +46,24 @@ static void
 gail_boolean_cell_class_init (GailBooleanCellClass *klass)
 {
   GailRendererCellClass *renderer_cell_class = GAIL_RENDERER_CELL_CLASS (klass);
+  GailCellClass *cell_class = GAIL_CELL_CLASS (klass);
 
   renderer_cell_class->update_cache = gail_boolean_cell_update_cache;
   renderer_cell_class->property_list = gail_boolean_cell_property_list;
+
+  cell_class->initialize = gail_boolean_cell_initialize;
 }
 
 static void
 gail_boolean_cell_init (GailBooleanCell *cell)
 {
+}
+
+static void
+gail_boolean_cell_initialize (GailCell *cell)
+{
+    id<NSAccessibility> realElement = (__bridge id<NSAccessibility>) cell->cell_element;
+    [realElement setAccessibilityRole:NSAccessibilityCheckBoxRole];
 }
 
 AtkObject* 
@@ -82,6 +96,7 @@ gail_boolean_cell_update_cache (GailRendererCell *cell,
                                 gboolean         emit_change_signal)
 {
   GailBooleanCell *boolean_cell = GAIL_BOOLEAN_CELL (cell);
+  GailCell *gail_cell = GAIL_CELL(cell);
   gboolean rv = FALSE;
   gboolean new_boolean;
   gboolean new_sensitive;
