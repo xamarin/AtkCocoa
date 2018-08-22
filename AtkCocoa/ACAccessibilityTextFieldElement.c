@@ -38,6 +38,10 @@
         return nil;
 	}
 
+    if (!gtk_entry_get_visibility (GTK_ENTRY (owner))){
+        return nil;
+    }
+
     return nsstring_from_cstring (get_entry_text([self delegate]));
 }
 
