@@ -105,7 +105,17 @@ get_entry_text (AcElement *element)
 
 - (NSString *)accessibilityValueDescription
 {
-    return @"contains secure text";
+    GObject *widget = ac_element_get_owner ([self delegate]);
+    
+    if (!GTK_IS_ENTRY (widget)) {
+        return nil;
+    }
+    
+    if (!gtk_entry_get_visibility (GTK_ENTRY (widget))){
+        return @"contains secure text";
+    }
+    
+    return [super accessibilityValueDescription];
 }
 
 - (NSRange)accessibilityRangeForLine:(NSInteger)line
