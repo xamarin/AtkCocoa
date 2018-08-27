@@ -38,10 +38,6 @@
         return nil;
 	}
 
-    if (!gtk_entry_get_visibility (GTK_ENTRY (owner))){
-        return nil;
-    }
-
     return nsstring_from_cstring (get_entry_text([self delegate]));
 }
 
@@ -89,11 +85,27 @@ const char *
 get_entry_text (AcElement *element)
 {
     GtkWidget *widget = gtk_accessible_get_widget(GTK_ACCESSIBLE (element));
-    if (GTK_IS_ENTRY(widget)) {
-        return gtk_entry_get_text(GTK_ENTRY (widget));
+    
+    if (!GTK_IS_ENTRY(widget)) {
+        NSLog(@"This is not a GTK entry");
+        return "";
     }
+    
+    NSString *value = nsstring_from_cstring (gtk_entry_get_text(GTK_ENTRY (widget)));
+    
+    if (!gtk_entry_get_visibility (GTK_ENTRY (widget))){
+        value = [@"" stringByPaddingToLength:value.length withString: @"•" startingAtIndex:0];
+    }
+    
+    if (value == nil)
+        return "";
+    
+    return [value cStringUsingEncoding:NSUTF8StringEncoding];
+}
 
-    return "";
+- (NSString *)accessibilityValueDescription
+{
+    return @"contains secure text";
 }
 
 - (NSRange)accessibilityRangeForLine:(NSInteger)line
