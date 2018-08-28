@@ -1076,10 +1076,10 @@ _gail_entry_insert_text_cb (GtkEntry *entry,
 
   if (arg1 != NULL && *arg1 != 0) {
     NSAccessibilityPostNotificationWithUserInfo(ac_element_get_accessibility_element(AC_ELEMENT(accessible)),
-                                                NSAccessibilityAnnouncementRequestedNotification,
-                                                @{ NSAccessibilityAnnouncementKey : nsstring_from_cstring(arg1),
-                                                   NSAccessibilityPriorityKey: @(NSAccessibilityPriorityHigh)
-                                                   });
+                                                  NSAccessibilityAnnouncementRequestedNotification,
+                                              @{ NSAccessibilityAnnouncementKey : gtk_entry_get_visibility (entry) ? nsstring_from_cstring(arg1) : @"•",
+                                                     NSAccessibilityPriorityKey: @(NSAccessibilityPriorityHigh)
+                                                     });
   }
 
   /*
