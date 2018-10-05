@@ -29,6 +29,11 @@
 	return [super initWithDelegate:delegate];
 }
 
+- (NSArray *)accessibilityChildren
+{
+    return nil;
+}
+
 - (BOOL)accessibilityPerformPress
 {
     return ac_element_perform_press ([self delegate]);
