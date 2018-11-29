@@ -20,7 +20,12 @@
 #import <Cocoa/Cocoa.h>
 #include "ACAccessibilityElement.h"
 
+@class ACAccessibilityTableHeaderElement;
+
 @interface ACAccessibilityOutlineElement : ACAccessibilityElement <NSAccessibilityOutline>
 
 - (instancetype)initWithDelegate:(AcElement *)delegate;
+- (ACAccessibilityTableHeaderElement *)headerElement;
+- (void)setHeaderElement:(ACAccessibilityTableHeaderElement *)header;
+
 @end

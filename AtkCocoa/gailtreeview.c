@@ -39,6 +39,7 @@
 #include "atk-cocoa/acdebug.h"
 
 #import "atk-cocoa/ACAccessibilityOutlineElement.h"
+#import "atk-cocoa/ACAccessibilityTableHeaderElement.h"
 #import "atk-cocoa/ACAccessibilityTreeCellElement.h"
 #import "atk-cocoa/ACAccessibilityTreeColumnElement.h"
 #import "atk-cocoa/ACAccessibilityTreeRowElement.h"
@@ -841,7 +842,6 @@ remove_column_from_parent (gpointer key,
   [columnElement setAccessibilityWindow:nil];
   [columnElement setAccessibilityTopLevelUIElement:nil];
 
-/*
   id<NSAccessibility> headerElement = [columnElement columnHeaderElement];
   if (headerElement != nil) {
     NSArray *headers = [parent accessibilityColumnHeaderUIElements];
@@ -850,7 +850,7 @@ remove_column_from_parent (gpointer key,
       [parent setAccessibilityColumnHeaderUIElements:[headers ac_removeObject:headerElement]];
     }
   }
-*/
+
   // Remove this from the hashtable
 
   CFRelease(value);
@@ -860,16 +860,19 @@ remove_column_from_parent (gpointer key,
 static void
 update_column_headers (GtkTreeView *tree_view)
 {
-  /*
   AtkObject *atk_obj = gtk_widget_get_accessible(GTK_WIDGET(tree_view));
   GailTreeView *gailview = GAIL_TREE_VIEW(atk_obj);
   ACAccessibilityElement *element = ac_element_get_accessibility_element(AC_ELEMENT(atk_obj));
   GList *tv_cols, *t;
   BOOL hasHeaders = gtk_tree_view_get_headers_visible(tree_view);
-  NSMutableArray *headers;
+  ACAccessibilityOutlineElement *outlineElement = (ACAccessibilityOutlineElement *)element;
 
   if (hasHeaders) {
-    headers = [NSMutableArray array];
+    ACAccessibilityTableHeaderElement *header = [[ACAccessibilityTableHeaderElement alloc] init];
+    [header setAccessibilityWindow:[element accessibilityWindow]];
+    [header setAccessibilityTopLevelUIElement:[element accessibilityWindow]];
+
+    [outlineElement setHeaderElement:header];
 
     tv_cols = gtk_tree_view_get_columns(tree_view);
     for (t = tv_cols; t; t = t->next) {
@@ -880,8 +883,8 @@ update_column_headers (GtkTreeView *tree_view)
 
       id<NSAccessibility> headerElement = [tc columnHeaderElement];
       if (headerElement) {
-        [headers addObject:headerElement];
-        [element accessibilityAddChildElement:headerElement];
+        [header accessibilityAddChildElement:headerElement];
+
         [headerElement setAccessibilityWindow:[element accessibilityWindow]];
         [headerElement setAccessibilityTopLevelUIElement:[element accessibilityWindow]];
       }
@@ -889,15 +892,9 @@ update_column_headers (GtkTreeView *tree_view)
 
     g_list_free (tv_cols);
   } else {
-    for (ACAccessibilityElement *headerElement in [element accessibilityColumnHeaderUIElements]) {
-      [element ac_accessibilityRemoveChildElement:headerElement];
-    }
-
-    headers = nil;
+    // Remove the header
+    [outlineElement setHeaderElement:nil];
   }
-
-  [element setAccessibilityColumnHeaderUIElements:headers];
-   */
 }
 
 static void
@@ -943,7 +940,7 @@ update_columns (GailTreeView *gailview,
     idx++;
   }
 
-//  update_column_headers(tree_view);
+  update_column_headers(tree_view);
 
   g_list_free (tv_cols);
 }

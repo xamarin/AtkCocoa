@@ -18,13 +18,16 @@
  */
 
 #import "atk-cocoa/ACAccessibilityOutlineElement.h"
+#import "atk-cocoa/ACAccessibilityTableHeaderElement.h"
 #import "atk-cocoa/ACAccessibilityTreeRowElement.h"
 #import "atk-cocoa/ACAccessibilityTreeColumnElement.h"
+#import "atk-cocoa/NSAccessibilityElement+AtkCocoa.h"
 #include "atk-cocoa/acelement.h"
 #include "atk-cocoa/acdebug.h"
 #include "atk-cocoa/gailtreeview.h"
 
 @implementation ACAccessibilityOutlineElement {
+    ACAccessibilityTableHeaderElement *_headerElement;
 }
 
 - (instancetype)initWithDelegate:(AcElement *)delegate
@@ -202,4 +205,19 @@
     return [self accessibilityRows];
 }
 
+- (ACAccessibilityTableHeaderElement *)headerElement
+{
+    return _headerElement;
+}
+
+- (void)setHeaderElement:(ACAccessibilityTableHeaderElement *)header
+{
+    if (_headerElement != nil) {
+        [self ac_accessibilityRemoveChildElement:_headerElement];
+    }
+
+    _headerElement = header;
+    [self accessibilityAddChildElement:_headerElement];
+    [self setAccessibilityHeader:header];
+}
 @end

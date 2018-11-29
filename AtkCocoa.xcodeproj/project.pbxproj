@@ -97,6 +97,7 @@
 		AE47D4531F0FA39100678275 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE47D4511F0FA39100678275 /* Foundation.framework */; };
 		AE519EFA1F29079F0039BBD4 /* NSArray+AtkCocoa.m in Sources */ = {isa = PBXBuildFile; fileRef = AE519EF91F2902090039BBD4 /* NSArray+AtkCocoa.m */; };
 		AE77D1CC1F1E4DB000151C16 /* ACAccessibilityTreeColumnHeaderElement.c in Sources */ = {isa = PBXBuildFile; fileRef = AE77D1CA1F1E4DB000151C16 /* ACAccessibilityTreeColumnHeaderElement.c */; };
+		AE86858A21AEECAD00C0D2BC /* ACAccessibilityTableHeaderElement.m in Sources */ = {isa = PBXBuildFile; fileRef = AE86858821AEECAD00C0D2BC /* ACAccessibilityTableHeaderElement.m */; };
 		AE9AADF31F58455300C37B28 /* gailnsview.c in Sources */ = {isa = PBXBuildFile; fileRef = AE9AADF11F58455300C37B28 /* gailnsview.c */; };
 /* End PBXBuildFile section */
 
@@ -193,6 +194,7 @@
 		AE47D4511F0FA39100678275 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		AE519EF91F2902090039BBD4 /* NSArray+AtkCocoa.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSArray+AtkCocoa.m"; sourceTree = "<group>"; };
 		AE77D1CA1F1E4DB000151C16 /* ACAccessibilityTreeColumnHeaderElement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = ACAccessibilityTreeColumnHeaderElement.c; sourceTree = "<group>"; };
+		AE86858821AEECAD00C0D2BC /* ACAccessibilityTableHeaderElement.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ACAccessibilityTableHeaderElement.m; sourceTree = "<group>"; };
 		AE9AADF11F58455300C37B28 /* gailnsview.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; path = gailnsview.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -251,6 +253,7 @@
 				AE47D39B1F0E764B00678275 /* ACAccessibilityNotebookTabElement.c */,
 				AE47D39C1F0E764B00678275 /* ACAccessibilityOutlineElement.c */,
 				AE47D39D1F0E764B00678275 /* ACAccessibilitySpinnerElement.c */,
+				AE86858821AEECAD00C0D2BC /* ACAccessibilityTableHeaderElement.m */,
 				AE47D39E1F0E764B00678275 /* ACAccessibilityTextFieldElement.c */,
 				AE47D39F1F0E764B00678275 /* ACAccessibilityTextViewElement.c */,
 				AE47D3A01F0E764B00678275 /* ACAccessibilityTreeCellElement.c */,
@@ -432,6 +435,7 @@
 				AE47D4171F0E764B00678275 /* gailnotebookpage.c in Sources */,
 				AE47D42B1F0E764B00678275 /* gailtextutil.c in Sources */,
 				AE47D3FD1F0E764B00678275 /* gailcellparent.c in Sources */,
+				AE86858A21AEECAD00C0D2BC /* ACAccessibilityTableHeaderElement.m in Sources */,
 				AE47D4301F0E764B00678275 /* gailutil.c in Sources */,
 				AE47D3E91F0E764B00678275 /* ACAccessibilityNotebookElement.c in Sources */,
 				AE47D3FE1F0E764B00678275 /* gailcheckmenuitem.c in Sources */,

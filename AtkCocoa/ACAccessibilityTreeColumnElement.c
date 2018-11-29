@@ -118,10 +118,17 @@
         if (_customHeaderElement == nil) {
             _customHeaderElement = [[ACAccessibilityTreeColumnHeaderElement alloc] initWithDelegate:[self delegate]
                                                                                          treeColumn:_column];
+            [self setAccessibilityColumnHeaderUIElements:@[_customHeaderElement]];
         }
+
         return _customHeaderElement;
     }
 
-    return ac_element_get_accessibility_element(AC_ELEMENT (gtk_widget_get_accessible(header)));
+    ACAccessibilityElement *ret = ac_element_get_accessibility_element(AC_ELEMENT (gtk_widget_get_accessible(header)));
+    NSArray *existing = [self accessibilityColumnHeaderUIElements];
+    if ([existing count] == 0) {
+        [self setAccessibilityColumnHeaderUIElements:@[ret]];
+    }
+    return ret;
 }
 @end
