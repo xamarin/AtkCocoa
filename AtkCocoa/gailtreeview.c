@@ -844,11 +844,13 @@ remove_column_from_parent (gpointer key,
 
   id<NSAccessibility> headerElement = [columnElement columnHeaderElement];
   if (headerElement != nil) {
+    /*
     NSArray *headers = [parent accessibilityColumnHeaderUIElements];
 
     if (headers != nil) {
       [parent setAccessibilityColumnHeaderUIElements:[headers ac_removeObject:headerElement]];
     }
+     */
   }
 
   // Remove this from the hashtable
@@ -887,6 +889,7 @@ update_column_headers (GtkTreeView *tree_view)
 
         [headerElement setAccessibilityWindow:[element accessibilityWindow]];
         [headerElement setAccessibilityTopLevelUIElement:[element accessibilityWindow]];
+        [headerElement setAccessibilityParent:header];
       }
     }
 
@@ -1597,7 +1600,8 @@ gail_treeview_add_row_elements (GailTreeView *gailview,
     return;
   }
 
-  columns = g_hash_table_get_keys(gailview->columnMap);
+//  columns = g_hash_table_get_keys(gailview->columnMap);
+  columns = gtk_tree_view_get_columns(treeview);
   for (c = columns; c; c = c->next) {
     ACAccessibilityTreeColumnElement *columnElement = find_column_element_for_column (gailview, c->data);
 
@@ -1767,7 +1771,23 @@ void
 gail_treeview_add_columns (GailTreeView *gailview,
                            NSMutableArray *a)
 {
-  g_hash_table_foreach(gailview->columnMap, add_columns_foreach, (__bridge void *)a);
+//  g_hash_table_foreach(gailview->columnMap, add_columns_foreach, (__bridge void *)a);
+  GtkTreeView *treeview = GTK_TREE_VIEW (GTK_ACCESSIBLE(gailview)->widget);
+  GList *columns, *c;
+
+  columns = gtk_tree_view_get_columns(treeview);
+  for (c = columns; c; c = c->next) {
+    // If there are no renderers for the column, then we skip it
+    GList *renderers = gtk_cell_layout_get_cells(GTK_CELL_LAYOUT(c));
+    if (renderers == NULL) {
+      return;
+    }
+    g_list_free (renderers);
+
+    id<NSAccessibility> element = find_column_element_for_column(gailview, c->data);
+    [a addObject:element];
+  }
+  g_list_free(columns);
 }
 
 void
