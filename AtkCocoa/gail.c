@@ -592,6 +592,12 @@ gail_focus_notify (GtkWidget *widget)
             NSAccessibilityPostNotificationWithUserInfo([NSApplication sharedApplication],
                                                         NSAccessibilityFocusedUIElementChangedNotification,
                                                         @{NSAccessibilityUIElementsKey: @[ac_element_get_accessibility_element(element)]});
+        } else {
+          NSApplication *app = [NSApplication sharedApplication];
+          [app setAccessibilityApplicationFocusedUIElement:nil];
+          NSAccessibilityPostNotificationWithUserInfo(app,
+                                                      NSAccessibilityFocusedUIElementChangedNotification,
+                                                      @{NSAccessibilityUIElementsKey: @[]});
         }
     }
   else
