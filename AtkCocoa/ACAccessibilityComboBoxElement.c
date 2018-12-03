@@ -25,7 +25,7 @@
 
 - (instancetype)initWithDelegate:(AcElement *)delegate
 {
-    [self setAccessibilityRole:NSAccessibilityMenuButtonRole];
+    [self setAccessibilityRole:NSAccessibilityPopUpButtonRole];
 	return [super initWithDelegate:delegate];
 }
 

@@ -390,7 +390,7 @@ ns_role_from_atk (AtkRole atk_role, NSString **ns_role, NSString **ns_subrole)
 			break;
 
 		case ATK_ROLE_COMBO_BOX:
-			*ns_role = NSAccessibilityComboBoxRole;
+            *ns_role = NSAccessibilityPopUpButtonRole;
 			break;
 
 		case ATK_ROLE_DATE_EDITOR:

@@ -102,6 +102,25 @@ gail_combo_box_init (GailComboBox      *combo_box)
   combo_box->popup_set = FALSE;
 }
 
+static gboolean
+toggle_button_focused (GtkToggleButton *button,
+                       GdkEventFocus *focus,
+                       AtkObject *obj)
+{
+  gboolean return_val = FALSE;
+
+  ac_element_focus_and_ignore_next(AC_ELEMENT (obj));
+  return FALSE;
+}
+
+static void
+combo_box_forall_cb (GtkWidget *child, gpointer obj)
+{
+  if (GTK_IS_TOGGLE_BUTTON (child)) {
+    g_signal_connect (child, "focus-in-event", G_CALLBACK (toggle_button_focused), obj);
+  }
+}
+
 static void
 gail_combo_box_real_initialize (AtkObject *obj,
                                 gpointer  data)
@@ -131,6 +150,11 @@ gail_combo_box_real_initialize (AtkObject *obj,
   if (gtk_combo_box_get_has_entry (combo_box))
     atk_object_set_parent (gtk_widget_get_accessible (gtk_bin_get_child (GTK_BIN (combo_box))), obj);
 
+  // When the combobox gets focus, it passes the focus to an internal GtkToggleButton
+  // We need to watch for that togglebutton being focused and focus the main ComboBox
+  // because that is where the accessibility works for VoiceOver.
+  // But we can't get the internal togglebutton in any sane way, so we need to go looking for it
+  gtk_container_forall(GTK_CONTAINER (combo_box), combo_box_forall_cb, obj);
   obj->role = ATK_ROLE_COMBO_BOX;
 }
 

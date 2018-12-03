@@ -102,6 +102,8 @@ gboolean ac_element_perform_show_alternate_ui (AcElement *element);
 gboolean ac_element_perform_show_default_ui (AcElement *element);
 gboolean ac_element_perform_show_menu (AcElement *element);
 
+void ac_element_focus_and_ignore_next (AcElement *element);
+
 G_END_DECLS
 
 #endif /* __AC_ELEMENT_H__ */

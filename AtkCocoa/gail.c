@@ -588,10 +588,16 @@ gail_focus_notify (GtkWidget *widget)
 
             // FIXME: Seems to have some issues tracking focus when the new focus element is in a different parent group
             // than the original?
-            [app setAccessibilityApplicationFocusedUIElement:ac_element_get_accessibility_element(element)];
+
+          // Ignore toggle buttons inside combo boxes
+          gboolean ignore = GTK_IS_TOGGLE_BUTTON(focus_widget) && GTK_IS_COMBO_BOX (gtk_widget_get_parent(focus_widget));
+          id<NSAccessibility> e = ac_element_get_accessibility_element(element);
+          if (!ignore) {
+            [app setAccessibilityApplicationFocusedUIElement:e];
             NSAccessibilityPostNotificationWithUserInfo([NSApplication sharedApplication],
                                                         NSAccessibilityFocusedUIElementChangedNotification,
-                                                        @{NSAccessibilityUIElementsKey: @[ac_element_get_accessibility_element(element)]});
+                                                        @{NSAccessibilityUIElementsKey: @[e]});
+          }
         } else {
           NSApplication *app = [NSApplication sharedApplication];
           [app setAccessibilityApplicationFocusedUIElement:nil];

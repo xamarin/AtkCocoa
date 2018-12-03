@@ -33,6 +33,7 @@ static void ac_element_class_init (AcElementClass *klass);
 static void ac_element_init (AcElement *element);
 static void ac_element_dispose (GObject *obj);
 static void ac_element_finalize (GObject *obj);
+static void ac_element_real_focus_event (AtkObject *object, gboolean focus);
 static ACAccessibilityElement *ac_element_get_real_accessibility_element (AcElement *element);
 static NSArray *ac_element_real_get_actions (AcElement *element);
 static gboolean ac_element_real_perform_cancel (AcElement *element);
@@ -84,6 +85,7 @@ ac_element_class_init (AcElementClass *klass)
   GtkAccessibleClass *accessible_class = GTK_ACCESSIBLE_CLASS (klass);
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+  class->focus_event = ac_element_real_focus_event;
   klass->get_accessibility_element = ac_element_get_real_accessibility_element;
   klass->get_actions = ac_element_real_get_actions;
 
@@ -161,6 +163,33 @@ ac_element_finalize (GObject *obj)
 	G_OBJECT_CLASS (ac_element_parent_class)->finalize (obj);
 }
 
+gboolean ignore_next_focus = FALSE;
+static void
+ac_element_real_focus_event (AtkObject *object,
+                             gboolean focus)
+{
+  if (!ignore_next_focus) {
+    ACAccessibilityElement *element = ac_element_get_accessibility_element (AC_ELEMENT (object));
+    [element setAccessibilityFocused:focus];
+  }
+  ignore_next_focus = FALSE;
+}
+
+void
+ac_element_focus_and_ignore_next (AcElement *element)
+{
+  if (!ignore_next_focus) {
+    ACAccessibilityElement *real_element = ac_element_get_accessibility_element (element);
+    [real_element setAccessibilityFocused:YES];
+    [[NSApplication sharedApplication] setAccessibilityApplicationFocusedUIElement:real_element];
+    NSAccessibilityPostNotificationWithUserInfo([NSApplication sharedApplication],
+                                                NSAccessibilityFocusedUIElementChangedNotification,
+                                                @{NSAccessibilityUIElementsKey: @[real_element]});
+    ignore_next_focus = TRUE;
+  } else {
+    ignore_next_focus = FALSE;
+  }
+}
 static id<NSAccessibility>
 ac_element_get_real_accessibility_element (AcElement *element)
 {
