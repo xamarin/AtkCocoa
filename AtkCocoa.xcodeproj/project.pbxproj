@@ -98,6 +98,7 @@
 		AE519EFA1F29079F0039BBD4 /* NSArray+AtkCocoa.m in Sources */ = {isa = PBXBuildFile; fileRef = AE519EF91F2902090039BBD4 /* NSArray+AtkCocoa.m */; };
 		AE77D1CC1F1E4DB000151C16 /* ACAccessibilityTreeColumnHeaderElement.c in Sources */ = {isa = PBXBuildFile; fileRef = AE77D1CA1F1E4DB000151C16 /* ACAccessibilityTreeColumnHeaderElement.c */; };
 		AE86858A21AEECAD00C0D2BC /* ACAccessibilityTableHeaderElement.m in Sources */ = {isa = PBXBuildFile; fileRef = AE86858821AEECAD00C0D2BC /* ACAccessibilityTableHeaderElement.m */; };
+		AE8AD64421E799770024A67D /* ACAccessibilityExpanderElement.m in Sources */ = {isa = PBXBuildFile; fileRef = AE8AD64221E799770024A67D /* ACAccessibilityExpanderElement.m */; };
 		AE9AADF31F58455300C37B28 /* gailnsview.c in Sources */ = {isa = PBXBuildFile; fileRef = AE9AADF11F58455300C37B28 /* gailnsview.c */; };
 /* End PBXBuildFile section */
 
@@ -135,7 +136,7 @@
 		AE47D3B51F0E764B00678275 /* gailcontainer.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailcontainer.c; sourceTree = "<group>"; };
 		AE47D3B61F0E764B00678275 /* gailcontainercell.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailcontainercell.c; sourceTree = "<group>"; };
 		AE47D3B71F0E764B00678275 /* gailentry.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; indentWidth = 2; path = gailentry.c; sourceTree = "<group>"; };
-		AE47D3B81F0E764B00678275 /* gailexpander.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailexpander.c; sourceTree = "<group>"; };
+		AE47D3B81F0E764B00678275 /* gailexpander.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; indentWidth = 2; path = gailexpander.c; sourceTree = "<group>"; tabWidth = 2; };
 		AE47D3B91F0E764B00678275 /* gailframe.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailframe.c; sourceTree = "<group>"; };
 		AE47D3BE1F0E764B00678275 /* gailimage.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailimage.c; sourceTree = "<group>"; };
 		AE47D3BF1F0E764B00678275 /* gailimagecell.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailimagecell.c; sourceTree = "<group>"; };
@@ -195,6 +196,7 @@
 		AE519EF91F2902090039BBD4 /* NSArray+AtkCocoa.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSArray+AtkCocoa.m"; sourceTree = "<group>"; };
 		AE77D1CA1F1E4DB000151C16 /* ACAccessibilityTreeColumnHeaderElement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = ACAccessibilityTreeColumnHeaderElement.c; sourceTree = "<group>"; };
 		AE86858821AEECAD00C0D2BC /* ACAccessibilityTableHeaderElement.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ACAccessibilityTableHeaderElement.m; sourceTree = "<group>"; };
+		AE8AD64221E799770024A67D /* ACAccessibilityExpanderElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ACAccessibilityExpanderElement.m; sourceTree = "<group>"; };
 		AE9AADF11F58455300C37B28 /* gailnsview.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; path = gailnsview.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -248,6 +250,7 @@
 				AE47D3961F0E764B00678275 /* ACAccessibilityCellElement.c */,
 				AE47D3971F0E764B00678275 /* ACAccessibilityComboBoxElement.c */,
 				AE47D3981F0E764B00678275 /* ACAccessibilityElement.c */,
+				AE8AD64221E799770024A67D /* ACAccessibilityExpanderElement.m */,
 				AE47D3991F0E764B00678275 /* ACAccessibilityMenuItemElement.c */,
 				AE47D39A1F0E764B00678275 /* ACAccessibilityNotebookElement.c */,
 				AE47D39B1F0E764B00678275 /* ACAccessibilityNotebookTabElement.c */,
@@ -502,6 +505,7 @@
 				AE47D4311F0E764B00678275 /* gailwidget.c in Sources */,
 				AE47D4181F0E764B00678275 /* gailobject.c in Sources */,
 				AE47D4161F0E764B00678275 /* gailnotebook.c in Sources */,
+				AE8AD64421E799770024A67D /* ACAccessibilityExpanderElement.m in Sources */,
 				AE47D3F21F0E764B00678275 /* acelement.c in Sources */,
 				AE47D3ED1F0E764B00678275 /* ACAccessibilityTextFieldElement.c in Sources */,
 				AE47D3E71F0E764B00678275 /* ACAccessibilityElement.c in Sources */,

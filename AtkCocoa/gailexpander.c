@@ -25,6 +25,8 @@
 #include "atk-cocoa/gailexpander.h"
 #include "atk-cocoa/gailmisc.h"
 
+#import "atk-cocoa/ACAccessibilityExpanderElement.h"
+
 static void                  gail_expander_class_init       (GailExpanderClass *klass);
 static void                  gail_expander_init             (GailExpander      *expander);
 
@@ -111,6 +113,8 @@ static AtkAttributeSet* gail_expander_get_run_attributes
 					            gint	      *end_offset);
 static AtkAttributeSet* gail_expander_get_default_attributes
                                                    (AtkText           *text);
+static id<NSAccessibility> get_real_accessibility_element (AcElement *element);
+static gboolean real_perform_press (AcElement *element);
 
 G_DEFINE_TYPE_WITH_CODE (GailExpander, gail_expander, GAIL_TYPE_CONTAINER,
                          G_IMPLEMENT_INTERFACE (ATK_TYPE_ACTION, atk_action_interface_init)
@@ -122,6 +126,7 @@ gail_expander_class_init (GailExpanderClass *klass)
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   AtkObjectClass *class = ATK_OBJECT_CLASS (klass);
   GailWidgetClass *widget_class;
+  AcElementClass *element_class = AC_ELEMENT_CLASS(klass);
 
   widget_class = (GailWidgetClass*)klass;
   widget_class->notify_gtk = gail_expander_real_notify_gtk;
@@ -134,6 +139,16 @@ gail_expander_class_init (GailExpanderClass *klass)
   class->ref_state_set = gail_expander_ref_state_set;
 
   class->initialize = gail_expander_real_initialize;
+
+  element_class->get_accessibility_element = get_real_accessibility_element;
+  element_class->perform_press = real_perform_press;
+}
+
+static id<NSAccessibility>
+get_real_accessibility_element (AcElement *element)
+{
+  NSLog (@"Getting real element");
+  return [[ACAccessibilityExpanderElement alloc] initWithDelegate:element];
 }
 
 static void
@@ -285,10 +300,13 @@ gail_expander_real_notify_gtk (GObject    *obj,
   AtkObject* atk_obj;
   GtkExpander *expander;
   GailExpander *gail_expander;
+  AcElement *element;
 
   expander = GTK_EXPANDER (obj);
   atk_obj = gtk_widget_get_accessible (GTK_WIDGET (expander));
-;
+
+  element = AC_ELEMENT (atk_obj);
+
   if (strcmp (pspec->name, "label") == 0)
     {
       const gchar* label_text;
@@ -319,6 +337,8 @@ gail_expander_real_notify_gtk (GObject    *obj,
       atk_object_notify_state_change (atk_obj, ATK_STATE_EXPANDED, 
                                       gtk_expander_get_expanded (expander));
       g_signal_emit_by_name (atk_obj, "visible_data_changed");
+
+      NSAccessibilityPostNotification(ac_element_get_accessibility_element(element), NSAccessibilityValueChangedNotification);
     }
   else
     GAIL_WIDGET_CLASS (gail_expander_parent_class)->notify_gtk (obj, pspec);
@@ -889,4 +909,12 @@ gail_expander_finalize (GObject *object)
     g_object_unref (expander->textutil);
 
   G_OBJECT_CLASS (gail_expander_parent_class)->finalize (object);
+}
+
+static gboolean
+real_perform_press (AcElement *element)
+{
+  idle_do_action(element);
+
+  return TRUE;
 }
