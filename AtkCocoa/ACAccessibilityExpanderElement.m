@@ -52,4 +52,17 @@
 
     return YES;
 }
+
+- (id)accessibilityTitleUIElement
+{
+    GtkExpander *expander = GTK_EXPANDER(ac_element_get_owner([self delegate]));
+    GtkWidget *label = gtk_expander_get_label_widget(expander);
+
+    if (label == NULL) {
+        return nil;
+    }
+
+    AcElement *labelElement = AC_ELEMENT (gtk_widget_get_accessible(label));
+    return ac_element_get_accessibility_element(labelElement);
+}
 @end
