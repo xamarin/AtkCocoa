@@ -161,15 +161,6 @@ gail_combo_box_real_initialize (AtkObject *obj,
 static id<NSAccessibility>
 get_real_accessibility_element (AcElement *element)
 {
-  /*
-  GailComboBox *gail_combo_box = GAIL_COMBO_BOX (element);
-
-  if (gail_combo_box->real_element == NULL) {
-    gail_combo_box->real_element = (__bridge_retained void *)[[ACAccessibilityComboBoxElement alloc] initWithDelegate:element];
-  }
-
-  return (__bridge id<NSAccessibility>) gail_combo_box->real_element;
-  */
   return [[ACAccessibilityComboBoxElement alloc] initWithDelegate:element];
 }
 
@@ -191,6 +182,8 @@ gail_combo_box_changed_gtk (GtkWidget *widget)
       gail_combo_box->old_selection = index;
       g_object_notify (G_OBJECT (obj), "accessible-name");
       g_signal_emit_by_name (obj, "selection_changed");
+
+      ac_element_notify(AC_ELEMENT (obj), NSAccessibilityValueChangedNotification, @{NSAccessibilityUIElementsKey: @[ac_element_get_accessibility_element(AC_ELEMENT(obj))]});
     }
 }
 

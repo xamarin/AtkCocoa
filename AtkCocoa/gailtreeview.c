@@ -699,7 +699,7 @@ gail_tree_view_expand_row_gtk (GtkTreeView       *tree_view,
   }
 
   gailview->treeIsDirty = TRUE;
-  NSAccessibilityPostNotification(treeElement, NSAccessibilityRowExpandedNotification);
+  NSAccessibilityPostNotification(expandedElement, NSAccessibilityRowExpandedNotification);
   return FALSE;
 }
 
@@ -750,7 +750,7 @@ gail_tree_view_collapse_row_gtk (GtkTreeView       *tree_view,
   collapsedElement = find_row_element_for_path (gailview, path);
   remove_all_children (gailview, treeElement, collapsedElement);
 
-  NSAccessibilityPostNotification(treeElement, NSAccessibilityRowCollapsedNotification);
+  NSAccessibilityPostNotification(collapsedElement, NSAccessibilityRowCollapsedNotification);
 
   return FALSE;
 }
