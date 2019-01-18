@@ -18,9 +18,9 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#include "ACAccessibilityElement.h"
+#include "ACAccessibilityTextFieldElement.h"
 
-@interface ACAccessibilityComboBoxElement : ACAccessibilityElement <NSAccessibilityButton>
+@interface ACAccessibilityComboBoxElement : ACAccessibilityTextFieldElement
 
 - (instancetype)initWithDelegate:(AcElement *)delegate;
 

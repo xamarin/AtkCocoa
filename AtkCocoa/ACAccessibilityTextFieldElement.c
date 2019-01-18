@@ -30,10 +30,24 @@
 	return [super initWithDelegate:delegate];
 }
 
+- (BOOL)respondsToSelector:(SEL)aSelector
+{
+    if (aSelector == @selector(accessibilityValueDescription)) {
+        GtkEntry *widget = [self getEntry];
+
+        if (!GTK_IS_ENTRY (widget)) {
+            return NO;
+        }
+
+        return !gtk_entry_get_visibility (GTK_ENTRY (widget));
+    }
+
+    return [super respondsToSelector:aSelector];
+}
+
 - (NSString *)accessibilityValue
 {
-	GObject *owner = ac_element_get_owner ([self delegate]);
-
+    GtkEntry *owner = [self getEntry];
 	if (!GTK_IS_ENTRY (owner)) {
         return nil;
 	}
@@ -43,11 +57,11 @@
 
 - (void)setAccessibilityValue:(id)newValue
 {
-    GObject *owner = ac_element_get_owner ([self delegate]);
+    GtkEntry *owner = [self getEntry];
 
-	if (!GTK_IS_ENTRY (owner)) {
+    if (!GTK_IS_ENTRY (owner)) {
         return;
-	}
+    }
 
     if (!gtk_editable_get_editable (GTK_EDITABLE (owner))) {
         return;
@@ -78,16 +92,28 @@
 
 - (NSInteger)accessibilityLineForIndex:(NSInteger)index
 {
-    return 0;
+    return 1;
+}
+
+- (GtkEntry *)getEntry
+{
+    GObject *widget = ac_element_get_owner ([self delegate]);
+
+    if (!GTK_IS_ENTRY (widget)) {
+        return NULL;
+    } else {
+        return GTK_ENTRY (widget);
+    }
 }
 
 const char *
 get_entry_text (AcElement *element)
 {
-    GtkWidget *widget = gtk_accessible_get_widget(GTK_ACCESSIBLE (element));
+    ACAccessibilityTextFieldElement *textElement = (ACAccessibilityTextFieldElement *)ac_element_get_accessibility_element(element);
+    GtkWidget *widget = (GtkWidget *)[textElement getEntry];
     
     if (!GTK_IS_ENTRY(widget)) {
-        NSLog(@"This is not a GTK entry");
+        NSLog(@"%@: This is not a GTK entry %s", textElement, widget ? G_OBJECT_TYPE_NAME(widget) : "<null>");
         return "";
     }
     
@@ -105,7 +131,7 @@ get_entry_text (AcElement *element)
 
 - (NSString *)accessibilityValueDescription
 {
-    GObject *widget = ac_element_get_owner ([self delegate]);
+    GtkEntry *widget = [self getEntry];
     
     if (!GTK_IS_ENTRY (widget)) {
         return nil;
@@ -140,7 +166,7 @@ get_entry_text (AcElement *element)
 #define PADDING 2
 - (NSRect)accessibilityFrameForRange:(NSRange)range
 {
-    GtkWidget *widget = gtk_accessible_get_widget(GTK_ACCESSIBLE([self delegate]));
+    GtkEntry *widget = [self getEntry];
     PangoLayout *layout = gtk_entry_get_layout(GTK_ENTRY (widget));
     PangoRectangle first_rect, last_rect;
 
@@ -170,6 +196,27 @@ get_entry_text (AcElement *element)
                             fullRect.size.width + (PADDING * 2), fullRect.size.height + (PADDING * 2));
 
     return ret;
+}
+
+- (NSRange)accessibilitySelectedTextRange
+{
+    GtkEntry *widget = [self getEntry];
+    int start, end;
+
+    if (!gtk_editable_get_selection_bounds(GTK_EDITABLE (widget), &start, &end)) {
+        return NSMakeRange(0, 0);
+    }
+
+    return NSMakeRange(start, end - start);
+}
+
+- (NSString *)accessibilitySelectedText
+{
+    GtkEntry *widget = [self getEntry];
+    NSRange range = [self accessibilitySelectedTextRange];
+
+    NSString *ret = nsstring_from_cstring(get_entry_text ([self delegate]));
+    return [ret substringWithRange:range];
 }
 
 @end

@@ -27,13 +27,35 @@
 
 - (instancetype)initWithDelegate:(AcElement *)delegate
 {
-    [self setAccessibilityRole:NSAccessibilityPopUpButtonRole];
 	return [super initWithDelegate:delegate];
+}
+
+- (BOOL)hasDynamicChildren
+{
+    return YES;
+}
+
+static void
+dump_child (GtkWidget *child, gpointer data)
+{
+    NSMutableArray *children = (__bridge NSMutableArray *) data;
+    if (GTK_IS_TOGGLE_BUTTON (child)) {
+        AcElement *element = AC_ELEMENT (gtk_widget_get_accessible(child));
+        ACAccessibilityElement *e = ac_element_get_accessibility_element(element);
+
+        [e setAccessibilityRole:NSAccessibilityButtonRole];
+        [children addObject:e];
+    }
 }
 
 - (NSArray *)accessibilityChildren
 {
-    return nil;
+    GtkComboBox *combobox = GTK_COMBO_BOX (ac_element_get_owner([self delegate]));
+    NSMutableArray *children = [NSMutableArray array];
+
+    gtk_container_forall(GTK_CONTAINER(combobox), dump_child, (__bridge void *) children);
+
+    return children;
 }
 
 - (BOOL)accessibilityPerformPress
@@ -46,22 +68,16 @@
     return ac_element_perform_show_menu ([self delegate]);
 }
 
-- (NSString *)accessibilityLabel
+- (GtkEntry *)getEntry
 {
     GtkComboBox *combobox = GTK_COMBO_BOX (ac_element_get_owner([self delegate]));
-    char *text;
-    NSString *ret;
 
-    return @(gtk_combo_box_get_active_text (GTK_COMBO_BOX (combobox)));
-}
+    GtkWidget *entry = gtk_bin_get_child (GTK_BIN (combobox));
+    if (!GTK_IS_ENTRY(entry)) {
+        return NULL;
+    }
 
-- (id)accessibilityValue
-{
-    GtkComboBox *combobox = GTK_COMBO_BOX (ac_element_get_owner([self delegate]));
-    char *text;
-    NSString *ret;
-
-    return @(gtk_combo_box_get_active_text (GTK_COMBO_BOX (combobox)));
+    return (GtkEntry *)entry;
 }
 
 /*
@@ -82,5 +98,11 @@
 {
     return [super accessibilityParent];
 }
+
+- (NSString *)accessibilityRole
+{
+    return NSAccessibilityComboBoxRole;
+}
+
 
 @end

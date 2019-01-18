@@ -908,4 +908,10 @@ ns_role_from_atk (AtkRole atk_role, NSString **ns_role, NSString **ns_subrole)
 	}
 }
 
+- (void)setAccessibilityFocused:(BOOL)accessibilityFocused
+{
+    if (accessibilityFocused) {
+        gtk_widget_grab_focus(GTK_WIDGET (ac_element_get_owner(_delegate)));
+    }
+}
 @end

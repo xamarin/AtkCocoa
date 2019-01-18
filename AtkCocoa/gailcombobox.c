@@ -26,6 +26,7 @@
 #include "atk-cocoa/gailcombobox.h"
 
 #import "atk-cocoa/ACAccessibilityComboBoxElement.h"
+#import "atk-cocoa/ACAccessibilityPopupMenuElement.h"
 
 static void         gail_combo_box_class_init              (GailComboBoxClass *klass);
 static void         gail_combo_box_init                    (GailComboBox      *combo_box);
@@ -161,7 +162,13 @@ gail_combo_box_real_initialize (AtkObject *obj,
 static id<NSAccessibility>
 get_real_accessibility_element (AcElement *element)
 {
-  return [[ACAccessibilityComboBoxElement alloc] initWithDelegate:element];
+  GtkComboBox *box = GTK_COMBO_BOX(ac_element_get_owner(element));
+
+  if (gtk_combo_box_get_has_entry(box) || GTK_IS_COMBO_BOX_ENTRY(box)) {
+    return [[ACAccessibilityComboBoxElement alloc] initWithDelegate:element];
+  } else {
+    return [[ACAccessibilityPopupMenuElement alloc] initWithDelegate:element];
+  }
 }
 
 static void

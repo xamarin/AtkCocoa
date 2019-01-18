@@ -98,6 +98,7 @@
 		AE519EFA1F29079F0039BBD4 /* NSArray+AtkCocoa.m in Sources */ = {isa = PBXBuildFile; fileRef = AE519EF91F2902090039BBD4 /* NSArray+AtkCocoa.m */; };
 		AE77D1CC1F1E4DB000151C16 /* ACAccessibilityTreeColumnHeaderElement.c in Sources */ = {isa = PBXBuildFile; fileRef = AE77D1CA1F1E4DB000151C16 /* ACAccessibilityTreeColumnHeaderElement.c */; };
 		AE86858A21AEECAD00C0D2BC /* ACAccessibilityTableHeaderElement.m in Sources */ = {isa = PBXBuildFile; fileRef = AE86858821AEECAD00C0D2BC /* ACAccessibilityTableHeaderElement.m */; };
+		AE86858E21EF8A2C00C0D2BC /* ACAccessibilityPopupMenuElement.m in Sources */ = {isa = PBXBuildFile; fileRef = AE86858C21EF8A2C00C0D2BC /* ACAccessibilityPopupMenuElement.m */; };
 		AE8AD64421E799770024A67D /* ACAccessibilityExpanderElement.m in Sources */ = {isa = PBXBuildFile; fileRef = AE8AD64221E799770024A67D /* ACAccessibilityExpanderElement.m */; };
 		AE9AADF31F58455300C37B28 /* gailnsview.c in Sources */ = {isa = PBXBuildFile; fileRef = AE9AADF11F58455300C37B28 /* gailnsview.c */; };
 /* End PBXBuildFile section */
@@ -196,6 +197,7 @@
 		AE519EF91F2902090039BBD4 /* NSArray+AtkCocoa.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSArray+AtkCocoa.m"; sourceTree = "<group>"; };
 		AE77D1CA1F1E4DB000151C16 /* ACAccessibilityTreeColumnHeaderElement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = ACAccessibilityTreeColumnHeaderElement.c; sourceTree = "<group>"; };
 		AE86858821AEECAD00C0D2BC /* ACAccessibilityTableHeaderElement.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ACAccessibilityTableHeaderElement.m; sourceTree = "<group>"; };
+		AE86858C21EF8A2C00C0D2BC /* ACAccessibilityPopupMenuElement.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ACAccessibilityPopupMenuElement.m; sourceTree = "<group>"; };
 		AE8AD64221E799770024A67D /* ACAccessibilityExpanderElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ACAccessibilityExpanderElement.m; sourceTree = "<group>"; };
 		AE9AADF11F58455300C37B28 /* gailnsview.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; path = gailnsview.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -249,6 +251,7 @@
 				AE47D4341F0E781500678275 /* atk-cocoa */,
 				AE47D3961F0E764B00678275 /* ACAccessibilityCellElement.c */,
 				AE47D3971F0E764B00678275 /* ACAccessibilityComboBoxElement.c */,
+				AE86858C21EF8A2C00C0D2BC /* ACAccessibilityPopupMenuElement.m */,
 				AE47D3981F0E764B00678275 /* ACAccessibilityElement.c */,
 				AE8AD64221E799770024A67D /* ACAccessibilityExpanderElement.m */,
 				AE47D3991F0E764B00678275 /* ACAccessibilityMenuItemElement.c */,
@@ -501,6 +504,7 @@
 				AE47D41B1F0E764B00678275 /* gailpixmap.c in Sources */,
 				AE47D4191F0E764B00678275 /* gailoptionmenu.c in Sources */,
 				AE47D4241F0E764B00678275 /* gailscrollbar.c in Sources */,
+				AE86858E21EF8A2C00C0D2BC /* ACAccessibilityPopupMenuElement.m in Sources */,
 				AE47D4271F0E764B00678275 /* gailspinbutton.c in Sources */,
 				AE47D4311F0E764B00678275 /* gailwidget.c in Sources */,
 				AE47D4181F0E764B00678275 /* gailobject.c in Sources */,
