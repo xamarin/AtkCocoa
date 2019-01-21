@@ -23,6 +23,8 @@
 #include <gtk/gtk.h>
 #include "atk-cocoa/gailtogglebutton.h"
 
+#import <Cocoa/Cocoa.h>
+
 static void      gail_toggle_button_class_init        (GailToggleButtonClass *klass);
 
 static void      gail_toggle_button_init              (GailToggleButton      *button);
@@ -85,6 +87,7 @@ gail_toggle_button_toggled_gtk (GtkWidget       *widget)
   accessible = gtk_widget_get_accessible (widget);
   atk_object_notify_state_change (accessible, ATK_STATE_CHECKED, 
                                   toggle_button->active);
+  ac_element_notify(AC_ELEMENT (accessible), NSAccessibilityValueChangedNotification, NULL);
 } 
 
 static AtkStateSet*

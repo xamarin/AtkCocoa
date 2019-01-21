@@ -29,7 +29,6 @@
 
 - (BOOL)respondsToSelector:(SEL)sel
 {
-    // NSLog (@"Notebook: %@", NSStringFromSelector (sel));
     return [super respondsToSelector:sel];
 }
 

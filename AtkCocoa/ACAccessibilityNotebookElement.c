@@ -33,14 +33,12 @@
 
 - (BOOL)respondsToSelector:(SEL)sel
 {
-    // NSLog (@"Notebook: %@", NSStringFromSelector (sel));
     return [super respondsToSelector:sel];
 }
 
 - (BOOL)isAccessibilitySelectorAllowed:(SEL)sel
 {
     BOOL res = [super isAccessibilitySelectorAllowed:sel];
-    //NSLog (@"selector allowed: %@ %d", NSStringFromSelector (sel), res);
 
     return res;
 }
@@ -48,7 +46,6 @@
 - (NSArray *)accessibilityChildrenInNavigationOrder
 {
     //NSArray *c = [super accessibilityChildrenInNavigationOrder];
-    NSLog (@"Navigation order");
 
     return [super accessibilityChildren];
 }
@@ -60,7 +57,6 @@
     int currentPage = gtk_notebook_get_current_page (notebook);
     GailNotebookPage *page = g_list_nth_data (gailbook->page_cache, currentPage);
 
-    NSLog (@"Got %@", (__bridge id)page->element);
     return (__bridge id)page->element;
 }
 
