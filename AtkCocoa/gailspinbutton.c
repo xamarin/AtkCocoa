@@ -275,5 +275,6 @@ gail_spin_button_value_changed (GtkAdjustment    *adjustment,
   spin_button = GAIL_SPIN_BUTTON (data);
 
   g_object_notify (G_OBJECT (spin_button), "accessible-value");
+  ac_element_notify(AC_ELEMENT (spin_button), NSAccessibilityValueChangedNotification, NULL);
 }
 
