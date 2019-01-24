@@ -18,6 +18,7 @@
  */
 
 #import "atk-cocoa/ACAccessibilityElement.h"
+#import "atk-cocoa/ACAccessibilityTableHeaderElement.h"
 
 #include "atk-cocoa/acelement.h"
 #include "atk-cocoa/acdebug.h"
@@ -252,7 +253,11 @@ get_coords_in_window (GtkWidget *widget, int *x, int *y)
 			continue;
 		}
 
-		GdkRectangle ownerRect = [e frameInGtkWindowSpace];
+        GdkRectangle ownerRect;
+
+        if ([e respondsToSelector:@selector(frameInGtkWindowSpace)]) {
+            ownerRect = [e frameInGtkWindowSpace];
+        }
 
 		if (pointInGtkWindow.x >= ownerRect.x && pointInGtkWindow.x < ownerRect.x + ownerRect.width &&
 			pointInGtkWindow.y >= ownerRect.y && pointInGtkWindow.y < ownerRect.y + ownerRect.height) {
@@ -793,7 +798,7 @@ ns_role_from_atk (AtkRole atk_role, NSString **ns_role, NSString **ns_subrole)
 			parentRect.width = view.frame.size.width;
 			parentRect.height = view.frame.size.height;
 			needsParentOffset = TRUE;
-		} else {
+        } else {
 			NSLog (@"Parent element is %@ and not supported", parentElement);
 			return CGRectZero;
 		}

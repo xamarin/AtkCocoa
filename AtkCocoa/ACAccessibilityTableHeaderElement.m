@@ -14,4 +14,23 @@
 {
     return NSAccessibilityGroupRole;
 }
+
+- (NSArray *)accessibilityChildren
+{
+    return [super accessibilityChildren];
+}
+
+- (CGRect)accessibilityFrameInParentSpace
+{
+    GtkWidget *widget = GTK_WIDGET (ac_element_get_owner([self delegate]));
+    return NSMakeRect(0, widget->allocation.height - 24.0, widget->allocation.width, 24.0);
+}
+
+- (GdkRectangle)frameInGtkWindowSpace
+{
+    GdkRectangle parentFrame = [super frameInGtkWindowSpace];
+    parentFrame.height = 24;
+
+    return parentFrame;
+}
 @end

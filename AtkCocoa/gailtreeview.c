@@ -870,7 +870,7 @@ update_column_headers (GtkTreeView *tree_view)
   ACAccessibilityOutlineElement *outlineElement = (ACAccessibilityOutlineElement *)element;
 
   if (hasHeaders) {
-    ACAccessibilityTableHeaderElement *header = [[ACAccessibilityTableHeaderElement alloc] init];
+    ACAccessibilityTableHeaderElement *header = [[ACAccessibilityTableHeaderElement alloc] initWithDelegate:(AcElement *)gailview];
     [header setAccessibilityWindow:[element accessibilityWindow]];
     [header setAccessibilityTopLevelUIElement:[element accessibilityWindow]];
 

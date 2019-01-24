@@ -125,6 +125,18 @@
     }
 
     ACAccessibilityElement *ret = ac_element_get_accessibility_element(AC_ELEMENT (gtk_widget_get_accessible(header)));
+    [ret setAccessibilityRole:NSAccessibilityButtonRole];
+    [ret setAccessibilitySubrole:NSAccessibilitySortButtonSubrole];
+
+    NSAccessibilitySortDirection sortDirection = NSAccessibilitySortDirectionUnknown;
+    if (gtk_tree_view_column_get_sort_indicator(_column)) {
+        GtkSortType dir = gtk_tree_view_column_get_sort_order(_column);
+
+        sortDirection = dir == GTK_SORT_ASCENDING ? NSAccessibilitySortDirectionAscending : NSAccessibilitySortDirectionDescending;
+    }
+
+    [ret setAccessibilitySortDirection:sortDirection];
+    
     NSArray *existing = [self accessibilityColumnHeaderUIElements];
     if ([existing count] == 0) {
         [self setAccessibilityColumnHeaderUIElements:@[ret]];

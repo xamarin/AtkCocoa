@@ -141,12 +141,12 @@
 
 - (NSArray *)accessibilityColumnHeaderUIElements
 {
-    NSMutableArray *children = [NSMutableArray array];
-    GailTreeView *gailview = GAIL_TREE_VIEW([self delegate]);
+    id<NSAccessibility> headerElement = [self accessibilityHeader];
+    if (headerElement != nil) {
+        return [headerElement accessibilityChildren];
+    }
 
-    gail_treeview_add_headers(gailview, children);
-
-    return children;
+    return nil;
 }
 
 - (NSArray *)accessibilityVisibleColumns

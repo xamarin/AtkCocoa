@@ -25,6 +25,7 @@
 - (instancetype)initWithDelegate:(AcElement *)delegate;
 - (AcElement *)delegate;
 - (BOOL)hasDynamicChildren;
+- (GdkRectangle)frameInGtkWindowSpace;
 
 NSString *nsstring_from_cstring (const char *cstring);
 
