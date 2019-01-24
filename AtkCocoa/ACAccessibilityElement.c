@@ -30,6 +30,7 @@
 	AcElement *_delegate;
 	NSString *_realTitle;
 	NSString *_realRole;
+    NSString *_realSubrole;
 	BOOL _accessibilityElementSet;
 	BOOL _accElement;
 
@@ -742,6 +743,10 @@ ns_role_from_atk (AtkRole atk_role, NSString **ns_role, NSString **ns_subrole)
 {
 	NSString *role, *subrole;
 
+    if (_realSubrole) {
+        return _realSubrole;
+    }
+
 	ns_role_from_atk (atk_object_get_role (ATK_OBJECT (_delegate)), &role, &subrole);
 
 	if (subrole == NULL) {
@@ -749,6 +754,12 @@ ns_role_from_atk (AtkRole atk_role, NSString **ns_role, NSString **ns_subrole)
 	} else {
 		return subrole;
 	}
+}
+
+- (void)setAccessibilitySubrole:(NSString *)subrole
+{
+    _realSubrole = subrole;
+    [super setAccessibilityRole:subrole];
 }
 
 - (CGRect)accessibilityFrameInParentSpace

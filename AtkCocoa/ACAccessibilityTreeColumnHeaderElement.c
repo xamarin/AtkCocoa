@@ -38,7 +38,11 @@
     }
 
     [self setAccessibilityRole:NSAccessibilityButtonRole];
+    if (gtk_tree_view_column_get_clickable(column)) {
+        [self setAccessibilitySubrole:NSAccessibilitySortButtonSubrole];
+    }
 
+    g_signal_connect (column, "notify::clickable", G_CALLBACK (clickable_changed_cb), (__bridge void *) self);
     return self;
 }
 
@@ -46,6 +50,21 @@
 {
     if (_column) {
         g_object_remove_weak_pointer(G_OBJECT (_column), (void **)&_column);
+        g_signal_handlers_disconnect_by_func(_column, clickable_changed_cb, (__bridge void *) self);
+    }
+}
+
+static void
+clickable_changed_cb (GObject *object,
+                      GParamSpec *pspec,
+                      gpointer data)
+{
+    ACAccessibilityTreeColumnHeaderElement *element = (__bridge ACAccessibilityTreeColumnHeaderElement *)data;
+
+    if (gtk_tree_view_column_get_clickable(GTK_TREE_VIEW_COLUMN(object))) {
+        [element setAccessibilitySubrole:NSAccessibilitySortButtonSubrole];
+    } else {
+        [element setAccessibilitySubrole:nil];
     }
 }
 
@@ -109,6 +128,18 @@
 
     title = gtk_tree_view_column_get_title(_column);
     return nsstring_from_cstring(title);
+}
+
+- (NSAccessibilitySortDirection)accessibilitySortDirection
+{
+    NSAccessibilitySortDirection sortDirection = NSAccessibilitySortDirectionUnknown;
+    if (gtk_tree_view_column_get_sort_indicator(_column)) {
+        GtkSortType dir = gtk_tree_view_column_get_sort_order(_column);
+
+        sortDirection = dir == GTK_SORT_ASCENDING ? NSAccessibilitySortDirectionAscending : NSAccessibilitySortDirectionDescending;
+    }
+
+    return sortDirection;
 }
 
 - (BOOL)accessibilityPerformPress
