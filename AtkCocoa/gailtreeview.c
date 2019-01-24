@@ -1762,7 +1762,7 @@ gail_treeview_add_columns (GailTreeView *gailview,
   columns = gtk_tree_view_get_columns(treeview);
   for (c = columns; c; c = c->next) {
     // If there are no renderers for the column, then we skip it
-    GList *renderers = gtk_cell_layout_get_cells(GTK_CELL_LAYOUT(c));
+    GList *renderers = gtk_cell_layout_get_cells(GTK_CELL_LAYOUT(c->data));
     if (renderers == NULL) {
       return;
     }
