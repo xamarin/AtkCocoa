@@ -499,7 +499,7 @@ gail_tree_view_real_notify_gtk (GObject             *obj,
     }
   else if (strcmp (pspec->name, "headers-visible") == 0)
     {
-//      update_column_headers(tree_view);
+      update_column_headers(tree_view);
     }
   else
     GAIL_WIDGET_CLASS (gail_tree_view_parent_class)->notify_gtk (obj, pspec);
