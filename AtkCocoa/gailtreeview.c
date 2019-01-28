@@ -1673,6 +1673,10 @@ gail_treeview_add_renderer_elements (GailTreeView *gailview,
     GailRendererCell *renderer_cell;
     NSAccessibilityElement *renderer_element = NULL;
 
+    if (!gtk_cell_renderer_get_visible(renderer)) {
+      continue;
+    }
+
     if (GTK_IS_CELL_RENDERER_TEXT (renderer)) {
       g_object_get (G_OBJECT (renderer), "editable", &editable, NULL);
     }
@@ -1709,6 +1713,14 @@ gail_treeview_add_renderer_elements (GailTreeView *gailview,
     id<NSAccessibility> realElement = renderer_element ?: gail_cell_get_real_cell (gailCell);
     [realElement setAccessibilityWindow:[parentElement accessibilityWindow]];
     [realElement setAccessibilityTopLevelUIElement:[parentElement accessibilityWindow]];
+
+    // We do this here, because GailCell doesn't know anything about the renderer it was created from
+    if (GTK_IS_CELL_RENDERER_TOGGLE(renderer)) {
+      if (gtk_cell_renderer_toggle_get_radio(GTK_CELL_RENDERER_TOGGLE(renderer))) {
+        [realElement setAccessibilityRole:NSAccessibilityRadioButtonRole];
+      }
+    }
+
     [a addObject:renderer_element ?: (NSAccessibilityElement *)gail_cell_get_real_cell (gailCell)];
 
     // Attach the NSAccessibility element for the cell to the cell renderer, so that a custom data function
