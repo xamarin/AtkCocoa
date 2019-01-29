@@ -1153,7 +1153,8 @@ make_accessibility_element_for_row (GtkTreeModel *treeModel,
   rowElement = [[ACAccessibilityTreeRowElement alloc] initWithDelegate:AC_ELEMENT (gailView) treeRow:rowRef treeView:treeView];
   [rowElement setAccessibilityParent:parentElement];
   [rowElement setAccessibilityWindow:[parentElement accessibilityWindow]];
-  [rowElement setAccessibilityTopLevelUIElement:[parentElement accessibilityTopLevelUIElement]];
+  
+//  [rowElement setAccessibilityTopLevelUIElement:[parentElement accessibilityTopLevelUIElement]];
   gtk_tree_path_free (rowPath);
 
   return rowElement;
