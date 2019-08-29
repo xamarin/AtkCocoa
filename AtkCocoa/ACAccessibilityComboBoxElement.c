@@ -43,7 +43,7 @@ dump_child (GtkWidget *child, gpointer data)
         AcElement *element = AC_ELEMENT (gtk_widget_get_accessible(child));
         ACAccessibilityElement *e = ac_element_get_accessibility_element(element);
 
-        [e setAccessibilityRole:NSAccessibilityButtonRole];
+        [e setAccessibilityRole:NSAccessibilityMenuButtonRole];
         [children addObject:e];
     }
 }
@@ -101,6 +101,12 @@ dump_child (GtkWidget *child, gpointer data)
 
 - (NSString *)accessibilityRole
 {
+    // If this is an editable combo, then we just pretend it's a group with
+    // two children, a textfield and a button
+    if ([self getEntry] != NULL) {
+        return NSAccessibilityGroupRole;
+    }
+
     return NSAccessibilityComboBoxRole;
 }
 

@@ -148,15 +148,19 @@ gail_combo_box_real_initialize (AtkObject *obj,
       atk_object_set_parent (popup, obj);
       gail_combo_box->popup_set = TRUE;
     }
-  if (gtk_combo_box_get_has_entry (combo_box))
+
+  if (gtk_combo_box_get_has_entry (combo_box) || GTK_IS_COMBO_BOX_ENTRY(combo_box)) {
     atk_object_set_parent (gtk_widget_get_accessible (gtk_bin_get_child (GTK_BIN (combo_box))), obj);
+    obj->role = ATK_ROLE_FILLER;
+  } else {
+    obj->role = ATK_ROLE_COMBO_BOX;
+  }
 
   // When the combobox gets focus, it passes the focus to an internal GtkToggleButton
   // We need to watch for that togglebutton being focused and focus the main ComboBox
   // because that is where the accessibility works for VoiceOver.
   // But we can't get the internal togglebutton in any sane way, so we need to go looking for it
   gtk_container_forall(GTK_CONTAINER (combo_box), combo_box_forall_cb, obj);
-  obj->role = ATK_ROLE_COMBO_BOX;
 }
 
 static id<NSAccessibility>
