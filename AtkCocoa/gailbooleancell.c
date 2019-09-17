@@ -21,8 +21,10 @@
 
 #include <gtk/gtk.h>
 #include "atk-cocoa/gailbooleancell.h"
+#include "atk-cocoa/acelement.h"
 
 #import <Cocoa/Cocoa.h>
+#import "atk-cocoa/ACAccessibiltyBooleanCellElement.h"
 
 static void      gail_boolean_cell_class_init          (GailBooleanCellClass *klass);
 static void      gail_boolean_cell_init                (GailBooleanCell *cell);
@@ -32,6 +34,7 @@ static void      gail_boolean_cell_initialize (GailCell *cell);
 
 static gboolean gail_boolean_cell_update_cache         (GailRendererCell     *cell,
                                                         gboolean             emit_change_signal);
+static Class gail_boolean_cell_get_element_class (void);
 
 gchar *gail_boolean_cell_property_list[] = {
   "active",
@@ -52,6 +55,7 @@ gail_boolean_cell_class_init (GailBooleanCellClass *klass)
   renderer_cell_class->property_list = gail_boolean_cell_property_list;
 
   cell_class->initialize = gail_boolean_cell_initialize;
+  cell_class->get_element_class = gail_boolean_cell_get_element_class;
 }
 
 static void
@@ -64,6 +68,12 @@ gail_boolean_cell_initialize (GailCell *cell)
 {
     id<NSAccessibility> realElement = (__bridge id<NSAccessibility>) cell->cell_element;
     [realElement setAccessibilityRole:NSAccessibilityCheckBoxRole];
+}
+
+static Class
+gail_boolean_cell_get_element_class (void)
+{
+  return [ACAccessibiltyBooleanCellElement class];
 }
 
 AtkObject* 
@@ -106,15 +116,20 @@ gail_boolean_cell_update_cache (GailRendererCell *cell,
 
   if (boolean_cell->cell_value != new_boolean)
     {
+      // This needs to be fired before the value changes as Cocoa seems to use
+      // the current value to work out if it was a tick or an untick action
+      id<NSAccessibility> realElement = (__bridge id<NSAccessibility>) gail_cell->cell_element;
+//      NSAccessibilityPostNotification(realElement, NSAccessibilityValueChangedNotification);
+
       rv = TRUE;
       boolean_cell->cell_value = !(boolean_cell->cell_value);
 
       /* Update cell's state */
 
-    if (new_boolean)
-      gail_cell_add_state (GAIL_CELL (cell), ATK_STATE_CHECKED, emit_change_signal);
-    else
-      gail_cell_remove_state (GAIL_CELL (cell), ATK_STATE_CHECKED, emit_change_signal);
+      if (new_boolean)
+        gail_cell_add_state (GAIL_CELL (cell), ATK_STATE_CHECKED, emit_change_signal);
+      else
+        gail_cell_remove_state (GAIL_CELL (cell), ATK_STATE_CHECKED, emit_change_signal);
     }
 
   if (boolean_cell->cell_sensitive != new_sensitive)

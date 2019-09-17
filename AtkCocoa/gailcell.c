@@ -110,7 +110,19 @@ gail_cell_initialise (GailCell  *cell,
   cell->index = index;
 
   if (rowElement != NULL) {
-    cell->cell_element = (__bridge_retained void *) [[ACAccessibilityCellElement alloc] initWithDelegate:cell rowElement:rowElement column:column index:index];
+    if (GAIL_CELL_GET_CLASS(cell)->get_element_class == NULL) {
+      cell->cell_element = (__bridge_retained void *) [[ACAccessibilityCellElement alloc] initWithDelegate:cell rowElement:rowElement column:column index:index];
+    } else {
+      Class c = GAIL_CELL_GET_CLASS(cell)->get_element_class ();
+      NSObject *o = [c alloc];
+
+      if ([o respondsToSelector:@selector(initWithDelegate:rowElement:column:index:)]) {
+        ACAccessibilityCellElement *element = (ACAccessibilityCellElement *)o;
+        cell->cell_element = (__bridge_retained void *) [element initWithDelegate:cell rowElement:rowElement column:column index:index];
+      } else {
+        NSLog (@"Invalid class %@", c);
+      }
+    }
   }
 
   g_signal_connect_object (G_OBJECT (widget),

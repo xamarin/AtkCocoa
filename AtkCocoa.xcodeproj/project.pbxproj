@@ -101,6 +101,7 @@
 		AE86858E21EF8A2C00C0D2BC /* ACAccessibilityPopupMenuElement.m in Sources */ = {isa = PBXBuildFile; fileRef = AE86858C21EF8A2C00C0D2BC /* ACAccessibilityPopupMenuElement.m */; };
 		AE8AD64421E799770024A67D /* ACAccessibilityExpanderElement.m in Sources */ = {isa = PBXBuildFile; fileRef = AE8AD64221E799770024A67D /* ACAccessibilityExpanderElement.m */; };
 		AE9AADF31F58455300C37B28 /* gailnsview.c in Sources */ = {isa = PBXBuildFile; fileRef = AE9AADF11F58455300C37B28 /* gailnsview.c */; };
+		AEFCB9512327E60C0025E79C /* ACAccessibiltyBooleanCellElement.m in Sources */ = {isa = PBXBuildFile; fileRef = AEFCB94F2327E60C0025E79C /* ACAccessibiltyBooleanCellElement.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -128,7 +129,7 @@
 		AE47D3AA1F0E764B00678275 /* gailbox.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailbox.c; sourceTree = "<group>"; };
 		AE47D3AB1F0E764B00678275 /* gailbutton.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; indentWidth = 2; path = gailbutton.c; sourceTree = "<group>"; tabWidth = 2; };
 		AE47D3AC1F0E764B00678275 /* gailcalendar.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailcalendar.c; sourceTree = "<group>"; };
-		AE47D3AD1F0E764B00678275 /* gailcell.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailcell.c; sourceTree = "<group>"; };
+		AE47D3AD1F0E764B00678275 /* gailcell.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; indentWidth = 2; path = gailcell.c; sourceTree = "<group>"; tabWidth = 2; };
 		AE47D3AE1F0E764B00678275 /* gailcellparent.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailcellparent.c; sourceTree = "<group>"; };
 		AE47D3AF1F0E764B00678275 /* gailcheckmenuitem.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailcheckmenuitem.c; sourceTree = "<group>"; };
 		AE47D3B01F0E764B00678275 /* gailchecksubmenuitem.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = gailchecksubmenuitem.c; sourceTree = "<group>"; };
@@ -200,6 +201,7 @@
 		AE86858C21EF8A2C00C0D2BC /* ACAccessibilityPopupMenuElement.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ACAccessibilityPopupMenuElement.m; sourceTree = "<group>"; };
 		AE8AD64221E799770024A67D /* ACAccessibilityExpanderElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ACAccessibilityExpanderElement.m; sourceTree = "<group>"; };
 		AE9AADF11F58455300C37B28 /* gailnsview.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; path = gailnsview.c; sourceTree = "<group>"; };
+		AEFCB94F2327E60C0025E79C /* ACAccessibiltyBooleanCellElement.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ACAccessibiltyBooleanCellElement.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -250,6 +252,7 @@
 				AE47D44E1F0E874F00678275 /* acmarshal.c */,
 				AE47D4341F0E781500678275 /* atk-cocoa */,
 				AE47D3961F0E764B00678275 /* ACAccessibilityCellElement.c */,
+				AEFCB94F2327E60C0025E79C /* ACAccessibiltyBooleanCellElement.m */,
 				AE47D3971F0E764B00678275 /* ACAccessibilityComboBoxElement.c */,
 				AE86858C21EF8A2C00C0D2BC /* ACAccessibilityPopupMenuElement.m */,
 				AE47D3981F0E764B00678275 /* ACAccessibilityElement.c */,
@@ -405,6 +408,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = AE47D2E31F0E74B700678275;
@@ -504,6 +508,7 @@
 				AE47D41B1F0E764B00678275 /* gailpixmap.c in Sources */,
 				AE47D4191F0E764B00678275 /* gailoptionmenu.c in Sources */,
 				AE47D4241F0E764B00678275 /* gailscrollbar.c in Sources */,
+				AEFCB9512327E60C0025E79C /* ACAccessibiltyBooleanCellElement.m in Sources */,
 				AE86858E21EF8A2C00C0D2BC /* ACAccessibilityPopupMenuElement.m in Sources */,
 				AE47D4271F0E764B00678275 /* gailspinbutton.c in Sources */,
 				AE47D4311F0E764B00678275 /* gailwidget.c in Sources */,

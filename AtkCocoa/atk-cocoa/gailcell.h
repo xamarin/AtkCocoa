@@ -65,6 +65,7 @@ struct _GailCellClass
   AtkObjectClass parent_class;
 
   void (*initialize) (GailCell *cell);
+  Class (*get_element_class) (void);
 };
 
 struct _ActionInfo {

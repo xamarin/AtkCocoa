@@ -95,6 +95,16 @@
 	return _column;
 }
 
+- (GtkTreePath *)rowPath
+{
+    return [_rowElement rowPath];
+}
+
+- (int)indexInColumn
+{
+    return _indexInColumn;
+}
+
 static char *value_property_names[] = {
 	"text",
 	"active",
@@ -236,6 +246,6 @@ static char *value_property_names[] = {
 // Clear any actions that the accessibility system might try to inherit from the parent TreeView
 - (NSArray *)accessibilityActionNames
 {
-	return nil;
+    return nil;
 }
 @end

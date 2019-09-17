@@ -961,7 +961,7 @@ model_row_changed (GtkTreeModel *tree_model,
   GtkTreeView *tree_view = GTK_TREE_VIEW(user_data);
   GailTreeView *gailview;
   ACAccessibilityTreeRowElement *row;
- 
+
   gailview = GAIL_TREE_VIEW (gtk_widget_get_accessible (GTK_WIDGET (tree_view)));
 
   if (gailview->rowRootNode == NULL) {
@@ -1411,8 +1411,6 @@ cocoa_update_cell_value (GailRendererCell *renderer_cell,
   gchar **prop_list;
   AtkObject *parent;
 
-  return FALSE;
-
   gail_renderer_cell_class = GAIL_RENDERER_CELL_GET_CLASS (renderer_cell);
   if (renderer_cell->renderer)
     gtk_cell_renderer_class = GTK_CELL_RENDERER_GET_CLASS (renderer_cell->renderer);
@@ -1463,8 +1461,7 @@ cocoa_update_cell_value (GailRendererCell *renderer_cell,
     }
   g_list_free (renderers);
 
-  //return gail_renderer_cell_update_cache (renderer_cell, emit_change_signal);
-  return TRUE;
+  return gail_renderer_cell_update_cache (renderer_cell, emit_change_signal);
 }
 
 /* Misc Private */

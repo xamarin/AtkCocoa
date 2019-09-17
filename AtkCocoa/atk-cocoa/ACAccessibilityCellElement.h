@@ -32,5 +32,7 @@
 - (GailCell *)delegate;
 
 - (GtkTreeViewColumn *)column;
+- (GtkTreePath *)rowPath;
+- (int)indexInColumn;
 
 @end
