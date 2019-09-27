@@ -337,8 +337,10 @@ gail_focus_watcher (GSignalInvocationHint *ihint,
   /*
    * The widget may not yet be visible on the screen so we wait until it is.
    */
-  gail_focus_notify_when_idle (widget);
-  return TRUE; 
+  if (!gtk_widget_get_visible(widget)) {
+    gail_focus_notify_when_idle (widget);
+  }
+  return TRUE;
 }
 
 static gboolean
