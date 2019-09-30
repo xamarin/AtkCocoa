@@ -1,4 +1,5 @@
 #include "acdebug.h"
+#include "accombocell.h"
 #include "gailadjustment.h"
 #include "gailarrow.h"
 #include "gailbooleancell.h"

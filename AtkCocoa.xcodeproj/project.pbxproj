@@ -96,11 +96,13 @@
 		AE47D4521F0FA39100678275 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE47D4501F0FA39100678275 /* Cocoa.framework */; };
 		AE47D4531F0FA39100678275 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE47D4511F0FA39100678275 /* Foundation.framework */; };
 		AE519EFA1F29079F0039BBD4 /* NSArray+AtkCocoa.m in Sources */ = {isa = PBXBuildFile; fileRef = AE519EF91F2902090039BBD4 /* NSArray+AtkCocoa.m */; };
+		AE71185F2342176C0096B799 /* ACAccessibilityComboCellElement.m in Sources */ = {isa = PBXBuildFile; fileRef = AE71185D2342176C0096B799 /* ACAccessibilityComboCellElement.m */; };
 		AE77D1CC1F1E4DB000151C16 /* ACAccessibilityTreeColumnHeaderElement.c in Sources */ = {isa = PBXBuildFile; fileRef = AE77D1CA1F1E4DB000151C16 /* ACAccessibilityTreeColumnHeaderElement.c */; };
 		AE86858A21AEECAD00C0D2BC /* ACAccessibilityTableHeaderElement.m in Sources */ = {isa = PBXBuildFile; fileRef = AE86858821AEECAD00C0D2BC /* ACAccessibilityTableHeaderElement.m */; };
 		AE86858E21EF8A2C00C0D2BC /* ACAccessibilityPopupMenuElement.m in Sources */ = {isa = PBXBuildFile; fileRef = AE86858C21EF8A2C00C0D2BC /* ACAccessibilityPopupMenuElement.m */; };
 		AE8AD64421E799770024A67D /* ACAccessibilityExpanderElement.m in Sources */ = {isa = PBXBuildFile; fileRef = AE8AD64221E799770024A67D /* ACAccessibilityExpanderElement.m */; };
 		AE9AADF31F58455300C37B28 /* gailnsview.c in Sources */ = {isa = PBXBuildFile; fileRef = AE9AADF11F58455300C37B28 /* gailnsview.c */; };
+		AEB7339B233E670D000C2C0E /* accombocell.c in Sources */ = {isa = PBXBuildFile; fileRef = AEB73399233E670D000C2C0E /* accombocell.c */; };
 		AEFCB9512327E60C0025E79C /* ACAccessibiltyBooleanCellElement.m in Sources */ = {isa = PBXBuildFile; fileRef = AEFCB94F2327E60C0025E79C /* ACAccessibiltyBooleanCellElement.m */; };
 /* End PBXBuildFile section */
 
@@ -196,11 +198,13 @@
 		AE47D4501F0FA39100678275 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		AE47D4511F0FA39100678275 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		AE519EF91F2902090039BBD4 /* NSArray+AtkCocoa.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSArray+AtkCocoa.m"; sourceTree = "<group>"; };
+		AE71185D2342176C0096B799 /* ACAccessibilityComboCellElement.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ACAccessibilityComboCellElement.m; sourceTree = "<group>"; };
 		AE77D1CA1F1E4DB000151C16 /* ACAccessibilityTreeColumnHeaderElement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = ACAccessibilityTreeColumnHeaderElement.c; sourceTree = "<group>"; };
 		AE86858821AEECAD00C0D2BC /* ACAccessibilityTableHeaderElement.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ACAccessibilityTableHeaderElement.m; sourceTree = "<group>"; };
 		AE86858C21EF8A2C00C0D2BC /* ACAccessibilityPopupMenuElement.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ACAccessibilityPopupMenuElement.m; sourceTree = "<group>"; };
 		AE8AD64221E799770024A67D /* ACAccessibilityExpanderElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ACAccessibilityExpanderElement.m; sourceTree = "<group>"; };
 		AE9AADF11F58455300C37B28 /* gailnsview.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; path = gailnsview.c; sourceTree = "<group>"; };
+		AEB73399233E670D000C2C0E /* accombocell.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; path = accombocell.c; sourceTree = "<group>"; };
 		AEFCB94F2327E60C0025E79C /* ACAccessibiltyBooleanCellElement.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ACAccessibiltyBooleanCellElement.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -253,6 +257,7 @@
 				AE47D4341F0E781500678275 /* atk-cocoa */,
 				AE47D3961F0E764B00678275 /* ACAccessibilityCellElement.c */,
 				AEFCB94F2327E60C0025E79C /* ACAccessibiltyBooleanCellElement.m */,
+				AE71185D2342176C0096B799 /* ACAccessibilityComboCellElement.m */,
 				AE47D3971F0E764B00678275 /* ACAccessibilityComboBoxElement.c */,
 				AE86858C21EF8A2C00C0D2BC /* ACAccessibilityPopupMenuElement.m */,
 				AE47D3981F0E764B00678275 /* ACAccessibilityElement.c */,
@@ -276,6 +281,7 @@
 				AE47D3A71F0E764B00678275 /* gailadjustment.c */,
 				AE47D3A81F0E764B00678275 /* gailarrow.c */,
 				AE47D3A91F0E764B00678275 /* gailbooleancell.c */,
+				AEB73399233E670D000C2C0E /* accombocell.c */,
 				AE47D3AA1F0E764B00678275 /* gailbox.c */,
 				AE47D3AB1F0E764B00678275 /* gailbutton.c */,
 				AE47D3AC1F0E764B00678275 /* gailcalendar.c */,
@@ -464,11 +470,13 @@
 				AE47D4081F0E764B00678275 /* gailframe.c in Sources */,
 				AE47D4021F0E764B00678275 /* gailcombo.c in Sources */,
 				AE47D41E1F0E764B00678275 /* gailradiomenuitem.c in Sources */,
+				AE71185F2342176C0096B799 /* ACAccessibilityComboCellElement.m in Sources */,
 				AE47D4221F0E764B00678275 /* gailscale.c in Sources */,
 				AE47D3FC1F0E764B00678275 /* gailcell.c in Sources */,
 				AE47D3EE1F0E764B00678275 /* ACAccessibilityTextViewElement.c in Sources */,
 				AE47D4261F0E764B00678275 /* gailseparator.c in Sources */,
 				AE47D4111F0E764B00678275 /* gaillist.c in Sources */,
+				AEB7339B233E670D000C2C0E /* accombocell.c in Sources */,
 				AE47D41A1F0E764B00678275 /* gailpaned.c in Sources */,
 				AE47D3EA1F0E764B00678275 /* ACAccessibilityNotebookTabElement.c in Sources */,
 				AE47D3F51F0E764B00678275 /* gail.c in Sources */,
