@@ -69,6 +69,13 @@
 	return _delegate;
 }
 
+// Need the check if the delegate is invalid, because the delegate might have been
+// destroyed while Cocoa accessibility is still asking for details
+- (BOOL)delegateIsInvalid
+{
+    return _delegate == NULL || !ATK_IS_OBJECT (_delegate);
+}
+
 - (void)dealloc
 {
 	AC_NOTE (DESTRUCTION, (NSLog (@"Deallocing: %@", [super description])));
@@ -93,6 +100,10 @@
 	if (_accessibilityElementSet) {
 		return [super isAccessibilityElement];
 	}
+
+    if ([self delegateIsInvalid]) {
+        return NO;
+    }
 
 	// Deduce this from the AtkRole
 	return atk_object_get_role (ATK_OBJECT (_delegate)) != ATK_ROLE_FILLER;
@@ -133,6 +144,11 @@ static char *get_full_object_path (GtkWidget *object)
 - (GdkRectangle)frameInGtkWindowSpace
 {
 	int windowX, windowY;
+
+    if ([self delegateIsInvalid]) {
+        GdkRectangle emptyRect;
+        return emptyRect;
+    }
 
 	GObject *owner = ac_element_get_owner (_delegate);
 
@@ -271,6 +287,9 @@ get_coords_in_window (GtkWidget *widget, int *x, int *y)
 
 - (NSString *)accessibilityTitle
 {
+    if ([self delegateIsInvalid]) {
+        return nil;
+    }
 	GObject *owner = ac_element_get_owner (_delegate);
 
 	if (GTK_IS_LABEL (owner) || GTK_IS_BUTTON (owner)) {
@@ -306,6 +325,10 @@ get_coords_in_window (GtkWidget *widget, int *x, int *y)
 
 - (NSString *)accessibilityIdentifier
 {
+    if ([self delegateIsInvalid]) {
+        return @"";
+    }
+
 	const char *name = atk_object_get_name (ATK_OBJECT (_delegate));
 	if (name == NULL) {
 		name = G_OBJECT_TYPE_NAME (ac_element_get_owner (_delegate));
@@ -320,6 +343,10 @@ get_coords_in_window (GtkWidget *widget, int *x, int *y)
 
 - (NSString *)accessibilityHelp
 {
+    if ([self delegateIsInvalid]) {
+        return @"";
+    }
+
 	return nsstring_from_cstring (atk_object_get_description (ATK_OBJECT (_delegate)));
 }
 
@@ -729,6 +756,10 @@ ns_role_from_atk (AtkRole atk_role, NSString **ns_role, NSString **ns_subrole)
 		return _realRole;
 	}
 
+    if ([self delegateIsInvalid]) {
+        return NSAccessibilityUnknownRole;
+    }
+
 	ns_role_from_atk (atk_object_get_role (ATK_OBJECT (_delegate)), &role, &subrole);
 	return role;
 }
@@ -745,6 +776,10 @@ ns_role_from_atk (AtkRole atk_role, NSString **ns_role, NSString **ns_subrole)
 
     if (_realSubrole) {
         return _realSubrole;
+    }
+
+    if ([self delegateIsInvalid]) {
+        return nil;
     }
 
 	ns_role_from_atk (atk_object_get_role (ATK_OBJECT (_delegate)), &role, &subrole);
@@ -771,6 +806,10 @@ ns_role_from_atk (AtkRole atk_role, NSString **ns_role, NSString **ns_subrole)
 	id<NSAccessibility> parentElement;
 	int x, y, parentX, parentY;
 	float halfParentHeight, dy;
+
+    if ([self delegateIsInvalid]) {
+        return CGRectZero;
+    }
 
 	owner = ac_element_get_owner (_delegate);
 	if (!GTK_IS_WIDGET (owner)) {
@@ -848,6 +887,10 @@ ns_role_from_atk (AtkRole atk_role, NSString **ns_role, NSString **ns_subrole)
 	GObject *owner;
 	GtkWidget *ownerWidget;
 
+    if ([self delegateIsInvalid]) {
+        return NO;
+    }
+
 	owner = ac_element_get_owner (_delegate);
 	if (!GTK_IS_WIDGET (owner)) {
 		return NO;
@@ -861,6 +904,10 @@ ns_role_from_atk (AtkRole atk_role, NSString **ns_role, NSString **ns_subrole)
 {
 	GObject *owner;
 	GtkWidget *ownerWidget;
+
+    if ([self delegateIsInvalid]) {
+        return NO;
+    }
 
 	owner = ac_element_get_owner (_delegate);
 	if (!GTK_IS_WIDGET (owner)) {
@@ -876,6 +923,10 @@ ns_role_from_atk (AtkRole atk_role, NSString **ns_role, NSString **ns_subrole)
 {
     GObject *owner;
     GtkWidget *ownerWidget;
+
+    if ([self delegateIsInvalid]) {
+        return NO;
+    }
 
     owner = ac_element_get_owner (_delegate);
     if (!GTK_IS_WIDGET (owner)) {
@@ -894,11 +945,19 @@ ns_role_from_atk (AtkRole atk_role, NSString **ns_role, NSString **ns_subrole)
 
 - (NSArray *)accessibilityActionNames
 {
+    if ([self delegateIsInvalid]) {
+        return nil;
+    }
+
 	return ac_element_get_actions (_delegate);
 }
 
 - (void)accessibilityPerformAction:(NSString *)action
 {
+    if ([self delegateIsInvalid]) {
+        return;
+    }
+
 	if ([action isEqualTo:NSAccessibilityCancelAction]) {
 		ac_element_perform_cancel (_delegate);
 	} else if ([action isEqualTo:NSAccessibilityConfirmAction]) {
@@ -926,6 +985,10 @@ ns_role_from_atk (AtkRole atk_role, NSString **ns_role, NSString **ns_subrole)
 
 - (void)setAccessibilityFocused:(BOOL)accessibilityFocused
 {
+    if ([self delegateIsInvalid]) {
+        return;
+    }
+
     if (accessibilityFocused) {
         gtk_widget_grab_focus(GTK_WIDGET (ac_element_get_owner(_delegate)));
     }

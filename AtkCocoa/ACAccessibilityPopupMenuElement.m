@@ -37,6 +37,10 @@
 
 - (NSString *)accessibilityLabel
 {
+    if ([self delegateIsInvalid]) {
+        return nil;
+    }
+
     GtkComboBox *combobox = GTK_COMBO_BOX (ac_element_get_owner([self delegate]));
     char *text;
     NSString *ret;
@@ -46,6 +50,10 @@
 
 - (id)accessibilityValue
 {
+    if ([self delegateIsInvalid]) {
+        return nil;
+    }
+
     GtkComboBox *combobox = GTK_COMBO_BOX (ac_element_get_owner([self delegate]));
     char *text;
     NSString *ret;
@@ -74,6 +82,10 @@
 
 - (NSString *)accessibilityRole
 {
+    if ([self delegateIsInvalid]) {
+        return nil;
+    }
+    
     GtkComboBox *combobox = GTK_COMBO_BOX (ac_element_get_owner([self delegate]));
 
     if (gtk_combo_box_get_has_entry(combobox) || GTK_IS_COMBO_BOX_ENTRY(combobox)) {

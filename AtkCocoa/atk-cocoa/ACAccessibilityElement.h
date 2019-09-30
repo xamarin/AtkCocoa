@@ -24,6 +24,7 @@
 
 - (instancetype)initWithDelegate:(AcElement *)delegate;
 - (AcElement *)delegate;
+- (BOOL)delegateIsInvalid;
 - (BOOL)hasDynamicChildren;
 - (GdkRectangle)frameInGtkWindowSpace;
 
