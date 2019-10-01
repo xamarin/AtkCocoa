@@ -220,14 +220,6 @@ gail_text_view_init (GailTextView      *text_view)
 static id<NSAccessibility>
 get_real_accessibility_element (AcElement *element)
 {
-  /*
-  GailTextView *textview = GAIL_TEXT_VIEW (element);
-  if (textview->real_element == NULL) {
-    textview->real_element = (__bridge_retained void *)[[ACAccessibilityTextViewElement alloc] initWithDelegate:element];
-  }
-
-  return (__bridge id<NSAccessibility>) textview->real_element;
-  */
   return [[ACAccessibilityTextViewElement alloc] initWithDelegate:element];
 }
 
@@ -1439,6 +1431,12 @@ _gail_text_view_insert_text_cb (GtkTextBuffer *buffer,
   /*
    * The signal will be emitted when the changed signal is received
    */
+
+    ac_element_notify(AC_ELEMENT (accessible), NSAccessibilityValueChangedNotification, nil);
+    ac_element_notify(AC_ELEMENT (accessible),NSAccessibilityAnnouncementRequestedNotification,
+                      @{ NSAccessibilityAnnouncementKey : nsstring_from_cstring(arg2),
+                         NSAccessibilityPriorityKey: @(NSAccessibilityPriorityHigh)
+                         });
 }
 
 /* Note arg1 returns the start of the delete range, arg2 returns the
@@ -1480,6 +1478,8 @@ _gail_text_view_delete_range_cb (GtkTextBuffer *buffer,
     }
   g_signal_emit_by_name (accessible, "text_changed::delete",
                          offset, length);
+
+  ac_element_notify(AC_ELEMENT (accessible), NSAccessibilityValueChangedNotification, nil);
 }
 
 /* Note arg1 and arg2 point to the same offset, which is the caret
