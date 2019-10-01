@@ -43,7 +43,7 @@ dump_child (GtkWidget *child, gpointer data)
         AcElement *element = AC_ELEMENT (gtk_widget_get_accessible(child));
         ACAccessibilityElement *e = ac_element_get_accessibility_element(element);
 
-        [e setAccessibilityRole:NSAccessibilityMenuButtonRole];
+        [e setAccessibilityRole:NSAccessibilityPopUpButtonRole];
         [children addObject:e];
     }
 }
@@ -107,7 +107,7 @@ dump_child (GtkWidget *child, gpointer data)
         return NSAccessibilityGroupRole;
     }
 
-    return NSAccessibilityComboBoxRole;
+    return NSAccessibilityPopUpButtonRole;
 }
 
 

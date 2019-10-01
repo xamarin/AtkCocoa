@@ -91,7 +91,7 @@
     if (gtk_combo_box_get_has_entry(combobox) || GTK_IS_COMBO_BOX_ENTRY(combobox)) {
         return NSAccessibilityComboBoxRole;
     } else {
-        return NSAccessibilityMenuButtonRole;
+        return NSAccessibilityPopUpButtonRole;
     }
 }
 @end
