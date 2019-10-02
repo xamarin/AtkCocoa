@@ -70,6 +70,10 @@ static gboolean     gail_combo_box_remove_selection        (AtkSelection   *sele
 static gboolean real_perform_press (AcElement *element);
 static gboolean real_perform_show_menu (AcElement *element);
 
+static void popup_created (GailComboBox *gail_combo_box,
+                           AtkObject *popup);
+static void popup_destroyed (AtkObject *popup);
+
 G_DEFINE_TYPE_WITH_CODE (GailComboBox, gail_combo_box, GAIL_TYPE_CONTAINER,
                          G_IMPLEMENT_INTERFACE (ATK_TYPE_ACTION, atk_action_interface_init)
                          G_IMPLEMENT_INTERFACE (ATK_TYPE_SELECTION, atk_selection_interface_init))
@@ -115,10 +119,33 @@ toggle_button_focused (GtkToggleButton *button,
 }
 
 static void
+toggle_button_toggled (GtkToggleButton *button,
+                       gpointer obj)
+{
+  GtkComboBox *combo = GTK_COMBO_BOX (obj);
+  AtkObject *popup = gtk_combo_box_get_popup_accessible(combo);
+  AtkObject *combo_accessible = gtk_widget_get_accessible(GTK_WIDGET (obj));
+
+  if (gtk_toggle_button_get_active(button)) {
+    popup_created(GAIL_COMBO_BOX (combo_accessible), popup);
+  } else {
+    popup_destroyed(popup);
+  }
+}
+
+struct _foreachData {
+  GtkComboBox *combo;
+  AtkObject *accessible;
+};
+
+static void
 combo_box_forall_cb (GtkWidget *child, gpointer obj)
 {
+  struct _foreachData *data = (struct _foreachData *)obj;
+
   if (GTK_IS_TOGGLE_BUTTON (child)) {
-    g_signal_connect (child, "focus-in-event", G_CALLBACK (toggle_button_focused), obj);
+    g_signal_connect (child, "focus-in-event", G_CALLBACK (toggle_button_focused), data->accessible);
+    g_signal_connect (child, "toggled", G_CALLBACK (toggle_button_toggled), data->combo);
   }
 }
 
@@ -160,7 +187,11 @@ gail_combo_box_real_initialize (AtkObject *obj,
   // We need to watch for that togglebutton being focused and focus the main ComboBox
   // because that is where the accessibility works for VoiceOver.
   // But we can't get the internal togglebutton in any sane way, so we need to go looking for it
-  gtk_container_forall(GTK_CONTAINER (combo_box), combo_box_forall_cb, obj);
+
+  struct _foreachData fed;
+  fed.combo = combo_box;
+  fed.accessible = gail_combo_box;
+  gtk_container_forall(GTK_CONTAINER (combo_box), combo_box_forall_cb, &fed);
 }
 
 static id<NSAccessibility>
@@ -357,6 +388,29 @@ gail_combo_box_do_action (AtkAction *action,
     return FALSE;
 }
 
+static void
+popup_created (GailComboBox *gail_combo_box,
+               AtkObject *popup)
+{
+  id<NSAccessibility> comboElement = ac_element_get_accessibility_element(AC_ELEMENT (gail_combo_box));
+  id<NSAccessibility> menuElement = ac_element_get_accessibility_element(AC_ELEMENT (popup));
+
+  [comboElement setAccessibilityLinkedUIElements:@[menuElement]];
+  NSAccessibilityPostNotification(menuElement, NSAccessibilityCreatedNotification);
+
+  // Focus the menu
+  GtkWidget *widget = GTK_ACCESSIBLE(popup)->widget;
+  if (GTK_IS_MENU (widget)) {
+    gtk_menu_shell_select_first(GTK_MENU_SHELL (widget), FALSE);
+  }
+}
+
+static void
+popup_destroyed (AtkObject *popup)
+{
+  ac_element_notify(AC_ELEMENT (popup), NSAccessibilityUIElementDestroyedNotification, NULL);
+}
+
 static gboolean
 maybe_show_popup (GailComboBox *gail_combo_box)
 {
@@ -373,16 +427,10 @@ maybe_show_popup (GailComboBox *gail_combo_box)
   do_popup = !gtk_widget_get_mapped (GTK_ACCESSIBLE (popup)->widget);
   if (do_popup) {
     gtk_combo_box_popup (combo_box);
-
-    id<NSAccessibility> comboElement = ac_element_get_accessibility_element(AC_ELEMENT (gail_combo_box));
-    id<NSAccessibility> menuElement = ac_element_get_accessibility_element(AC_ELEMENT (popup));
-
-    [comboElement setAccessibilityLinkedUIElements:@[menuElement]];
-    NSAccessibilityPostNotification(menuElement, NSAccessibilityCreatedNotification);
+    popup_created(gail_combo_box, popup);
   } else {
     gtk_combo_box_popdown (combo_box);
-    id<NSAccessibility> menuElement = ac_element_get_accessibility_element(AC_ELEMENT (popup));
-    NSAccessibilityPostNotification(menuElement, NSAccessibilityUIElementDestroyedNotification);
+    popup_destroyed (popup);
   }
 
   return TRUE;
@@ -407,12 +455,16 @@ idle_do_action (gpointer data)
   combo_box = GTK_COMBO_BOX (widget);
 
   popup = gtk_combo_box_get_popup_accessible (combo_box);
-  do_popup = !gtk_widget_get_mapped (GTK_ACCESSIBLE (popup)->widget);
-  if (do_popup)
-      gtk_combo_box_popup (combo_box);
-  else
-      gtk_combo_box_popdown (combo_box);
+  NSLog (@"Popup type: %d {%s}", atk_object_get_role(popup), atk_role_get_name(atk_object_get_role(popup)));
 
+  do_popup = !gtk_widget_get_mapped (GTK_ACCESSIBLE (popup)->widget);
+  if (do_popup) {
+    gtk_combo_box_popup (combo_box);
+    popup_created(gail_combo_box, popup);
+  } else {
+    gtk_combo_box_popdown (combo_box);
+    popup_destroyed(popup);
+  }
   return FALSE;
 }
 
