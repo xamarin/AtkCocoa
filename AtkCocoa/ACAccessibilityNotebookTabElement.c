@@ -60,14 +60,18 @@
 	return (currentPage == _delegate->index) ? @(1) : @(0);
 }
 
-- (NSString *)accessibilityLabel
+- (NSString *)accessibilityTitle
 {
-	if (_delegate->textutil == NULL) {
-		return nil;
-	}
+    // Widget is defunct
+    if (_delegate->notebook == NULL) {
+        return nil;
+    }
 
-	char *text = gail_text_util_get_substring (_delegate->textutil, 0, -1);
-	return nsstring_from_cstring (text);
+    GtkWidget *page = gtk_notebook_get_nth_page (_delegate->notebook, _delegate->index);
+    GtkWidget *label = gtk_notebook_get_tab_label (_delegate->notebook, page);
+
+    const char *label_text = gtk_label_get_text (GTK_LABEL (label));
+	return nsstring_from_cstring (label_text);
 }
 
 - (BOOL)accessibilityPerformPress
