@@ -40,6 +40,7 @@ gchar *gail_boolean_cell_property_list[] = {
   "active",
   "radio",
   "sensitive",
+  "visible",
   NULL
 };
 
@@ -66,8 +67,9 @@ gail_boolean_cell_init (GailBooleanCell *cell)
 static void
 gail_boolean_cell_initialize (GailCell *cell)
 {
-    id<NSAccessibility> realElement = (__bridge id<NSAccessibility>) cell->cell_element;
-    [realElement setAccessibilityRole:NSAccessibilityCheckBoxRole];
+  id<NSAccessibility> realElement = (__bridge id<NSAccessibility>) cell->cell_element;
+
+  [realElement setAccessibilityRole:NSAccessibilityCheckBoxRole];
 }
 
 static Class
@@ -110,10 +112,23 @@ gail_boolean_cell_update_cache (GailRendererCell *cell,
   gboolean rv = FALSE;
   gboolean new_boolean;
   gboolean new_sensitive;
+  gboolean is_radio;
+  gboolean is_visible;
+
+  id<NSAccessibility> realElement = (__bridge id<NSAccessibility>) gail_cell->cell_element;
 
   g_object_get (G_OBJECT(cell->renderer), "active", &new_boolean,
-                                          "sensitive", &new_sensitive, NULL);
+                                          "sensitive", &new_sensitive,
+                                          "radio", &is_radio,
+                                          "visible", &is_visible);
+  if (is_radio) {
+    [realElement setAccessibilityRole:NSAccessibilityRadioButtonRole];
+  } else {
+    [realElement setAccessibilityRole:NSAccessibilityCheckBoxRole];
+  }
 
+  [realElement setAccessibilityHidden:!is_visible];
+  
   if (boolean_cell->cell_value != new_boolean)
     {
       // This needs to be fired before the value changes as Cocoa seems to use

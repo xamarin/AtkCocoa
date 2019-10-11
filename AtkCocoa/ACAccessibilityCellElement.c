@@ -208,6 +208,17 @@ static char *value_property_names[] = {
 	return nil;
 }
 
+- (BOOL)isAccessibilityHidden
+{
+    GailRendererCell *rendererCell = GAIL_RENDERER_CELL (_delegate);
+    GtkCellRenderer *renderer = rendererCell->renderer;
+    gboolean visible;
+
+    g_object_get (renderer, "visible", &visible, NULL);
+
+    return !visible;
+}
+
 - (CGRect)accessibilityFrameInParentSpace
 {
 	GList *renderers;

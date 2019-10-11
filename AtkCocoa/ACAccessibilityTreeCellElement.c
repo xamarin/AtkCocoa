@@ -60,6 +60,7 @@
     __weak ACAccessibilityTreeColumnElement *_columnElement;
     ACAccessibilityDisclosureButton *_disclosureElement;
     NSArray *_children;
+    NSArray *_visibleChildren;
     BOOL _updateChildren;
 }
 
@@ -156,25 +157,57 @@
     _updateChildren = YES;
 }
 
+- (void)updateChildren
+{
+    GailTreeView *gailview = GAIL_TREE_VIEW([self delegate]);
+
+    NSMutableArray *children = [NSMutableArray array];
+    NSMutableArray *visibleChildren = [NSMutableArray array];
+    if (_disclosureElement) {
+        [children addObject:_disclosureElement];
+        [visibleChildren addObject:_disclosureElement];
+    }
+
+    gail_treeview_add_renderer_elements (gailview, _rowElement, _columnElement, children, visibleChildren);
+
+    _children = children;
+    _visibleChildren = visibleChildren;
+
+    _updateChildren = NO;
+}
+
 - (NSArray *)accessibilityChildren
 {
+    if ([self delegateIsInvalid]) {
+        return nil;
+    }
+
     GailTreeView *gailview = GAIL_TREE_VIEW([self delegate]);
 
     if (_children && !_updateChildren) {
         return _children;
     }
 
-    NSMutableArray *children = [NSMutableArray array];
-    if (_disclosureElement) {
-        [children addObject:_disclosureElement];
+    [self updateChildren];
+
+    return _children;
+}
+
+- (NSArray *)accessibilityVisibleChildren
+{
+    if ([self delegateIsInvalid]) {
+        return nil;
     }
 
-    gail_treeview_add_renderer_elements (gailview, _rowElement, _columnElement, children);
+    GailTreeView *gailview = GAIL_TREE_VIEW([self delegate]);
 
-    _children = children;
-    _updateChildren = NO;
+    if (_visibleChildren && !_updateChildren) {
+        return _visibleChildren;
+    }
 
-    return children;
+    [self updateChildren];
+
+    return _visibleChildren;
 }
 
 - (void)performDisclosurePress

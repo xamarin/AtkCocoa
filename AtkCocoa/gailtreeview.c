@@ -1440,6 +1440,7 @@ cocoa_update_cell_value (GailRendererCell *renderer_cell,
           spec = g_object_class_find_property
                            (G_OBJECT_GET_CLASS (cur_renderer->data), *prop_list);
 
+          NSLog (@"Property: %s", *prop_list);
           if (spec != NULL)
             {
               GValue value = { 0, };
@@ -1630,7 +1631,8 @@ void
 gail_treeview_add_renderer_elements (GailTreeView *gailview,
                                      ACAccessibilityTreeRowElement *rowElement,
                                      ACAccessibilityTreeColumnElement *columnElement,
-                                     NSMutableArray *a)
+                                     NSMutableArray *a,
+                                     NSMutableArray *visibleChildren)
 {
   ACAccessibilityElement *parentElement = ac_element_get_accessibility_element (AC_ELEMENT (gailview));
   GtkTreeView *treeView = GTK_TREE_VIEW (ac_element_get_owner (AC_ELEMENT (gailview)));
@@ -1719,8 +1721,6 @@ gail_treeview_add_renderer_elements (GailTreeView *gailview,
       }
     }
 
-    [a addObject:renderer_element ?: (NSAccessibilityElement *)gail_cell_get_real_cell (gailCell)];
-
     // Attach the NSAccessibility element for the cell to the cell renderer, so that a custom data function
     // is able to fill in the appropriate attributes
     g_object_set_data (G_OBJECT (renderer), "xamarin-private-atkcocoa-nsaccessibility", (__bridge gpointer) gail_cell_get_real_cell (gailCell));
@@ -1732,6 +1732,18 @@ gail_treeview_add_renderer_elements (GailTreeView *gailview,
       char **prop_list = gail_renderer_cell_class->property_list;
 
       gtk_tree_view_column_cell_set_cell_data (column, model, &rowIter, isExpanderColumn, is_expanded);
+
+      if (gtk_cell_renderer_get_visible(renderer)) {
+        // accessibilityChildren: [checkbox, radiobutton, text]
+        // accessibilityVisibleChildren: [radiobutton, text]
+        //
+        // VoiceOver: "This is a checkbox cell"
+        //
+        // We only add visible items to the accessibilityChildren array, because otherwise VoiceOver reads out
+        // hidden items.
+        [a addObject:renderer_element ?: (NSAccessibilityElement *)gail_cell_get_real_cell (gailCell)];
+        [visibleChildren addObject:renderer_element ?: (NSAccessibilityElement *)gail_cell_get_real_cell(gailCell)];
+      }
 
       while (*prop_list) {
         GParamSpec *spec;

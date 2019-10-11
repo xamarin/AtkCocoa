@@ -84,7 +84,8 @@ void gail_treeview_add_row_elements (GailTreeView *gailview,
 void gail_treeview_add_renderer_elements (GailTreeView *gailview,
                                           ACAccessibilityTreeRowElement *rowElement,
                                           ACAccessibilityTreeColumnElement *columnElement,
-                                          NSMutableArray *a);
+                                          NSMutableArray *a,
+                                          NSMutableArray *visibleChildren);
 void gail_treeview_add_selected_rows (GailTreeView *gailview,
                                       NSMutableArray *a);
 ACAccessibilityTreeRowElement *gail_treeview_row_for_path (GailTreeView *gailview,
