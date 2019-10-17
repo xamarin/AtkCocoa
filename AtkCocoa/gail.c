@@ -60,7 +60,7 @@ static void     gail_map_cb              (GtkWidget            *widget);
 static void     gail_map_submenu_cb      (GtkWidget            *widget);
 static gint     gail_focus_idle_handler  (gpointer             data);
 static void     gail_focus_notify        (GtkWidget            *widget);
-static void     gail_focus_notify_when_idle (GtkWidget            *widget);
+static void     gail_focus_notify_when_idle (GtkWidget            *widget, gboolean whenIdle);
 
 static void     gail_focus_tracker_init (void);
 static void     gail_focus_object_destroyed (gpointer data);
@@ -338,9 +338,9 @@ gail_focus_watcher (GSignalInvocationHint *ihint,
   /*
    * The widget may not yet be visible on the screen so we wait until it is.
    */
-  if (GTK_IS_WIDGET (widget) && !gtk_widget_get_visible(widget)) {
-    gail_focus_notify_when_idle (widget);
-  }
+  gboolean whenIdle = GTK_IS_WIDGET (widget) && !gtk_widget_get_visible(widget);
+  gail_focus_notify_when_idle (widget, whenIdle);
+
   return TRUE;
 }
 
@@ -433,7 +433,7 @@ gail_finish_select (GtkWidget *widget)
       g_object_add_weak_pointer (G_OBJECT (focus_before_menu), vp_focus_before_menu);
 
     } 
-  gail_focus_notify_when_idle (widget);
+  gail_focus_notify_when_idle (widget, TRUE);
 
   return; 
 }
@@ -489,14 +489,14 @@ gail_deselect_watcher (GSignalInvocationHint *ihint,
           active_menu_item = GTK_MENU_SHELL (parent_menu_shell)->active_menu_item;
           if (active_menu_item)
             {
-              gail_focus_notify_when_idle (active_menu_item);
+              gail_focus_notify_when_idle (active_menu_item, TRUE);
             }
         }
       else
         {
           if (!GTK_IS_MENU_BAR (menu_shell))
             {
-              gail_focus_notify_when_idle (menu_shell);
+              gail_focus_notify_when_idle (menu_shell, TRUE);
             }
         }
     }
@@ -526,7 +526,7 @@ gail_switch_page_watcher (GSignalInvocationHint *ihint,
   if (!notebook->focus_tab)
     return TRUE;
 
-  gail_focus_notify_when_idle (widget);
+  gail_focus_notify_when_idle (widget, TRUE);
   return TRUE;
 }
 
@@ -583,7 +583,7 @@ gail_focus_notify (GtkWidget *widget)
               focus_before_menu = NULL;
             }
         }
-      gail_focus_notify_when_idle (focus_widget);
+      gail_focus_notify_when_idle (focus_widget, TRUE);
 
         if (focus_widget) {
             AcElement *element = AC_ELEMENT(gtk_widget_get_accessible(focus_widget));
@@ -627,13 +627,13 @@ gail_focus_notify (GtkWidget *widget)
         {
           GtkWidget *tmp_widget = subsequent_focus_widget;
           subsequent_focus_widget = NULL;
-          gail_focus_notify_when_idle (tmp_widget);
+          gail_focus_notify_when_idle (tmp_widget, TRUE);
         }
     }
 }
 
 static void
-gail_focus_notify_when_idle (GtkWidget *widget)
+gail_focus_notify_when_idle (GtkWidget *widget, gboolean whenIdle)
 {
   if (focus_notify_handler)
     {
@@ -694,7 +694,11 @@ gail_focus_notify_when_idle (GtkWidget *widget)
         }
     }
 
-  focus_notify_handler = gdk_threads_add_idle (gail_focus_idle_handler, widget);
+  if (whenIdle) {
+    focus_notify_handler = gdk_threads_add_idle (gail_focus_idle_handler, widget);
+  } else {
+    gail_focus_idle_handler(widget);
+  }
 }
 
 static gboolean
@@ -734,7 +738,7 @@ gail_deactivate_watcher (GSignalInvocationHint *ihint,
       focus_notify_handler = 0;
       was_deselect = FALSE;
     }
-  gail_focus_notify_when_idle (focus);
+  gail_focus_notify_when_idle (focus, TRUE);
 
   return TRUE; 
 }

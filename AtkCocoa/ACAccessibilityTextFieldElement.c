@@ -204,7 +204,7 @@ get_entry_text (AcElement *element)
     int start, end;
 
     if (!gtk_editable_get_selection_bounds(GTK_EDITABLE (widget), &start, &end)) {
-        return NSMakeRange(0, 0);
+        return NSMakeRange(start, 0);
     }
 
     return NSMakeRange(start, end - start);
