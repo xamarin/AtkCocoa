@@ -52,6 +52,8 @@
     GtkTextIter iter;
 
     gtk_text_buffer_get_iter_at_mark(buffer, &iter, insertMark);
+
+    NSLog (@"Insertion point line number: %d", gtk_text_iter_get_line(&iter));
     return gtk_text_iter_get_line(&iter);
 }
 
@@ -62,12 +64,13 @@
     GtkTextIter startIter, endIter;
 
     gtk_text_buffer_get_iter_at_offset (buffer, &startIter, (int)range.location);
-    gtk_text_buffer_get_iter_at_offset (buffer, &endIter, (int)(range.location + range.length - 1));
+    gtk_text_buffer_get_iter_at_offset (buffer, &endIter, (int)(range.location + range.length));
 
-    char *text = gtk_text_buffer_get_slice (buffer, &startIter, &endIter, FALSE);
+    char *text = gtk_text_buffer_get_text (buffer, &startIter, &endIter, FALSE);
     NSString *retString = nsstring_from_cstring (text);
     g_free (text);
 
+    NSLog (@"Requested range %@: %@", NSStringFromRange(range), retString);
     return retString;
 }
 
@@ -102,22 +105,22 @@
     int startWinX, endWinX, startWinY, endWinY;
 
     gtk_text_buffer_get_iter_at_offset (buffer, &startIter, (int)range.location);
-    gtk_text_buffer_get_iter_at_offset (buffer, &endIter, (int)(range.location + range.length - 1));
+    gtk_text_buffer_get_iter_at_offset (buffer, &endIter, (int)(range.location + (range.length - 1)));
 
     gtk_text_view_get_iter_location (textview, &startIter, &startRect);
     gtk_text_view_get_iter_location (textview, &endIter, &endRect);
 
-//    g_print ("Getting %d -> %d\n", (range.location, (int)(range.location + range.length - 1));
-//    g_print ("Buffer rect %d,%d -> %d,%d\n", startRect.x, startRect.y, endRect.x, endRect.y);
-
     gtk_text_view_buffer_to_window_coords (textview, GTK_TEXT_WINDOW_WIDGET, startRect.x, startRect.y, &startWinX, &startWinY);
     gtk_text_view_buffer_to_window_coords (textview, GTK_TEXT_WINDOW_WIDGET, endRect.x, endRect.y, &endWinX, &endWinY);
 
-//    g_print ("Window rect %d,%d -> %d,%d\n", startWinX, startWinY, endWinX, endWinY);
+    GtkAllocation allocation = GTK_WIDGET (textview)->allocation;
+    int startCocoaY = allocation.height - (startWinY + startRect.height);
+    int endCocoaY = allocation.height - endWinY;
 
-    // FIXME: Some cunning calculation to work out line wrap?
-//    g_print ("Frame: %d,%d, %d x %x", startWinX, startWinY, endWinX - startWinX, endWinY - startWinY);
-    return NSMakeRect (startWinX, startWinY, endWinX - startWinX, endWinY - startWinY);
+    CGRect frame = [self accessibilityFrame];
+    NSRect rect = NSMakeRect (startWinX + frame.origin.x, startCocoaY + frame.origin.y, (endWinX - startWinX) + endRect.width, (endCocoaY - startCocoaY));
+
+    return rect;
 }
 
 - (NSString *)accessibilityValue
@@ -133,6 +136,52 @@
     g_free (text);
 
     return retString;
+}
+
+- (NSRange)accessibilitySelectedTextRange
+{
+    GtkTextView *textview = GTK_TEXT_VIEW (ac_element_get_owner ([self delegate]));
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer (textview);
+    GtkTextIter startIter, endIter;
+    int start = 0, length = 0;
+
+    if (gtk_text_buffer_get_selection_bounds(buffer, &startIter, &endIter)) {
+        start = gtk_text_iter_get_offset(&startIter);
+
+        int end = gtk_text_iter_get_offset(&endIter);
+        length = end - start;
+    } else {
+        GtkTextMark *caret = gtk_text_buffer_get_insert(buffer);
+        GtkTextIter caretIter;
+
+        gtk_text_buffer_get_iter_at_mark(buffer, &caretIter, caret);
+        start = gtk_text_iter_get_offset(&caretIter);
+    }
+
+    NSLog (@"Selected text range %@", NSStringFromRange(NSMakeRange(start, length)));
+    return NSMakeRange(start, length);
+}
+
+- (void)setAccessibilitySelectedTextRange:(NSRange)accessibilitySelectedTextRange
+{
+    NSLog (@"Set text range");
+}
+
+- (NSString *)accessibilitySelectedText
+{
+    GtkTextView *textview = GTK_TEXT_VIEW (ac_element_get_owner ([self delegate]));
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer (textview);
+    GtkTextIter startIter, endIter;
+    NSString *result = nil;
+
+    if (gtk_text_buffer_get_selection_bounds(buffer, &startIter, &endIter)) {
+        char *text = gtk_text_buffer_get_text(buffer, &startIter, &endIter, FALSE);
+        result = nsstring_from_cstring(text);
+
+        g_free (text);
+    }
+
+    return result;
 }
 
 // The compiler will complain that accessibilityFrame is not defined

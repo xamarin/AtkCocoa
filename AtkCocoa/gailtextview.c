@@ -1432,11 +1432,8 @@ _gail_text_view_insert_text_cb (GtkTextBuffer *buffer,
    * The signal will be emitted when the changed signal is received
    */
 
-    ac_element_notify(AC_ELEMENT (accessible), NSAccessibilityValueChangedNotification, nil);
-    ac_element_notify(AC_ELEMENT (accessible),NSAccessibilityAnnouncementRequestedNotification,
-                      @{ NSAccessibilityAnnouncementKey : nsstring_from_cstring(arg2),
-                         NSAccessibilityPriorityKey: @(NSAccessibilityPriorityHigh)
-                         });
+  ac_element_notify(AC_ELEMENT (accessible), NSAccessibilityValueChangedNotification, nil);
+  ac_element_notify(AC_ELEMENT (accessible), NSAccessibilitySelectedTextChangedNotification, nil);
 }
 
 /* Note arg1 returns the start of the delete range, arg2 returns the
@@ -1479,7 +1476,8 @@ _gail_text_view_delete_range_cb (GtkTextBuffer *buffer,
   g_signal_emit_by_name (accessible, "text_changed::delete",
                          offset, length);
 
-  ac_element_notify(AC_ELEMENT (accessible), NSAccessibilityValueChangedNotification, nil);
+  ac_element_notify(AC_ELEMENT (gail_text_view), NSAccessibilityValueChangedNotification, nil);
+  ac_element_notify(AC_ELEMENT (gail_text_view), NSAccessibilitySelectedTextChangedNotification, nil);
 }
 
 /* Note arg1 and arg2 point to the same offset, which is the caret
@@ -1543,6 +1541,13 @@ _gail_text_view_mark_set_cb (GtkTextBuffer *buffer,
     }
 }
 
+static void
+post_changed_notifications (AcElement *element)
+{
+  ac_element_notify(element, NSAccessibilityValueChangedNotification, NULL);
+  ac_element_notify(element, NSAccessibilitySelectedTextChangedNotification, NULL);
+}
+
 static void 
 _gail_text_view_changed_cb (GtkTextBuffer *buffer,
                             gpointer      user_data)
@@ -1563,6 +1568,8 @@ _gail_text_view_changed_cb (GtkTextBuffer *buffer,
     }
   emit_text_caret_moved (gail_text_view, get_insert_offset (buffer));
   gail_text_view->previous_selection_bound = get_selection_bound (buffer);
+
+  post_changed_notifications(AC_ELEMENT(accessible));
 }
 
 static gchar*
@@ -1638,6 +1645,8 @@ emit_text_caret_moved (GailTextView *gail_text_view,
       g_signal_emit_by_name (gail_text_view, "text_caret_moved", insert_offset);
       gail_text_view->previous_insert_offset = insert_offset;
     }
+
+  ac_element_notify(AC_ELEMENT (gail_text_view), NSAccessibilitySelectedTextChangedNotification, nil);
 }
 
 static gint
