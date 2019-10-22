@@ -333,8 +333,20 @@ gail_focus_watcher (GSignalInvocationHint *ihint,
    * plug will report a focus notification.
    */
   if (GTK_IS_SOCKET (widget) &&
-      GTK_SOCKET (widget)->plug_widget == NULL)
+      GTK_SOCKET (widget)->plug_widget == NULL) {
     return TRUE;
+  }
+
+  /*
+   * We can ignore the GtkNSViewHost as well, because it acts like a GtkSocket
+   * and the embedded NSView will handle focus for us.
+   * We need to do a string search here because GtkNSViewHost is a managed widget
+   * and so we don't have a nice GTK_IS macro for it
+   */
+  if (widget && g_strrstr(G_OBJECT_TYPE_NAME(widget), "GtkNSViewHost")) {
+    return TRUE;
+  }
+
   /*
    * The widget may not yet be visible on the screen so we wait until it is.
    */
