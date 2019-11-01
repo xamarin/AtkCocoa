@@ -1039,20 +1039,14 @@ widget_visible_in_viewport (GtkWidget *widget)
 }
 
 static gboolean
-focus_viewport_child (GtkWidget *widget)
+focus_viewport_child (GtkWidget *widget, GtkWidget *focus)
 {
-    GtkWidget *toplevel;
-    GtkWidget *focus;
     GtkAdjustment *adj;
     GtkAllocation widget_alloc;
     GtkAllocation focus_alloc;
     int x, y;
     gdouble value;
 
-    toplevel = gtk_widget_get_toplevel(widget);
-    g_return_val_if_fail(GTK_IS_WIDGET(toplevel), FALSE);
-
-    focus = gtk_window_get_focus(GTK_WINDOW(toplevel));
     if (focus == NULL)
         return FALSE;
 
@@ -1101,7 +1095,7 @@ focus_viewport_child (GtkWidget *widget)
 
         if (viewport != NULL && !widget_visible_in_viewport(widget))
         {
-            focus_viewport_child (viewport);
+            focus_viewport_child (viewport, widget);
         }
 
         gtk_widget_grab_focus(widget);
