@@ -1018,13 +1018,7 @@ widget_visible_in_viewport (GtkWidget *widget)
         rect.width = viewport->allocation.width;
         rect.height = viewport->allocation.height;
 
-        if (((widget->allocation.x + widget->allocation.width) < rect.x) ||
-            ((widget->allocation.y + widget->allocation.height) < rect.y) ||
-            (widget->allocation.x > (rect.x + rect.width)) ||
-            (widget->allocation.y > (rect.y + rect.height)))
-            ret = FALSE;
-        else
-            ret = TRUE;
+        ret = gdk_rectangle_intersect (&widget->allocation, &rect, NULL);
     }
     else
     {
