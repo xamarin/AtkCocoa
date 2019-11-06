@@ -983,6 +983,100 @@ ns_role_from_atk (AtkRole atk_role, NSString **ns_role, NSString **ns_subrole)
 	}
 }
 
+static GtkWidget *
+find_viewport (GtkWidget *widget)
+{
+    GtkWidget *parent;
+
+    parent = widget->parent;
+    while (parent != NULL)
+    {
+        if (GTK_IS_VIEWPORT(parent))
+            break;
+        parent = parent->parent;
+    }
+
+    return parent;
+}
+
+static gboolean
+widget_visible_in_viewport (GtkWidget *widget)
+{
+    GtkWidget *viewport;
+    gboolean ret;
+
+    viewport = find_viewport (widget);
+    if (viewport)
+    {
+        GtkAdjustment *adj;
+        GdkRectangle rect;
+
+        adj = gtk_viewport_get_vadjustment(GTK_VIEWPORT(viewport));
+        rect.y = adj->value;
+        adj = gtk_viewport_get_hadjustment(GTK_VIEWPORT(viewport));
+        rect.x = adj->value;
+        rect.width = viewport->allocation.width;
+        rect.height = viewport->allocation.height;
+
+        ret = gdk_rectangle_intersect (&widget->allocation, &rect, NULL);
+    }
+    else
+    {
+        if (widget->allocation.x + widget->allocation.width <= 0 &&
+            widget->allocation.y + widget->allocation.height <= 0)
+            ret = FALSE;
+        else
+            ret = TRUE;
+    }
+
+    return ret;
+}
+
+static gboolean
+focus_viewport_child (GtkWidget *widget, GtkWidget *focus)
+{
+    GtkAdjustment *adj;
+    GtkAllocation widget_alloc;
+    GtkAllocation focus_alloc;
+    int x, y;
+    gdouble value;
+
+    if (focus == NULL)
+        return FALSE;
+
+    gtk_widget_get_allocation(focus, &focus_alloc);
+    gtk_widget_get_allocation(widget, &widget_alloc);
+    gtk_widget_translate_coordinates(focus, widget, 0, 0, &x, &y);
+
+    /* Do we need to move vertically? */
+    if (y + focus_alloc.height >= widget_alloc.height)
+    {
+        adj = gtk_viewport_get_vadjustment(GTK_VIEWPORT(widget));
+        value = gtk_adjustment_get_value (adj) + (y + focus_alloc.height - widget_alloc.height);
+        gtk_adjustment_set_value(adj, value);
+    }
+    else if (y <= widget_alloc.y)
+    {
+        adj = gtk_viewport_get_vadjustment(GTK_VIEWPORT(widget));
+        value = gtk_adjustment_get_value(adj) - (widget_alloc.y - y);
+        gtk_adjustment_set_value(adj, value);
+    }
+
+    /* Do we need to move horizontally? */
+    if (x + focus_alloc.width >= widget_alloc.width)
+    {
+        adj = gtk_viewport_get_hadjustment(GTK_VIEWPORT(widget));
+        value = gtk_adjustment_get_value(adj) + (x + focus_alloc.width - widget_alloc.width);
+        gtk_adjustment_set_value(adj, value);
+    } else if (x <= widget_alloc.x) {
+        adj = gtk_viewport_get_hadjustment(GTK_VIEWPORT(widget));
+        value = gtk_adjustment_get_value(adj) - (widget_alloc.x - x);
+        gtk_adjustment_set_value (adj, value);
+    }
+
+    return FALSE;
+}
+
 - (void)setAccessibilityFocused:(BOOL)accessibilityFocused
 {
     if ([self delegateIsInvalid]) {
@@ -990,7 +1084,15 @@ ns_role_from_atk (AtkRole atk_role, NSString **ns_role, NSString **ns_subrole)
     }
 
     if (accessibilityFocused) {
-        gtk_widget_grab_focus(GTK_WIDGET (ac_element_get_owner(_delegate)));
+        GtkWidget *widget = GTK_WIDGET (ac_element_get_owner(_delegate));
+        GtkWidget *viewport = find_viewport (widget);
+
+        if (viewport != NULL && !widget_visible_in_viewport(widget))
+        {
+            focus_viewport_child (viewport, widget);
+        }
+
+        gtk_widget_grab_focus(widget);
     }
 }
 @end
