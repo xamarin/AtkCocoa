@@ -70,8 +70,12 @@
     GtkWidget *page = gtk_notebook_get_nth_page (_delegate->notebook, _delegate->index);
     GtkWidget *label = gtk_notebook_get_tab_label (_delegate->notebook, page);
 
-    const char *label_text = gtk_label_get_text (GTK_LABEL (label));
-	return nsstring_from_cstring (label_text);
+    if (GTK_IS_LABEL (label)) {
+      const char *label_text = gtk_label_get_text (GTK_LABEL (label));
+      return nsstring_from_cstring (label_text);
+    } else {
+      return NULL;
+    }
 }
 
 - (BOOL)accessibilityPerformPress
