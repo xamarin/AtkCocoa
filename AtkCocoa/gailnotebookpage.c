@@ -115,7 +115,6 @@ static AtkAttributeSet* gail_notebook_page_get_run_attributes
 static AtkAttributeSet* gail_notebook_page_get_default_attributes
                                                    (AtkText           *text);
 static GtkWidget* get_label_from_notebook_page     (GailNotebookPage  *page);
-static GtkWidget* find_label_child (GtkContainer *container);
 
 /* FIXME: not GAIL_TYPE_OBJECT? */
 G_DEFINE_TYPE_WITH_CODE (GailNotebookPage, gail_notebook_page, ATK_TYPE_OBJECT,
@@ -804,13 +803,13 @@ get_label_from_notebook_page (GailNotebookPage *page)
     return child;
 
   if (GTK_IS_CONTAINER (child))
-    child = find_label_child (GTK_CONTAINER (child));
+    child = gail_notebook_page_find_label_child (GTK_CONTAINER (child));
 
   return child;
 }
 
-static GtkWidget*
-find_label_child (GtkContainer *container)
+GtkWidget*
+gail_notebook_page_find_label_child (GtkContainer *container)
 {
   GList *children, *tmp_list;
   GtkWidget *child;
@@ -827,7 +826,7 @@ find_label_child (GtkContainer *container)
         }
       else if (GTK_IS_CONTAINER (tmp_list->data))
         {
-          child = find_label_child (GTK_CONTAINER (tmp_list->data));
+          child = gail_notebook_page_find_label_child (GTK_CONTAINER (tmp_list->data));
           if (child)
             break;
         }
