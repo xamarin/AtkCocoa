@@ -64,6 +64,8 @@ struct _GailNotebookPageClass
 
 AtkObject *gail_notebook_page_new(GtkNotebook *notebook, gint pagenum);
 
+GtkWidget *gail_notebook_page_find_label_child (GtkContainer *container);
+
 #define gail_notebook_page_get_element(p) ((__bridge id<NSAccessibility>)(p)->element);
 
 G_END_DECLS
