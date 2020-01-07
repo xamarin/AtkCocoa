@@ -1079,11 +1079,16 @@ focus_viewport_child (GtkWidget *widget, GtkWidget *focus)
 
 - (void)setAccessibilityFocused:(BOOL)accessibilityFocused
 {
+    [self setAccessibilityFocused:accessibilityFocused ignoringOwner:NO];
+}
+
+- (void)setAccessibilityFocused:(BOOL)accessibilityFocused ignoringOwner:(BOOL)ignore
+{
     if ([self delegateIsInvalid]) {
         return;
     }
 
-    if (accessibilityFocused) {
+    if (accessibilityFocused && !ignore) {
         GtkWidget *widget = GTK_WIDGET (ac_element_get_owner(_delegate));
         GtkWidget *viewport = find_viewport (widget);
 
@@ -1095,4 +1100,5 @@ focus_viewport_child (GtkWidget *widget, GtkWidget *focus)
         gtk_widget_grab_focus(widget);
     }
 }
+
 @end

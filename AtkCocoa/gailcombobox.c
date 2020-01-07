@@ -114,7 +114,15 @@ toggle_button_focused (GtkToggleButton *button,
 {
   gboolean return_val = FALSE;
 
-  ac_element_focus_and_ignore_next(AC_ELEMENT (obj));
+  ACAccessibilityElement *real_element = ac_element_get_accessibility_element (AC_ELEMENT (obj));
+
+  // We ignore the owner so that we don't get into a loop. At this point ATK things the focus is on the togglebutton
+  // but NSAccessibilty thinks the focus is on the combobox
+  [real_element setAccessibilityFocused:YES ignoringOwner:YES];
+  [[NSApplication sharedApplication] setAccessibilityApplicationFocusedUIElement:real_element];
+  NSAccessibilityPostNotificationWithUserInfo([NSApplication sharedApplication],
+                                              NSAccessibilityFocusedUIElementChangedNotification,
+                                              @{NSAccessibilityUIElementsKey: @[real_element]});
   return FALSE;
 }
 

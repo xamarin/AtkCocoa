@@ -27,6 +27,7 @@
 - (BOOL)delegateIsInvalid;
 - (BOOL)hasDynamicChildren;
 - (GdkRectangle)frameInGtkWindowSpace;
+- (void)setAccessibilityFocused:(BOOL)accessibilityFocused ignoringOwner:(BOOL)ignore;
 
 NSString *nsstring_from_cstring (const char *cstring);
 
