@@ -396,6 +396,14 @@ gail_combo_box_do_action (AtkAction *action,
     return FALSE;
 }
 
+static gboolean
+popup_unmapped (GtkWidget *widget,
+                GailComboBox *combo)
+{
+  ac_element_focus_and_ignore_next(AC_ELEMENT (combo));
+  return FALSE;
+}
+
 static void
 popup_created (GailComboBox *gail_combo_box,
                AtkObject *popup)
@@ -411,6 +419,8 @@ popup_created (GailComboBox *gail_combo_box,
   if (GTK_IS_MENU (widget)) {
     gtk_menu_shell_select_first(GTK_MENU_SHELL (widget), FALSE);
   }
+
+  g_signal_connect (widget, "hide", G_CALLBACK (popup_unmapped), gail_combo_box);
 }
 
 static void
@@ -463,7 +473,6 @@ idle_do_action (gpointer data)
   combo_box = GTK_COMBO_BOX (widget);
 
   popup = gtk_combo_box_get_popup_accessible (combo_box);
-  NSLog (@"Popup type: %d {%s}", atk_object_get_role(popup), atk_role_get_name(atk_object_get_role(popup)));
 
   do_popup = !gtk_widget_get_mapped (GTK_ACCESSIBLE (popup)->widget);
   if (do_popup) {

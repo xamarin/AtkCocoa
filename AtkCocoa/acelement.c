@@ -178,6 +178,7 @@ ac_element_real_focus_event (AtkObject *object,
 void
 ac_element_focus_and_ignore_next (AcElement *element)
 {
+  ignore_next_focus = FALSE;
   if (!ignore_next_focus) {
     ACAccessibilityElement *real_element = ac_element_get_accessibility_element (element);
     [real_element setAccessibilityFocused:YES];
