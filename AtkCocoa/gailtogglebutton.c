@@ -24,6 +24,7 @@
 #include "atk-cocoa/gailtogglebutton.h"
 
 #import <Cocoa/Cocoa.h>
+#import "atk-cocoa/ACAccessibilityToggleButtonElement.h"
 
 static void      gail_toggle_button_class_init        (GailToggleButtonClass *klass);
 
@@ -38,6 +39,7 @@ static void      gail_toggle_button_real_initialize   (AtkObject             *ob
                                                        gpointer              data);
 
 static AtkStateSet* gail_toggle_button_ref_state_set  (AtkObject             *accessible);
+id<NSAccessibility> gail_toggle_button_real_get_accessibility_element (AcElement *element);
 
 G_DEFINE_TYPE (GailToggleButton, gail_toggle_button, GAIL_TYPE_BUTTON)
 
@@ -46,12 +48,15 @@ gail_toggle_button_class_init (GailToggleButtonClass *klass)
 {
   GailWidgetClass *widget_class;
   AtkObjectClass *class = ATK_OBJECT_CLASS (klass);
+  AcElementClass *element_class = AC_ELEMENT_CLASS(klass);
 
   widget_class = (GailWidgetClass*)klass;
   widget_class->notify_gtk = gail_toggle_button_real_notify_gtk;
 
   class->ref_state_set = gail_toggle_button_ref_state_set;
   class->initialize = gail_toggle_button_real_initialize;
+
+  element_class->get_accessibility_element = gail_toggle_button_real_get_accessibility_element;
 }
 
 static void
@@ -74,6 +79,12 @@ gail_toggle_button_real_initialize (AtkObject *obj,
     obj->role = ATK_ROLE_CHECK_BOX;
   else
     obj->role = ATK_ROLE_TOGGLE_BUTTON;
+}
+
+id<NSAccessibility>
+gail_toggle_button_real_get_accessibility_element (AcElement *element)
+{
+  return [[ACAccessibilityToggleButtonElement alloc] initWithDelegate:element];
 }
 
 static void

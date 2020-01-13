@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AE13F63D23C73B4900233037 /* ACAccessibilityToggleButtonElement.m in Sources */ = {isa = PBXBuildFile; fileRef = AE13F63B23C73B4900233037 /* ACAccessibilityToggleButtonElement.m */; };
 		AE47D3E51F0E764B00678275 /* ACAccessibilityCellElement.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3961F0E764B00678275 /* ACAccessibilityCellElement.c */; };
 		AE47D3E61F0E764B00678275 /* ACAccessibilityComboBoxElement.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3971F0E764B00678275 /* ACAccessibilityComboBoxElement.c */; };
 		AE47D3E71F0E764B00678275 /* ACAccessibilityElement.c in Sources */ = {isa = PBXBuildFile; fileRef = AE47D3981F0E764B00678275 /* ACAccessibilityElement.c */; };
@@ -107,6 +108,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AE13F63B23C73B4900233037 /* ACAccessibilityToggleButtonElement.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ACAccessibilityToggleButtonElement.m; sourceTree = "<group>"; };
 		AE47D2EC1F0E74B700678275 /* libAtkCocoa.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libAtkCocoa.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE47D3961F0E764B00678275 /* ACAccessibilityCellElement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = ACAccessibilityCellElement.c; sourceTree = "<group>"; };
 		AE47D3971F0E764B00678275 /* ACAccessibilityComboBoxElement.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = ACAccessibilityComboBoxElement.c; sourceTree = "<group>"; };
@@ -270,6 +272,7 @@
 				AE86858821AEECAD00C0D2BC /* ACAccessibilityTableHeaderElement.m */,
 				AE47D39E1F0E764B00678275 /* ACAccessibilityTextFieldElement.c */,
 				AE47D39F1F0E764B00678275 /* ACAccessibilityTextViewElement.c */,
+				AE13F63B23C73B4900233037 /* ACAccessibilityToggleButtonElement.m */,
 				AE47D3A01F0E764B00678275 /* ACAccessibilityTreeCellElement.c */,
 				AE47D3A11F0E764B00678275 /* ACAccessibilityTreeColumnElement.c */,
 				AE77D1CA1F1E4DB000151C16 /* ACAccessibilityTreeColumnHeaderElement.c */,
@@ -514,6 +517,7 @@
 				AE47D4251F0E764B00678275 /* gailscrolledwindow.c in Sources */,
 				AE47D3EB1F0E764B00678275 /* ACAccessibilityOutlineElement.c in Sources */,
 				AE47D41B1F0E764B00678275 /* gailpixmap.c in Sources */,
+				AE13F63D23C73B4900233037 /* ACAccessibilityToggleButtonElement.m in Sources */,
 				AE47D4191F0E764B00678275 /* gailoptionmenu.c in Sources */,
 				AE47D4241F0E764B00678275 /* gailscrollbar.c in Sources */,
 				AEFCB9512327E60C0025E79C /* ACAccessibiltyBooleanCellElement.m in Sources */,

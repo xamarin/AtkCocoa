@@ -20,6 +20,7 @@
 #undef GTK_DISABLE_DEPRECATED
 
 #import "atk-cocoa/ACAccessibilityComboBoxElement.h"
+#import "atk-cocoa/ACAccessibilityToggleButtonElement.h"
 #include "atk-cocoa/acelement.h"
 #include "atk-cocoa/acdebug.h"
 
@@ -35,6 +36,7 @@
     return YES;
 }
 
+/*
 static void
 dump_child (GtkWidget *child, gpointer data)
 {
@@ -47,16 +49,75 @@ dump_child (GtkWidget *child, gpointer data)
         [children addObject:e];
     }
 }
+ */
+
+static void
+check_for_toggle_button (GtkWidget *child, gpointer data)
+{
+    if (GTK_IS_TOGGLE_BUTTON (child)) {
+        GtkToggleButton **ret = (GtkToggleButton **)data;
+        *ret = GTK_TOGGLE_BUTTON (child);
+    }
+}
+
+static GtkToggleButton *
+find_toggle_button (GtkWidget *combobox)
+{
+    GtkToggleButton *ret = NULL;
+    gtk_container_forall(GTK_CONTAINER (combobox), check_for_toggle_button, &ret);
+    return ret;
+}
 
 - (NSArray *)accessibilityChildren
 {
     GtkComboBox *combobox = GTK_COMBO_BOX (ac_element_get_owner([self delegate]));
     NSMutableArray *children = [NSMutableArray array];
 
-    gtk_container_forall(GTK_CONTAINER(combobox), dump_child, (__bridge void *) children);
+//    gtk_container_forall(GTK_CONTAINER(combobox), dump_child, (__bridge void *) children);
+    GtkToggleButton *tb = find_toggle_button(GTK_WIDGET (combobox));
+
+    if (tb != NULL) {
+        AcElement *element = AC_ELEMENT (gtk_widget_get_accessible(GTK_WIDGET (tb)));
+        ACAccessibilityElement *e = ac_element_get_accessibility_element(element);
+        ACAccessibilityToggleButtonElement *tbElement = (ACAccessibilityToggleButtonElement *)e;
+
+        GtkEntry *entry = [self getEntry];
+        AcElement *entryElement = AC_ELEMENT (gtk_widget_get_accessible(GTK_WIDGET (entry)));
+        [tbElement setComboBox:ac_element_get_accessibility_element(entryElement)];
+        [e setAccessibilityRole:NSAccessibilityMenuButtonRole];
+        [children addObject:e];
+    }
 
     return children;
 }
+
+/*
+- (void)setAccessibilityLabel:(NSString *)accessibilityLabel
+{
+    [super setAccessibilityLabel:accessibilityLabel];
+
+    GtkToggleButton *tb = find_toggle_button(GTK_WIDGET (ac_element_get_owner([self delegate])));
+    if (tb != NULL) {
+        AcElement *element = AC_ELEMENT (gtk_widget_get_accessible(GTK_WIDGET (tb)));
+        ACAccessibilityElement *e = ac_element_get_accessibility_element(element);
+
+        [e setAccessibilityLabel:accessibilityLabel];
+    }
+}
+
+- (void)setAccessibilityTitle:(NSString *)accessibilityTitle
+{
+    [super setAccessibilityTitle:accessibilityTitle];
+
+    GtkToggleButton *tb = find_toggle_button(GTK_WIDGET (ac_element_get_owner([self delegate])));
+    if (tb != NULL) {
+        AcElement *element = AC_ELEMENT (gtk_widget_get_accessible(GTK_WIDGET (tb)));
+        ACAccessibilityElement *e = ac_element_get_accessibility_element(element);
+
+        [e setAccessibilityTitle:accessibilityTitle];
+    }
+}
+*/
 
 - (BOOL)accessibilityPerformPress
 {
