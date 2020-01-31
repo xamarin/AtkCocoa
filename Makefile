@@ -1,6 +1,6 @@
-INSTALL_PATH=monodevelop/main/build/lib/gtk-2.0
+INSTALL_PATH=main/build/lib/gtk-2.0
 MD_ADDINS_INSTALL_ROOT=../../../$(INSTALL_PATH)
-STANDALONE_INSTALL_ROOT=../$(INSTALL_PATH)
+STANDALONE_INSTALL_ROOT=../monodevelop/$(INSTALL_PATH)
 
 all:
 	xcodebuild DSTROOT="Build/Release"
