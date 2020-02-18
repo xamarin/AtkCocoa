@@ -27,12 +27,20 @@
 
 - (BOOL)accessibilityPerformPress
 {
-    return ac_element_perform_press ([self delegate]);
+    // don't perform if not enabled
+    if ([self isAccessibilityEnabled]) {
+        return ac_element_perform_press ([self delegate]);
+    }
+    return FALSE;
 }
 
 - (BOOL)accessibilityPerformShowMenu
 {
-    return ac_element_perform_show_menu ([self delegate]);
+    // don't perform if not enabled
+    if ([self isAccessibilityEnabled]) {
+        return ac_element_perform_show_menu ([self delegate]);
+    }
+    return FALSE;
 }
 
 - (NSString *)accessibilityLabel
@@ -94,5 +102,23 @@
         return NSAccessibilityPopUpButtonRole;
     }
 }
-@end
 
+- (BOOL)isAccessibilityEnabled
+{
+    if ([super isAccessibilityEnabled]) {
+        // depending on the current GtkSensitivityType of the button
+        // and whether the menu has any items, the ComboBox might appear
+        // as insenstitive, even if gtk_widget_is_sensitive is true.
+        // This behaviour doesn't make sense with VoiceOver and we
+        // should always return false here if the menu has no items.
+        GtkComboBox *combo_box = GTK_COMBO_BOX (ac_element_get_owner([self delegate]));
+        GtkTreeModel *model = gtk_combo_box_get_model (combo_box);
+        GtkTreeIter iter;
+        if (gtk_tree_model_get_iter_first (model, &iter)) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
+@end
