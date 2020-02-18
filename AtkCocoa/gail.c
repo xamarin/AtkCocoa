@@ -219,6 +219,8 @@ gail_get_accessible_for_widget (GtkWidget *widget,
   return obj;
 }
 
+static gboolean skipNext = FALSE;
+
 static gboolean
 gail_focus_watcher (GSignalInvocationHint *ihint,
                     guint                  n_param_values,
@@ -263,40 +265,39 @@ gail_focus_watcher (GSignalInvocationHint *ihint,
 
                       return TRUE;
                     }
-                  widget = window->focus_widget;
                 }
               else if (window->type == GTK_WINDOW_POPUP) 
                 {
-	          if (GTK_IS_BIN (widget))
-		    {
-		      GtkWidget *child = gtk_bin_get_child (GTK_BIN (widget));
+                  if (GTK_IS_BIN (widget))
+                    {
+                      GtkWidget *child = gtk_bin_get_child (GTK_BIN (widget));
 
-		      if (GTK_IS_WIDGET (child) && gtk_widget_has_grab (child))
-			{
-			  if (GTK_IS_MENU_SHELL (child))
-			    {
-			      if (GTK_MENU_SHELL (child)->active_menu_item)
-				{
-				  /*
-				   * We have a menu which has a menu item selected
-				   * so we do not report focus on the menu.
-				   */ 
-				  return TRUE; 
-				}
-			    }
-			  widget = child;
-			} 
-		    }
-		  else /* popup window has no children; this edge case occurs in some custom code (OOo for instance) */
-		    {
-		      return TRUE;
-		    }
+                      if (GTK_IS_WIDGET (child) && gtk_widget_has_grab (child))
+                        {
+                          if (GTK_IS_MENU_SHELL (child))
+                            {
+                              if (GTK_MENU_SHELL (child)->active_menu_item)
+                                {
+                                  /*
+                                   * We have a menu which has a menu item selected
+                                   * so we do not report focus on the menu.
+                                   */
+                                  return TRUE;
+                                }
+                            }
+                          widget = child;
+                        }
+                    }
+                  else /* popup window has no children; this edge case occurs in some custom code (OOo for instance) */
+                  {
+                    return TRUE;
+                  }
                 }
-	      else /* Widget is a non-popup toplevel with no focus children; 
-		      don't emit for this case either, as it's useless */
-		{
-		  return TRUE;
-		}
+              else /* Widget is a non-popup toplevel with no focus children;
+                    don't emit for this case either, as it's useless */
+                {
+                  return TRUE;
+                }
             }
         }
       else
@@ -337,6 +338,10 @@ gail_focus_watcher (GSignalInvocationHint *ihint,
     return TRUE;
   }
 
+  if (GTK_IS_WINDOW (widget)) {
+    g_object_set_data (G_OBJECT (widget), "hasBeenFocused", GINT_TO_POINTER(TRUE));
+  }
+
   /*
    * We can ignore the GtkNSViewHost as well, because it acts like a GtkSocket
    * and the embedded NSView will handle focus for us.
@@ -350,6 +355,16 @@ gail_focus_watcher (GSignalInvocationHint *ihint,
   /*
    * The widget may not yet be visible on the screen so we wait until it is.
    */
+  GtkWidget *tl = gtk_widget_get_toplevel(widget);
+  if (tl == NULL) {
+    return TRUE;
+  }
+
+  gpointer hasBeenFocused = g_object_get_data (G_OBJECT (tl), "hasBeenFocused");
+  if (GPOINTER_TO_INT (hasBeenFocused) == FALSE) {
+    return TRUE;
+  }
+
   gboolean whenIdle = GTK_IS_WIDGET (widget) && !gtk_widget_get_visible(widget);
   gail_focus_notify_when_idle (widget, whenIdle);
 
@@ -444,7 +459,8 @@ gail_finish_select (GtkWidget *widget)
       focus_before_menu = focus_widget;
       g_object_add_weak_pointer (G_OBJECT (focus_before_menu), vp_focus_before_menu);
 
-    } 
+    }
+
   gail_focus_notify_when_idle (widget, TRUE);
 
   return; 
@@ -560,7 +576,7 @@ gail_focus_idle_handler (gpointer data)
       g_object_remove_weak_pointer (G_OBJECT (next_focus_widget), vp_next_focus_widget);
       next_focus_widget = NULL;
     }
-    
+
   gail_focus_notify (data);
 
   return FALSE;
@@ -750,6 +766,7 @@ gail_deactivate_watcher (GSignalInvocationHint *ihint,
       focus_notify_handler = 0;
       was_deselect = FALSE;
     }
+
   gail_focus_notify_when_idle (focus, TRUE);
 
   return TRUE; 
