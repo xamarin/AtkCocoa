@@ -328,6 +328,11 @@ gail_focus_watcher (GSignalInvocationHint *ihint,
           return TRUE;
         }
     }
+
+  if (widget == NULL) {
+    return TRUE;
+  }
+
   /*
    * If the focus widget is a GtkSocket without a plug
    * then ignore the focus notification as the embedded
