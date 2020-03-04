@@ -512,6 +512,7 @@ ns_role_from_atk (AtkRole atk_role, NSString **ns_role, NSString **ns_subrole)
 			break;
 
 		case ATK_ROLE_PAGE_TAB:
+			*ns_role = NSAccessibilityTabGroupRole;
 			break;
 
 		case ATK_ROLE_PAGE_TAB_LIST:
