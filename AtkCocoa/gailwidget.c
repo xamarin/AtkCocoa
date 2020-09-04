@@ -969,6 +969,13 @@ gail_widget_map_gtk (GtkWidget     *widget)
     return 1;
   }
 
+  if (GTK_IS_LABEL(widget)) {
+    GtkWidget *parentWidget = gtk_widget_get_parent(widget);
+    // Is this a label in a tab? if so, ignore it
+    if (GTK_IS_HBOX(parentWidget) && GTK_IS_NOTEBOOK(gtk_widget_get_parent(parentWidget))) {
+      return 1;
+    }
+  }
   // GtkNSView doesn't actually get mapped when the mapped signal is emitted
   // so we just accept that it will be mapped
   parentAccessible = gtk_widget_get_accessible(parent);
