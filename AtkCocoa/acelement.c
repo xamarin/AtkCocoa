@@ -683,14 +683,19 @@ ac_element_remove_child (AcElement *parent,
 	}
 }
 
-const char *
+NSString *
 ac_element_get_text (AcElement *element)
 {
+	NSString *result = nil;
+
 	if (ATK_IS_TEXT (element)) {
-		return atk_text_get_text (ATK_TEXT (element), 0, -1);
+		const char *text = atk_text_get_text (ATK_TEXT (element), 0, -1);
+
+		result = nsstring_from_cstring(text);
+		g_free(text);
 	}
 
-	return NULL;
+	return nil;
 }
 
 NSArray *

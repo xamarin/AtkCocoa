@@ -52,8 +52,8 @@
 	if (delegate != NULL) {
         g_object_add_weak_pointer(G_OBJECT (delegate), (void **)&_delegate);
 
-		_delegate_type = nsstring_from_cstring (g_strdup (G_OBJECT_TYPE_NAME (delegate)));
-		_owner_type = nsstring_from_cstring (g_strdup (G_OBJECT_TYPE_NAME (ac_element_get_owner (delegate))));
+		_delegate_type = nsstring_from_cstring (G_OBJECT_TYPE_NAME (delegate));
+		_owner_type = nsstring_from_cstring (G_OBJECT_TYPE_NAME (ac_element_get_owner (delegate)));
 	}
 
 	return self;
@@ -293,7 +293,7 @@ get_coords_in_window (GtkWidget *widget, int *x, int *y)
 	GObject *owner = ac_element_get_owner (_delegate);
 
 	if (GTK_IS_LABEL (owner) || GTK_IS_BUTTON (owner)) {
-		return _realTitle ?: nsstring_from_cstring (ac_element_get_text (_delegate));
+		return _realTitle ?: ac_element_get_text (_delegate);
 	} else {
 		return _realTitle;
 	}
@@ -313,7 +313,7 @@ get_coords_in_window (GtkWidget *widget, int *x, int *y)
 	GObject *owner = ac_element_get_owner (_delegate);
 
 	if (GTK_IS_ENTRY (owner)) {
-		return nsstring_from_cstring (ac_element_get_text (_delegate));
+		return ac_element_get_text (_delegate);
 	}
 
 	if (GTK_IS_TOGGLE_BUTTON (owner)) {
