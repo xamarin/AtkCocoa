@@ -142,7 +142,7 @@ get_entry_text (AcElement *element)
 
 - (NSRange)accessibilityRangeForLine:(NSInteger)line
 {
-    return NSMakeRange(0, [get_entry_text(AC_ELEMENT ([self delegate])) length]);
+    return NSRangeFromString(get_entry_text(AC_ELEMENT ([self delegate])));
 }
 
 - (NSString *)accessibilityStringForRange:(NSRange)range
