@@ -77,7 +77,7 @@
       const char *label_text = gtk_label_get_text (GTK_LABEL (label));
       return nsstring_from_cstring (label_text);
     } else {
-      return NULL;
+      return nil;
     }
 }
 

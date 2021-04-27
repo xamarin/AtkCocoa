@@ -147,7 +147,7 @@ gail_expander_class_init (GailExpanderClass *klass)
 static id<NSAccessibility>
 get_real_accessibility_element (AcElement *element)
 {
-  NSLog (@"Getting real element");
+  //NSLog (@"Getting real element");
   return [[ACAccessibilityExpanderElement alloc] initWithDelegate:element];
 }
 

@@ -1440,7 +1440,7 @@ cocoa_update_cell_value (GailRendererCell *renderer_cell,
           spec = g_object_class_find_property
                            (G_OBJECT_GET_CLASS (cur_renderer->data), *prop_list);
 
-          NSLog (@"Property: %s", *prop_list);
+          //NSLog (@"Property: %s", *prop_list);
           if (spec != NULL)
             {
               GValue value = { 0, };

@@ -52,7 +52,7 @@
         return nil;
 	}
 
-    return nsstring_from_cstring (get_entry_text([self delegate]));
+    return get_entry_text([self delegate]);
 }
 
 - (void)setAccessibilityValue:(id)newValue
@@ -87,7 +87,7 @@
 
 - (NSInteger)accessibilityNumberOfCharacters
 {
-    return strlen (get_entry_text([self delegate]));
+    return [get_entry_text([self delegate]) length];
 }
 
 - (NSInteger)accessibilityLineForIndex:(NSInteger)index
@@ -106,59 +106,55 @@
     }
 }
 
-const char *
+NSString *
 get_entry_text (AcElement *element)
 {
     ACAccessibilityTextFieldElement *textElement = (ACAccessibilityTextFieldElement *)ac_element_get_accessibility_element(element);
     GtkWidget *widget = (GtkWidget *)[textElement getEntry];
-    
+
     if (!GTK_IS_ENTRY(widget)) {
         NSLog(@"%@: This is not a GTK entry %s", textElement, widget ? G_OBJECT_TYPE_NAME(widget) : "<null>");
-        return "";
+        return @"";
     }
-    
+
     NSString *value = nsstring_from_cstring (gtk_entry_get_text(GTK_ENTRY (widget)));
-    
+
     if (!gtk_entry_get_visibility (GTK_ENTRY (widget))){
         value = [@"" stringByPaddingToLength:value.length withString: @"•" startingAtIndex:0];
     }
-    
-    if (value == nil)
-        return "";
-    
-    return [value cStringUsingEncoding:NSUTF8StringEncoding];
+    return value;
 }
 
 - (NSString *)accessibilityValueDescription
 {
     GtkEntry *widget = [self getEntry];
-    
+
     if (!GTK_IS_ENTRY (widget)) {
         return nil;
     }
-    
+
     if (!gtk_entry_get_visibility (GTK_ENTRY (widget))){
         return @"contains secure text";
     }
-    
+
     return [super accessibilityValueDescription];
 }
 
 - (NSRange)accessibilityRangeForLine:(NSInteger)line
 {
-    return NSMakeRange(0, strlen (get_entry_text(AC_ELEMENT ([self delegate]))));
+    return NSRangeFromString(get_entry_text(AC_ELEMENT ([self delegate])));
 }
 
 - (NSString *)accessibilityStringForRange:(NSRange)range
 {
-    NSString *ret = nsstring_from_cstring(get_entry_text([self delegate]));
+    NSString *ret = get_entry_text([self delegate]);
 
     return [ret substringWithRange:range];
 }
 
 - (NSAttributedString *)accessibilityAttributedStringForRange:(NSRange)range
 {
-    NSString *ret = nsstring_from_cstring(get_entry_text([self delegate]));
+    NSString *ret = get_entry_text([self delegate]);
 
     return [[NSAttributedString alloc] initWithString:[ret substringWithRange:range]];
 }
@@ -173,8 +169,7 @@ get_entry_text (AcElement *element)
     pango_layout_index_to_pos (layout, (int)range.location, &first_rect);
     pango_layout_index_to_pos (layout, (int)(range.location + range.length - 1), &last_rect);
 
-    const char *text = get_entry_text([self delegate]);
-    NSString *t = nsstring_from_cstring(text);
+    NSString *t = get_entry_text([self delegate]);
 
     NSRect first = NSMakeRect(first_rect.x / PANGO_SCALE, first_rect.y / PANGO_SCALE,
                               first_rect.width / PANGO_SCALE, first_rect.height / PANGO_SCALE);
@@ -215,7 +210,7 @@ get_entry_text (AcElement *element)
     GtkEntry *widget = [self getEntry];
     NSRange range = [self accessibilitySelectedTextRange];
 
-    NSString *ret = nsstring_from_cstring(get_entry_text ([self delegate]));
+    NSString *ret = get_entry_text ([self delegate]);
     return [ret substringWithRange:range];
 }
 

@@ -53,7 +53,7 @@
 
     gtk_text_buffer_get_iter_at_mark(buffer, &iter, insertMark);
 
-    NSLog (@"Insertion point line number: %d", gtk_text_iter_get_line(&iter));
+    //NSLog (@"Insertion point line number: %d", gtk_text_iter_get_line(&iter));
     return gtk_text_iter_get_line(&iter);
 }
 
@@ -70,7 +70,7 @@
     NSString *retString = nsstring_from_cstring (text);
     g_free (text);
 
-    NSLog (@"Requested range %@: %@", NSStringFromRange(range), retString);
+    //NSLog (@"Requested range %@: %@", NSStringFromRange(range), retString);
     return retString;
 }
 
@@ -158,13 +158,13 @@
         start = gtk_text_iter_get_offset(&caretIter);
     }
 
-    NSLog (@"Selected text range %@", NSStringFromRange(NSMakeRange(start, length)));
+    //NSLog (@"Selected text range %@", NSStringFromRange(NSMakeRange(start, length)));
     return NSMakeRange(start, length);
 }
 
 - (void)setAccessibilitySelectedTextRange:(NSRange)accessibilitySelectedTextRange
 {
-    NSLog (@"Set text range");
+    //NSLog (@"Set text range");
 }
 
 - (NSString *)accessibilitySelectedText
