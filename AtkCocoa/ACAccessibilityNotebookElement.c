@@ -46,8 +46,16 @@
 - (NSArray *)accessibilityChildrenInNavigationOrder
 {
     //NSArray *c = [super accessibilityChildrenInNavigationOrder];
+    GtkWidget *notebook = ac_element_get_owner ([self delegate]);
+    gint n_pages = gtk_notebook_get_n_pages (GTK_NOTEBOOK (notebook));
 
-    return [super accessibilityChildren];
+    NSMutableArray *ret = [[super accessibilityChildren] mutableCopy];
+
+    if (n_pages > 0)
+        for (int n = 0; n < n_pages; n++)
+            [ret removeLastObject];
+
+    return ret;
 }
 
 - (id)accessibilityValue
